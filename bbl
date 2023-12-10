@@ -25,23 +25,28 @@ fi
 
 # Declare variables and functions
 typeset run_command next_section
-run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
-next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
+run_command="\001\033[33m\002-->\001\033[0m\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
+#run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
+next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
+#next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
 typeset -r run_command next_section
 
 function waiter {
 	stty -echo
-	read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
+	read -r -N 1 -d " " var?"$(print ${1:---> Press the Space bar to continue, or Ctrl-C to exit.})" < /dev/tty
+	#read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
 	stty echo
 	printf "\n"
 }
 
 # Intro
-printf "\n"
+tput clear
+#printf "\n"
 printf "%s\n" "----------------------------------------------------------------------"
 printf "%s\n" "| Babble: An upgrade routine for Homebrew, Mac App Store, and macOS. |"
 printf "%s\n" "----------------------------------------------------------------------"
 printf "\n"
+#printf "%s\n" "" "----------------------------------------------------------------------" "| Babble: An upgrade routine for Homebrew, Mac App Store, and macOS. |" "----------------------------------------------------------------------" ""
 
 # Homebrew
 printf "%s\n" "Updating Homebrew -- The Missing Package Manager for macOS..." 'Would run `brew update`, and then `brew desc --eval-all` for any new packages'
@@ -51,7 +56,7 @@ brew update 2>&1 | tee "${TMPDIR:-/tmp/}bup.out"
 { set +x; }
 printf "\n"
 set -x
-awk '/==> New/{ f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{ f = 0 } /^You have/{f = 0 } f' "${TMPDIR:-/tmp/}bup.out" | xargs -J % brew desc --eval-all %
+awk '/==> New/{f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{f = 0} /^You have/{f = 0} f' "${TMPDIR:-/tmp/}bup.out" | xargs -J % brew desc --eval-all %
 { set +x; }
 rm -f "${TMPDIR:-/tmp/}bup.out"
 waiter "$next_section"
@@ -118,4 +123,7 @@ rm -f "${TMPDIR:-/tmp/}su.err"
 
 
 # Conclusion
-printf "\n%s\n" "[Babble] All finished! Exiting..."
+print
+printf "\001\033[36m\002%s\001\033[0m\002 %s\n" "⨀" "[Babble] All finished! Exiting..."
+#printf "\n%s\n" "[🔄 Babble] All finished! Exiting..."
+#printf "\n%s\n" "[⊙ Babble] All finished! Exiting..."
