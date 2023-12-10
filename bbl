@@ -1,6 +1,6 @@
-#! /bin/ksh
+#! /bin/ksh -p
 #
-# Babble (bbl): An upgrade routine for Homebrew, Mac App Store, and macOS.
+# Babble (bbl): An upgrade routine for Homebrew, Mac App Store and macOS
 #
 # Copyright 2023 Todd Schulman <toobuntu> AT <gmail> DOT <com>
 # License: GPLv3.0+
@@ -8,6 +8,17 @@
 # Modification history
 # 07-Dec-2023 T.S. Created original script
 #
+# NOTE: One cannot rely on Homebrew Git and the JSON API being in sync.
+# If this causes issues, prefix the invocation of Babble (`bbl`) with
+# HOMEBREW_NO_INSTALL_FROM_API=1 on a case-by-case basis.
+# > In v4.0.0 (16-Feb-2023), Homebrew migrated from Git-cloned taps
+# to JSON downloads (API) to enable significantly faster Homebrew-
+# maintained tap updates. However, the API data can lag behind Git.
+# Sometimes, a release is pulled and this is updated in Git, but the
+# API hasn't yet synced and a download fails when trying to upgrade.
+# To get the most up-to-date information, prefix the brew commands with
+# HOMEBREW_NO_INSTALL_FROM_API=1 on a case-by-case basis.
+
 # Initialization
 # Exit cleanly if aborted with ⌃C.
 trap 'exit 0' SIGINT
@@ -25,6 +36,9 @@ fi
 
 # Declare variables and functions
 typeset run_command next_section
+# NOTE: Use escape sequences \001 and \002 (otherwise known as
+# RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE) to exclude the
+# counting of non-printing characters.
 run_command="\001\033[33m\002-->\001\033[0m\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 #run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
@@ -32,36 +46,34 @@ next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar t
 typeset -r run_command next_section
 
 function waiter {
-	stty -echo
-	read -r -N 1 -d " " var?"$(print ${1:---> Press the Space bar to continue, or Ctrl-C to exit.})" < /dev/tty
+	/bin/stty -echo
+	read -r -N 1 -d " " var?"$(print -e ${1:---> Press the Space bar to continue, or Ctrl-C to exit.})" < /dev/tty
 	#read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
-	stty echo
-	printf "\n"
+	/bin/stty echo
+	print
 }
 
 # Intro
-tput clear
-#printf "\n"
-printf "%s\n" "----------------------------------------------------------------------"
-printf "%s\n" "| Babble: An upgrade routine for Homebrew, Mac App Store, and macOS. |"
-printf "%s\n" "----------------------------------------------------------------------"
-printf "\n"
-#printf "%s\n" "" "----------------------------------------------------------------------" "| Babble: An upgrade routine for Homebrew, Mac App Store, and macOS. |" "----------------------------------------------------------------------" ""
+/usr/bin/tput clear
+printf "%s\n" "-----------------------------------------------------------------------"
+printf "%s\n" "| ⨀ Babble: An upgrade routine for Homebrew, Mac App Store and macOS. |"
+printf "%s\n" "-----------------------------------------------------------------------"
+print
 
 # Homebrew
 printf "%s\n" "Updating Homebrew -- The Missing Package Manager for macOS..." 'Would run `brew update`, and then `brew desc --eval-all` for any new packages'
 waiter "$run_command"
 set -x
-brew update 2>&1 | tee "${TMPDIR:-/tmp/}bup.out"
+brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
 { set +x; }
-printf "\n"
+print
 set -x
-awk '/==> New/{f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{f = 0} /^You have/{f = 0} f' "${TMPDIR:-/tmp/}bup.out" | xargs -J % brew desc --eval-all %
+/usr/bin/awk '/==> New/{f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{f = 0} /^You have/{f = 0} f' "${TMPDIR:-/tmp/}bup.out" | /usr/bin/xargs -J % brew desc --eval-all %
 { set +x; }
-rm -f "${TMPDIR:-/tmp/}bup.out"
+/bin/rm -f "${TMPDIR:-/tmp/}bup.out"
 waiter "$next_section"
 
-printf "\n"
+print
 printf "%s\n" "Listing installed packages which are outdated..." 'Would run `brew outdated`'
 # By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
 waiter "$run_command"
@@ -70,7 +82,7 @@ brew outdated --greedy-auto-updates --fetch-HEAD --verbose
 { set +x; }
 waiter "$next_section"
 
-printf "\n"
+print
 printf "%s\n" "Upgrading outdated packages..." 'Would run `brew upgrade`'
 waiter "$run_command"
 set -x
@@ -80,7 +92,7 @@ waiter "$next_section"
 
 
 # Mac App Store
-printf "\n"
+print
 printf "%s\n" "Listing outdated Mac App Store apps..." 'Would run `mas outdated`'
 waiter "$run_command"
 typeset outie
@@ -89,41 +101,41 @@ outie="$(set -x; mas outdated; { set +x; })"
 if test -n "$outie"; then
 	printf "%s\n" "$outie"
 	waiter "$next_section"
-	printf "\n"
+	print
 	printf "%s\n" "Upgrading outdated Mac App Store apps..." 'Would run `mas upgrade`'
 	waiter "$run_command"
 	set -x
 	mas upgrade
 	{ set +x; }
-	waiter "$next_section"
 fi
+waiter "$next_section"
 
 
 # macOS
-printf "\n"
+print
 printf "%s\n" "Listing all available updates to macOS..." 'Would run `softwareupdate --list`'
 waiter "$run_command"
 set -x
-softwareupdate --list 2> "${TMPDIR:-/tmp/}su.err"
+/usr/sbin/softwareupdate --list 2> "${TMPDIR:-/tmp/}su.err"
 { set +x; } 2> /dev/null
-test -f "${TMPDIR:-/tmp/}su.err" && cat "${TMPDIR:-/tmp/}su.err" || :
+test -f "${TMPDIR:-/tmp/}su.err" && /bin/cat "${TMPDIR:-/tmp/}su.err" || :
 #waiter "$next_section"
 
-if ! grep --quiet --fixed-string "No new software available." "${TMPDIR:-/tmp/}su.err"; then
-	rm -f "${TMPDIR:-/tmp/}su.err"
-	printf "\n"
+if ! /usr/bin/grep --quiet --fixed-string "No new software available." "${TMPDIR:-/tmp/}su.err"; then
+	/bin/rm -f "${TMPDIR:-/tmp/}su.err"
+	waiter "$next_section"
+	print
 	printf "%s\n" "Installing all available updates to macOS..." "A system restart may occur if required to complete installation." 'Would run `sudo softwareupdate --install`'
 	waiter "$run_command"
 	set -x
-	sudo softwareupdate --all --install --restart --no-scan
+	/usr/bin/sudo /usr/sbin/softwareupdate --all --install --restart --no-scan
 	{ set +x; }
 fi
 
-rm -f "${TMPDIR:-/tmp/}su.err"
+/bin/rm -f "${TMPDIR:-/tmp/}su.err"
 
 
 # Conclusion
 print
 printf "\001\033[36m\002%s\001\033[0m\002 %s\n" "⨀" "[Babble] All finished! Exiting..."
 #printf "\n%s\n" "[🔄 Babble] All finished! Exiting..."
-#printf "\n%s\n" "[⊙ Babble] All finished! Exiting..."
