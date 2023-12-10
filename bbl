@@ -1,0 +1,121 @@
+#! /bin/ksh
+#
+# Babble (bbl): An upgrade routine for Homebrew, Mac App Store, and macOS.
+#
+# Copyright 2023 Todd Schulman <toobuntu> AT <gmail> DOT <com>
+# License: GPLv3.0+
+#
+# Modification history
+# 07-Dec-2023 T.S. Created original script
+#
+# Initialization
+# Exit cleanly if aborted with ⌃C.
+trap 'exit 0' SIGINT
+
+# Warn about missing dependencies
+if ! command -v brew > /dev/null; then
+	printf 1>&2 "%s\n" "[Babble] Warning: Homebrew is required. See https://brew.sh." "Exiting..."
+	exit 2
+fi
+
+if ! command -v mas > /dev/null; then
+	printf 1>&2 "%s\n" "[Babble] Warning: mas-cli is required. See https://github.com/mas-cli/mas." "Exiting..."
+	exit 3
+fi
+
+# Declare variables and functions
+typeset run_command next_section
+run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
+next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
+typeset -r run_command next_section
+
+function waiter {
+	stty -echo
+	read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
+	stty echo
+	printf "\n"
+}
+
+# Intro
+printf "\n"
+printf "%s\n" "----------------------------------------------------------------------"
+printf "%s\n" "| Babble: An upgrade routine for Homebrew, Mac App Store, and macOS. |"
+printf "%s\n" "----------------------------------------------------------------------"
+printf "\n"
+
+# Homebrew
+printf "%s\n" "Updating Homebrew -- The Missing Package Manager for macOS..." 'Would run `brew update`, and then `brew desc --eval-all` for any new packages'
+waiter "$run_command"
+set -x
+brew update 2>&1 | tee "${TMPDIR:-/tmp/}bup.out"
+{ set +x; }
+printf "\n"
+set -x
+awk '/==> New/{ f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{ f = 0 } /^You have/{f = 0 } f' "${TMPDIR:-/tmp/}bup.out" | xargs -J % brew desc --eval-all %
+{ set +x; }
+rm -f "${TMPDIR:-/tmp/}bup.out"
+waiter "$next_section"
+
+printf "\n"
+printf "%s\n" "Listing installed packages which are outdated..." 'Would run `brew outdated`'
+# By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
+waiter "$run_command"
+set -x
+brew outdated --greedy-auto-updates --fetch-HEAD --verbose
+{ set +x; }
+waiter "$next_section"
+
+printf "\n"
+printf "%s\n" "Upgrading outdated packages..." 'Would run `brew upgrade`'
+waiter "$run_command"
+set -x
+brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times
+{ set +x; }
+waiter "$next_section"
+
+
+# Mac App Store
+printf "\n"
+printf "%s\n" "Listing outdated Mac App Store apps..." 'Would run `mas outdated`'
+waiter "$run_command"
+typeset outie
+outie="$(set -x; mas outdated; { set +x; })"
+
+if test -n "$outie"; then
+	printf "%s\n" "$outie"
+	waiter "$next_section"
+	printf "\n"
+	printf "%s\n" "Upgrading outdated Mac App Store apps..." 'Would run `mas upgrade`'
+	waiter "$run_command"
+	set -x
+	mas upgrade
+	{ set +x; }
+	waiter "$next_section"
+fi
+
+
+# macOS
+printf "\n"
+printf "%s\n" "Listing all available updates to macOS..." 'Would run `softwareupdate --list`'
+waiter "$run_command"
+set -x
+softwareupdate --list 2> "${TMPDIR:-/tmp/}su.err"
+{ set +x; } 2> /dev/null
+test -f "${TMPDIR:-/tmp/}su.err" && cat "${TMPDIR:-/tmp/}su.err" || :
+#waiter "$next_section"
+
+if ! grep --quiet --fixed-string "No new software available." "${TMPDIR:-/tmp/}su.err"; then
+	rm -f "${TMPDIR:-/tmp/}su.err"
+	printf "\n"
+	printf "%s\n" "Installing all available updates to macOS..." "A system restart may occur if required to complete installation." 'Would run `sudo softwareupdate --install`'
+	waiter "$run_command"
+	set -x
+	sudo softwareupdate --all --install --restart --no-scan
+	{ set +x; }
+fi
+
+rm -f "${TMPDIR:-/tmp/}su.err"
+
+
+# Conclusion
+printf "\n%s\n" "[Babble] All finished! Exiting..."
