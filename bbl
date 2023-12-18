@@ -7,6 +7,7 @@
 #
 # Modification history
 # 07-Dec-2023 T.S. Created original script
+# 17-Dec-2023 T.S. Restart specified apps after upgrade
 #
 # NOTE: One cannot rely on Homebrew Git and the JSON API being in sync.
 # If this causes issues, prefix the invocation of Babble (`bbl`) with
@@ -38,43 +39,166 @@ fi
 typeset run_command next_section
 # NOTE: Use escape sequences \001 and \002 (otherwise known as
 # RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE) to exclude the
-# counting of non-printing characters.
+# counting of non-printing characters by read/readline.
 run_command="\001\033[33m\002-->\001\033[0m\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 #run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
 #next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
 typeset -r run_command next_section
 
+# App restart lists (bundle ids)
+# Get the app's bundle id with `osascript -e 'id of app "appname"'`
+# NOTE: Babble will reopen apps--those available as Homebrew casks or
+# Mac App Store apps. If a command line program must be restarted, an
+# additional restart method will need to be added to handle that task.
+typeset -a restart_list_brew
+restart_list_brew=( \
+	com.intelliscapesolutions.caffeine \
+	com.knollsoft.Rectangle \
+	com.mowglii.ItsycalApp \
+	eu.exelban.Stats \
+)
+typeset -r restart_list_brew
+
+typeset -a restart_list_mas
+restart_list_mas=( \
+	iapp.monitorcontrol.MonitorControlLite \
+	com.sindresorhus.Pandan \
+)
+typeset -r restart_list_mas
+
 function waiter {
 	/bin/stty -echo
-	read -r -N 1 -d " " var?"$(print -e ${1:---> Press the Space bar to continue, or Ctrl-C to exit.})" < /dev/tty
+	# Needed when $1 contains escape characters to colorize the arrow:
+	# print: -e Interpret backslash-escaped characters. This is the
+	# default behavior. It reverses the effect of an earlier -r.
+	read -r -N 1 -d " " var?"$(print -- "${1:-\001\033[33m\002-->\001\033[0m\002 Press the Space bar to continue, or Ctrl-C to exit.}")" < /dev/tty
 	#read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
 	/bin/stty echo
 	print
 }
 
+function gen_restart_list {
+	# From a list of apps requiring a restart after being upgraded,
+	# generate a list of those running prior to the upgrade.
+	printf "%s\n" "Pre-upgrade: Generating an app restart list..."
+	typeset -a restart_list
+	typeset open_apps_pre
+	unset -v -- restart_req_export
+	export restart_req_export
+	restart_list=("$@")
+	# NOTE: On macOS, a bundle ID uniquely identifies a single app
+	# throughout the system. The bundle ID string must contain only
+	# alphanumeric characters (A–Z, a–z, and 0–9), hyphens (-), and
+	# periods (.). Bundle IDs are case-insensitive.
+	# https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier
+	open_apps_pre="$(/usr/bin/lsappinfo list | /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' | sort -u)"
+	# set -x
+	# comm[on] requires files to be sorted lexically
+	# Show only common lines; suppress lines only in 1 or 2
+	restart_req_export="$(/usr/bin/comm -1 -2 <(/usr/bin/tr "[:space:]" "\n" <<< "${restart_list[@]}" | sort -u) <(print "$open_apps_pre"))"
+	# { set +x; }
+	# waiter "DEBUG"
+	# { set +x; }
+
+	# Pretty print
+	# No apps on the watchlist were running prior to the upgrade
+	set -x
+	if test "${#restart_req_export}" -eq 0; then
+		{ set +x; }
+		printf 1>&2 "%s\n" "No apps need to be restarted..."
+		print
+		return
+	fi
+	{ set +x; }
+	# List the open apps by Display Name instead of Bundle ID
+	# Disable word splitting by setting IFS=""
+	while IFS="" read -r line; do
+		/usr/bin/lsappinfo info -only name "$line" | /usr/bin/awk -F= '{gsub(/\"/,""); print $NF > "/dev/stderr"}'
+	done <<< "$restart_req_export"
+	print
+}
+
+function restarter {
+	# waiter "$run_command"
+
+	# No apps on the watchlist were running prior to the upgrade
+	set -x
+	if test "${#restart_req_export}" -eq 0; then
+		{ set +x; }
+		print
+		printf 1>&2 "%s\n" "No apps need to be restarted..."
+		return
+	fi
+	{ set +x; }
+
+	# Restart apps from the saved list
+	typeset open_apps_post restart_req
+	open_apps_post="$(/usr/bin/lsappinfo list | /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' | sort -u)"
+	# waiter "DEBUG"
+	# set -x
+	# Show only lines in 1; suppress lines only in 2 or common to both
+	restart_req="$(/usr/bin/comm -2 -3 <(/usr/bin/tr "[:space:]" "\n" <<< "$restart_req_export") <(print "$open_apps_post"))"
+	# { set +x; }
+
+	# No apps to restart; still running after upgrade
+	# print "restart_req=$restart_req"
+	# print
+	# print "restart_req_export=$restart_req_export"
+	set -x
+	if test "${#restart_req}" -eq 0; then
+		{ set +x; }
+		print
+		printf 1>&2 "%s\n" "No apps need to be restarted..."
+		return
+	fi
+	{ set +x; }
+
+	unset -v -- restart_req_export;
+
+	# There is something to restart
+	print
+	printf "%s\n" "Restarting apps from the restart list..."
+	set -x
+	# Disable word splitting by setting IFS=""
+	while IFS="" read -r line; do
+		/usr/bin/open -b "$line" 2> /dev/null
+	done <<< "$restart_req"
+	{ set +x; }
+}
+
 # Intro
 /usr/bin/tput clear
-printf "%s\n" "-----------------------------------------------------------------------"
-printf "%s\n" "| ⨀ Babble: An upgrade routine for Homebrew, Mac App Store and macOS. |"
-printf "%s\n" "-----------------------------------------------------------------------"
+printf "%s\n" \
+    "-----------------------------------------------------------------------" \
+    "| ⨀ Babble: An upgrade routine for Homebrew, Mac App Store and macOS. |" \
+    "-----------------------------------------------------------------------"
 print
 
 # Homebrew
-printf "%s\n" "Updating Homebrew -- The Missing Package Manager for macOS..." 'Would run `brew update`, and then `brew desc --eval-all` for any new packages'
+# Want to output `cmd` without expansion
+# shellcheck disable=SC2016
+printf "%s\n" \
+	"Updating Homebrew -- The Missing Package Manager for macOS..." \
+	'Would run `brew update`, and then `brew desc --eval-all` for any new packages'
 waiter "$run_command"
 set -x
 brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
 { set +x; }
-print
-set -x
-/usr/bin/awk '/==> New/{f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{f = 0} /^You have/{f = 0} f' "${TMPDIR:-/tmp/}bup.out" | /usr/bin/xargs -J % brew desc --eval-all %
-{ set +x; }
+#set -x
+# When f == 1, the "1" is a condition that is always true, and will
+# trigger the default action which is to print the current line.
+/usr/bin/awk '/==> New/{printf("\n%s\n","⨀=> Descriptions"); f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{f = 0} /^You have/{f = 0} /^Already up-to-date.$/{f = 0}; f{cmd = "xargs -J % brew desc --eval-all %"; print | cmd; close(cmd)}' "${TMPDIR:-/tmp/}bup.out"
+#{ set +x; }
 /bin/rm -f "${TMPDIR:-/tmp/}bup.out"
 waiter "$next_section"
 
 print
-printf "%s\n" "Listing installed packages which are outdated..." 'Would run `brew outdated`'
+# Want to output `cmd` without expansion
+# shellcheck disable=SC2016
+printf "%s\n" \
+	"Listing installed packages which are outdated..." \
+	'Would run `brew outdated`'
 # By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
 waiter "$run_command"
 set -x
@@ -83,17 +207,30 @@ brew outdated --greedy-auto-updates --fetch-HEAD --verbose
 waiter "$next_section"
 
 print
-printf "%s\n" "Upgrading outdated packages..." 'Would run `brew upgrade`'
+# Want to output `cmd` without expansion
+# shellcheck disable=SC2016
+printf "%s\n" \
+	"Upgrading outdated packages..." \
+	'Would run `brew upgrade`'
 waiter "$run_command"
+
+gen_restart_list "${restart_list_brew[@]}"
+
 set -x
 brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times
 { set +x; }
+
+restarter
 waiter "$next_section"
 
 
 # Mac App Store
 print
-printf "%s\n" "Listing outdated Mac App Store apps..." 'Would run `mas outdated`'
+# Want to output `cmd` without expansion
+# shellcheck disable=SC2016
+printf "%s\n" \
+	"Listing outdated Mac App Store apps..." \
+	'Would run `mas outdated`'
 waiter "$run_command"
 typeset outie
 outie="$(set -x; mas outdated; { set +x; })"
@@ -102,30 +239,50 @@ if test -n "$outie"; then
 	printf "%s\n" "$outie"
 	waiter "$next_section"
 	print
-	printf "%s\n" "Upgrading outdated Mac App Store apps..." 'Would run `mas upgrade`'
+	# Want to output `cmd` without expansion
+	# shellcheck disable=SC2016
+	printf "%s\n" \
+		"Upgrading outdated Mac App Store apps..." \
+		'Would run `mas upgrade`'
 	waiter "$run_command"
+
+	gen_restart_list "${restart_list_mas[@]}"
+
 	set -x
 	mas upgrade
 	{ set +x; }
+
+	restarter
 fi
 waiter "$next_section"
 
 
 # macOS
 print
-printf "%s\n" "Listing all available updates to macOS..." 'Would run `softwareupdate --list`'
+# Want to output `cmd` without expansion
+# shellcheck disable=SC2016
+printf "%s\n" \
+	"Listing all available updates to macOS..." \
+	'Would run `softwareupdate --list`'
 waiter "$run_command"
 set -x
 /usr/sbin/softwareupdate --list 2> "${TMPDIR:-/tmp/}su.err"
-{ set +x; } 2> /dev/null
-test -f "${TMPDIR:-/tmp/}su.err" && /bin/cat "${TMPDIR:-/tmp/}su.err" || :
+{ set +x; }
+if test -f "${TMPDIR:-/tmp/}su.err"; then
+	/bin/cat "${TMPDIR:-/tmp/}su.err"
+fi
 #waiter "$next_section"
 
 if ! /usr/bin/grep --quiet --fixed-string "No new software available." "${TMPDIR:-/tmp/}su.err"; then
 	/bin/rm -f "${TMPDIR:-/tmp/}su.err"
 	waiter "$next_section"
 	print
-	printf "%s\n" "Installing all available updates to macOS..." "A system restart may occur if required to complete installation." 'Would run `sudo softwareupdate --install`'
+	# Want to output `cmd` without expansion
+	# shellcheck disable=SC2016
+	printf "%s\n" \
+		"Installing all available updates to macOS..." \
+		"A system restart may occur if required to complete installation." \
+		'Would run `sudo softwareupdate --install`'
 	waiter "$run_command"
 	set -x
 	/usr/bin/sudo /usr/sbin/softwareupdate --all --install --restart --no-scan
@@ -137,5 +294,7 @@ fi
 
 # Conclusion
 print
-printf "\001\033[36m\002%s\001\033[0m\002 %s\n" "⨀" "[Babble] All finished! Exiting..."
+printf "\001\033[36m\002%s\001\033[0m\002 %s\n" \
+	"⨀" \
+	"[Babble] All finished! Exiting..."
 #printf "\n%s\n" "[🔄 Babble] All finished! Exiting..."
