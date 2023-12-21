@@ -83,14 +83,27 @@ function gen_restart_list {
 	set -x
 	for app in "${restart_list[@]}"; do
 		# Arrays cannot be exported. Instead, print each element
-		# as a string of comma-separated values and export that.
-		# Using an ASCII NUL character (character code 0, via
-		# awk ... printf("%s%c", $2, 0) like find's -print0
-		# led to errors, unresolved within a reasonable time.
-		restart_req_export+="$(/usr/bin/lsappinfo info -only bundleid -app "$app" | /usr/bin/awk -F= '{gsub(/\"/,"",$2); printf( "%s,", $2 )}')"
+		# as a string of NUL-separated values and export that.
+		# But, NUL cannot be stored in a variable because it is
+		# the character used to delimit the end of a variable.
+		# (One can use NUL in files and pipes.) So, uuencode it
+		# in base64.
+		# Print the ASCII NUL character (character code 0) via
+		# printf("%s%c" "string" 0), and use it like find ...
+		# -print0 | xargs -0.
+		# DEBUG: Check printf output by piping it to od -acAn.
+		restart_req_export+="$(/usr/bin/lsappinfo info -only bundleid -app "$app" | /usr/bin/awk -F= '{gsub(/\"/,"",$2); printf( "%s%c", $2, 0 )}' | /usr/bin/openssl base64 -e)"
+		#restart_req_export+="$(/usr/bin/lsappinfo info -only bundleid -app "$app" | /usr/bin/awk -F= '{gsub(/\"/,"",$2); printf( "%s,", $2 )}')"
 	done
+	#restart_req_export="$(printf "%s" "$restart_req_list" | uuencode -m -)"
+	#print "DEBUG:"
+	#print "restart_req_export=$restart_req_export"
+	#<<< "${restart_req_list}" | od -acAn
+	#print "$restart_req_export" | /usr/bin/openssl base64 -d -v -a -A| od -acAn
+	#waiter "DEBUG"
 	{ set +x; }
-	print "${restart_req_export[@]}" | /usr/bin/tr "," "\0" | /usr/bin/xargs -0 -I % /usr/bin/lsappinfo info -only name -app % | /usr/bin/awk -F= '{gsub(/\"/,"",$2); print($2)}'
+	print "${restart_req_export}" | /usr/bin/openssl base64 -d -a -A | /usr/bin/xargs -0 -I % /usr/bin/lsappinfo info -only name -app % | /usr/bin/awk -F= '{gsub(/\"/,"",$2); print($2)}'
+	#print "${restart_req_export}" | /usr/bin/tr "," "\0" | /usr/bin/xargs -0 -I % /usr/bin/lsappinfo info -only name -app % | /usr/bin/awk -F= '{gsub(/\"/,"",$2); print($2)}'
 	print
 
 	# Unused #2
@@ -101,10 +114,12 @@ function gen_restart_list {
 }
 
 function restarter {
-	# DEBUG: waiter "$run_command"
+	waiter "$run_command"
 	# Restart apps from the saved list
 	typeset -a restart_req
-	printf "%s" "$restart_req_export" | /usr/bin/tr "," "\n" | \
+	printf "%s" "$restart_req_export" | /usr/bin/openssl base64 -d -a -A | tr "\0" "\n" | \
+	#printf "%s" "$restart_req_export" | /usr/bin/tr "\0" "\n" | \
+	#printf "%s" "$restart_req_export" | /usr/bin/tr "," "\n" | \
 		while IFS="" read -r line; do
 			restart_req+=("$line")
 		done
