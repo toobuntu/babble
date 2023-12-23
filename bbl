@@ -78,21 +78,50 @@ function gen_restart_list {
 	#print
 	printf "%s\n" "Generating an app restart list..."
 	typeset -a restart_list
+	unset -v -- restart_req_export
 	export restart_req_export
 	restart_list=("$@")
+	# INSERTION: A more elegant and resource-efficient method is
+	# mwa+=(com.knollsoft.Rectangle); mwa+=(com.sindresorhus.Pandan); mwa+=(eu.exelban.Stats); mwa+=(com.intelliscapesolutions.caffeine); mwab="$(for i in "${mwa[@]}"; do /usr/bin/lsappinfo info -only bundleid -app "$i" | /usr/bin/awk -F= '{gsub(/\"/,""); print $NF}'; done | sort -u)"; mwaa="$(/usr/bin/lsappinfo list | awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' | sort -u)"; comm -12 <(tr "[:space:]" "\n" <<< "${mwa[@]}") <(tr "[:space:]" "\n" <<< "$mwaa"); while IFS="" read -r line; do /usr/bin/lsappinfo info -only name "$line" | /usr/bin/awk -F= '{gsub(/\"/,""); print $NF}'; done <<< "$mwab"; unset -v mwa mwab mwaa line i;
+	# Comparing mwa[@] to mwaa is more efficient than creating mwab. mwab is listed here only for its syntax.
 	set -x
 	for app in "${restart_list[@]}"; do
-		# Arrays cannot be exported. Instead, print each element
-		# as a string of NUL-separated values and export that.
-		# But, NUL cannot be stored in a variable because it is
-		# the character used to delimit the end of a variable.
-		# (One can use NUL in files and pipes.) So, uuencode it
-		# in base64.
+		# Arrays cannot be exported. Commas are disallowed in a
+		# bundle ID. So print each element as a comma-terminated
+		# string, concatenate, and export that.
+		#
+		# NOTE: On macOS, a bundle ID uniquely identifies a
+		# single app throughout the system. The bundle ID string
+		# must contain only alphanumeric characters (A–Z, a–z,
+		# and 0–9), hyphens (-), and periods (.). Bundle IDs are
+		# case-insensitive.
+		# https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier
+		#
+		# NOTE: It is common to use NUL-terminated strings, but
+		# NUL cannot be stored in a variable because it is the
+		# character used to delimit the end of a variable. (One
+		# can use any binary data, including NUL, in pipes and
+		# files.) So use a temporary file (which can contain
+		# NUL) or base64 encode the data in the variable.
+		# Exporting a base64 encoded variable did not work as
+		# intended except with openssl. Using a temp file is
+		# not necessary because bundle IDs cannot contain
+		# commas. Therefore, use comma-separated values.
+		#
 		# Print the ASCII NUL character (character code 0) via
-		# printf("%s%c" "string" 0), and use it like find ...
-		# -print0 | xargs -0.
-		# DEBUG: Check printf output by piping it to od -acAn.
-		restart_req_export+="$(/usr/bin/lsappinfo info -only bundleid -app "$app" | /usr/bin/awk -F= '{gsub(/\"/,"",$2); printf( "%s%c", $2, 0 )}' | /usr/bin/openssl base64 -e)"
+		# printf "%c" 0 or printf "\000" or printf "%b" "\000",
+		# and use it like find ... -print0 | xargs -0.
+		#
+		# macOS 14 Sonoma comes with /usr/bin/openssl,
+		# /usr/bin/base64 and /usr/bin/uu{en,de}code, which can
+		# do base64 encoding and decoding, but only uuencode is
+		# POSIX. That said, openssl is used in Babble.
+		# openssl base64 -A | openssl base64 -d -a -A, or
+		# openssl enc -base64 -A | openssl enc -base64 -d -a -A
+		# base64 | base64 -d
+		# uuencode -mr - | uudecode -mrp
+		# DEBUG: Check for '\0' (nul) by piping to od -acAn.
+		restart_req_export+="$(/usr/bin/lsappinfo info -only bundleid -app "$app" | /usr/bin/awk -F= '{gsub(/\"/,"",$2); printf( "%s%c", $2, 0 )}' | /usr/bin/openssl base64)"
 		#restart_req_export+="$(/usr/bin/lsappinfo info -only bundleid -app "$app" | /usr/bin/awk -F= '{gsub(/\"/,"",$2); printf( "%s,", $2 )}')"
 	done
 	#restart_req_export="$(printf "%s" "$restart_req_list" | uuencode -m -)"
@@ -101,8 +130,8 @@ function gen_restart_list {
 	#<<< "${restart_req_list}" | od -acAn
 	#print "$restart_req_export" | /usr/bin/openssl base64 -d -v -a -A| od -acAn
 	#waiter "DEBUG"
-	{ set +x; }
-	print "${restart_req_export}" | /usr/bin/openssl base64 -d -a -A | /usr/bin/xargs -0 -I % /usr/bin/lsappinfo info -only name -app % | /usr/bin/awk -F= '{gsub(/\"/,"",$2); print($2)}'
+	#{ set +x; }
+	/usr/bin/openssl base64 -d -a -A <<< "$restart_req_export" | /usr/bin/xargs -0 -I % /usr/bin/lsappinfo info -only name -app % | /usr/bin/awk -F= '{gsub(/\"/,"",$2); print($2)}'
 	#print "${restart_req_export}" | /usr/bin/tr "," "\0" | /usr/bin/xargs -0 -I % /usr/bin/lsappinfo info -only name -app % | /usr/bin/awk -F= '{gsub(/\"/,"",$2); print($2)}'
 	print
 
@@ -117,7 +146,7 @@ function restarter {
 	waiter "$run_command"
 	# Restart apps from the saved list
 	typeset -a restart_req
-	printf "%s" "$restart_req_export" | /usr/bin/openssl base64 -d -a -A | tr "\0" "\n" | \
+	/usr/bin/openssl base64 -d -a -A <<< "$restart_req_export" | tr "\0" "\n" | \
 	#printf "%s" "$restart_req_export" | /usr/bin/tr "\0" "\n" | \
 	#printf "%s" "$restart_req_export" | /usr/bin/tr "," "\n" | \
 		while IFS="" read -r line; do
