@@ -1,0 +1,26 @@
+#! /bin/bash
+set -o errexit # -e
+cd "$(dirname "$0")/.."
+
+test "$1" = "--fix" && STYLE_FIX="1"
+
+function shell_style {
+  typeset shfmt_args="--indent 2 --simplify --case-indent --language-dialect=bash"
+
+  if test -n "$STYLE_FIX"; then
+    for file in "$@"; do
+      # Want to expand shfmt_args
+      # shellcheck disable=SC2086
+      shfmt ${shfmt_args} --write "${file}" "${file}"
+      shellcheck --format=diff "${file}" | patch -p1
+    done
+  fi
+
+  # Want to expand shfmt_args
+  # shellcheck disable=SC2086
+  shfmt ${shfmt_args} --diff "$@"
+
+  shellcheck "$@"
+}
+
+shell_style bbl script/*
