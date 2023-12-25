@@ -8,6 +8,17 @@
 
 An upgrade routine for Homebrew, Mac App Store and macOS
 
+## Install
+
+```shell
+# Download the script
+curl --silent "https://raw.githubusercontent.com/toobuntu/babble/main/bbl" --output "<path>/bbl" && chmod +x "<path>/bbl"
+# Run it
+"<path>/bbl"
+```
+
+Change `<path>` to the path of your choice. `"$HOME/Downloads"`, `"$HOME/bin"` and `"$HOME/devel"` are all common possibilities.
+
 ---
 
 #### Babble uses the following open source icons:
