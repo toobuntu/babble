@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 test "$1" = "--fix" && STYLE_FIX="1"
 
 function shell_style {
-  typeset shfmt_args="--indent 2 --simplify --case-indent --language-dialect=bash"
+  typeset shfmt_args="--indent 2 --simplify --case-indent --space-redirects --language-dialect=bash"
 
   if test -n "$STYLE_FIX"; then
     for file in "$@"; do
