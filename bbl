@@ -40,6 +40,7 @@ fi
 typeset -x HOMEBREW_COLOR=1
 
 typeset run_command next_section
+# Print a colored arrow followed by normal text
 # NOTE: Use escape sequences \001 and \002 (otherwise known as
 # RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE) to exclude the
 # counting of non-printing characters by read/readline.
@@ -72,7 +73,9 @@ typeset -r restart_list_mas
 
 function waiter {
   /bin/stty -echo
-  # Needed when $1 contains escape characters to colorize the arrow:
+  # Print a colored arrow followed by normal text
+  # Use $(print [-e]) to interpret the escape characters in $1 which
+  # colorize the arrow.
   # print: -e Interpret backslash-escaped characters. This is the
   # default behavior. It reverses the effect of an earlier -r.
   read -r -N 1 -d " " var?"$(print -- "${1:-\001\033[33m\002-->\001\033[0m\002 Press the Space bar to continue, or Ctrl-C to exit.}")" < /dev/tty
@@ -95,11 +98,20 @@ function gen_restart_list {
   # alphanumeric characters (A–Z, a–z, and 0–9), hyphens (-), and
   # periods (.). Bundle IDs are case-insensitive.
   # https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier
-  open_apps_pre="$(/usr/bin/lsappinfo list | /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' | /usr/bin/sort -u)"
+  open_apps_pre="$(
+    /usr/bin/lsappinfo list |
+      /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' |
+      /usr/bin/sort -u
+  )"
   # set -x
   # comm[on] requires files to be sorted lexically
   # Show only common lines; suppress lines only in 1 or 2
-  restart_req_export="$(/usr/bin/comm -1 -2 <(/usr/bin/tr "[:space:]" "\n" <<< "${restart_list[@]}" | /usr/bin/sort -u) <(print "$open_apps_pre"))"
+  restart_req_export="$(
+    /usr/bin/comm -1 -2 \
+      <(/usr/bin/tr "[:space:]" "\n" <<< "${restart_list[@]}" |
+        /usr/bin/sort -u) \
+      <(print "$open_apps_pre")
+  )"
   # { set +x; }
   # waiter "DEBUG"
   # { set +x; }
@@ -109,7 +121,7 @@ function gen_restart_list {
   # set -x
   if test "${#restart_req_export}" -eq 0; then
     # { set +x; }
-    printf 1>&2 "%s\n" "No apps need to be restarted..."
+    printf 1>&2 "%s\n" "Post-upgrade: No apps need to be restarted..."
     print
     return
   fi
@@ -117,7 +129,8 @@ function gen_restart_list {
   # List the open apps by Display Name instead of Bundle ID
   # Disable word splitting by setting IFS=""
   while IFS="" read -r line; do
-    /usr/bin/lsappinfo info -only name "$line" | /usr/bin/awk -F= '{gsub(/\"/,""); print $NF > "/dev/stderr"}'
+    /usr/bin/lsappinfo info -only name "$line" |
+      /usr/bin/awk -F= '{gsub(/\"/,""); print $NF > "/dev/stderr"}'
   done <<< "$restart_req_export"
   print
 }
@@ -137,11 +150,19 @@ function restarter {
 
   # Restart apps from the saved list
   typeset open_apps_post restart_req
-  open_apps_post="$(/usr/bin/lsappinfo list | /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' | /usr/bin/sort -u)"
+  open_apps_post="$(
+    /usr/bin/lsappinfo list |
+      /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' |
+      /usr/bin/sort -u
+  )"
   # waiter "DEBUG"
   # set -x
   # Show only lines in 1; suppress lines only in 2 or common to both
-  restart_req="$(/usr/bin/comm -2 -3 <(/usr/bin/tr "[:space:]" "\n" <<< "$restart_req_export") <(print "$open_apps_post"))"
+  restart_req="$(
+    /usr/bin/comm -2 -3 \
+      <(/usr/bin/tr "[:space:]" "\n" <<< "$restart_req_export") \
+      <(print "$open_apps_post")
+  )"
   # { set +x; }
 
   # No apps to restart; still running after upgrade
@@ -194,17 +215,25 @@ brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
 # NOTE: When f == 1, the "1" is a condition that is always true, and
 # will trigger the default action which is to print the current line.
 /usr/bin/awk '
+# New formulae or casks
 {
   if ($1 ~ /==>/) {
     if ($2 ~ /New/) {
-      if (! f) {
-        printf("\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n","⨀=>", "Descriptions")
+      if ($3 ~ /Formulae/) {
+        f = 1
+        next
       }
-      f = 1
-      next
+      if ($3 ~ /Casks/) {
+        c = 1
+        f = 0
+        next
+      }
     }
+
     if ($2 ~ /(Outdated|Renamed|Deleted|Modified)/) {
       f = 0
+      c = 0
+      next
     }
   }
 }
@@ -212,19 +241,67 @@ brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
 {
   if ($0 ~ /^You have/) {
     f = 0
+    c = 0
+    next
   }
 }
 
 {
-  if ($0 == /^Already up-to-date.$/) {
+  if ($0 ~ /^Already up-to-date.$/) {
     f = 0
+    c = 0
+    next
+  }
+}
+
+{
+  # New Homebrew version released; match its semver in the announcement.
+  if ($0 ~ /The (0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*).* (changelog|release notes)/) {
+    f = 0
+    c = 0
+    next
   }
 }
 
 f {
-  cmd = "/usr/bin/xargs -J % brew desc --eval-all %"
-  print | cmd
-  close(cmd)
+  formulae[$0] = $0
+}
+
+c {
+  casks[$0] = $0
+}
+
+END {
+  # Print descriptions of new formulae or casks
+  # New Formulae
+  for (i in formulae) {
+    cf = 1
+  }
+  if (cf) {
+    if (! pf) {
+      # Print a colored alert arrow followed by bold text
+      printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions: New Formulae"
+      pf = 1
+    }
+    cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --formula %"
+    for (i in formulae) printf "%s%c", formulae[i], 0 | cmd
+    close(cmd)
+  }
+
+  # New Casks
+  for (i in casks) {
+    cc = 1
+  }
+  if (cc) {
+    if (! pc) {
+      # Print a colored alert arrow followed by bold text
+      printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions: New Casks"
+      pc = 1
+    }
+    cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --cask %"
+    for (i in casks) printf "%s%c", casks[i], 0 | cmd
+    close(cmd)
+  }
 }
 ' "${TMPDIR:-/tmp/}bup.out"
 #{ set +x; }
@@ -335,6 +412,7 @@ fi
 
 # Conclusion
 print
+# Print a colored symbol (U+2A00) followed by normal text
 printf "\001\033[36m\002%s\001\033[0m\002 %s\n" \
   "⨀" \
   "[Babble] All finished! Exiting..."
