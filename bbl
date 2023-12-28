@@ -259,6 +259,7 @@ brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
   if ($0 ~ /The (0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*).* (changelog|release notes)/) {
     f = 0
     c = 0
+    # Done processing this record; will match the url later to open it
     next
   }
 }
@@ -269,6 +270,22 @@ f {
 
 c {
   casks[$0] = $0
+}
+
+# New Homebrew version
+{
+  # New major or minor version: open the release notes
+  # Match a semver in the url
+  if ($0 ~ /https:\/\/brew\.sh\/blog\/(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0)/) {
+    rn = $0
+  }
+}
+
+{
+  # New patch version: open the changelog
+  if ($0 ~ /https:\/\/github\.com\/Homebrew\/brew\/releases\/tag/) {
+    ch = $0
+  }
 }
 
 END {
@@ -301,6 +318,22 @@ END {
     cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --cask %"
     for (i in casks) printf "%s%c", casks[i], 0 | cmd
     close(cmd)
+  }
+
+  # New Homebrew version; open info in web browser
+  # NOTE: Does not consider HOMEBREW_BROWSER or BROWSER env vars
+  if (rn) {
+    # Semver: New major or minor version
+    printf "\n"
+    print "⨀=> New Homebrew version: opening release notes in web browser..."
+    print rn | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+  }
+
+  if (ch) {
+    # Semver: New patch version
+    printf "\n"
+    print "⨀=> New Homebrew patch version: opening changelog in web browser..."
+    print ch | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
   }
 }
 ' "${TMPDIR:-/tmp/}bup.out"
