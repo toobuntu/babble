@@ -57,12 +57,16 @@ typeset -r run_command next_section
 # additional restart method will need to be added to handle that task.
 typeset -a restart_list_brew
 restart_list_brew=(
+  com.github.SokoloffA.Radiola
   com.intelliscapesolutions.caffeine
   com.knollsoft.Rectangle
   com.mowglii.ItsycalApp
   eu.exelban.Stats
 )
 typeset -r restart_list_brew
+# NOTE: These come from:
+# brew install --no-quarantine sokoloffa/radiola/radiola
+# brew install caffeine itsycal rectangle stats
 
 typeset -a restart_list_mas
 restart_list_mas=(
@@ -87,7 +91,9 @@ function waiter {
 function gen_restart_list {
   # From a list of apps requiring a restart after being upgraded,
   # generate a list of those running prior to the upgrade.
-  printf "%s\n" "Pre-upgrade: Generating an app restart list..."
+  # Want to output `cmd` without expansion
+  # shellcheck disable=SC2016
+  printf "%s\n" 'Before `brew upgrade`: Generating an app restart list...'
   typeset -a restart_list
   typeset open_apps_pre
   unset -v -- restart_req_export
@@ -100,7 +106,7 @@ function gen_restart_list {
   # https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier
   open_apps_pre="$(
     /usr/bin/lsappinfo list |
-      /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' |
+      /usr/bin/awk -F= '/bundleID/ {gsub(/"/,""); print $NF}' |
       /usr/bin/sort -u
   )"
   # set -x
@@ -121,7 +127,9 @@ function gen_restart_list {
   # set -x
   if test "${#restart_req_export}" -eq 0; then
     # { set +x; }
-    printf 1>&2 "%s\n" "Post-upgrade: No apps need to be restarted..."
+    # Want to output `cmd` without expansion
+    # shellcheck disable=SC2016
+    printf 1>&2 "%s\n" 'Before `brew upgrade`: No apps need to be restarted...'
     print
     return
   fi
@@ -130,7 +138,7 @@ function gen_restart_list {
   # Disable word splitting by setting IFS=""
   while IFS="" read -r line; do
     /usr/bin/lsappinfo info -only name "$line" |
-      /usr/bin/awk -F= '{gsub(/\"/,""); print $NF > "/dev/stderr"}'
+      /usr/bin/awk -F= '{gsub(/"/,""); printf("%2s%s\n", "", $NF) > "/dev/stderr"}'
   done <<< "$restart_req_export"
   print
 }
@@ -143,7 +151,9 @@ function restarter {
   if test "${#restart_req_export}" -eq 0; then
     # { set +x; }
     print
-    printf 1>&2 "%s\n" "No apps need to be restarted..."
+    # Want to output `cmd` without expansion
+    # shellcheck disable=SC2016
+    printf 1>&2 "%s\n" 'After `brew upgrade`: No apps need to be restarted...'
     return
   fi
   { set +x; }
@@ -152,7 +162,7 @@ function restarter {
   typeset open_apps_post restart_req
   open_apps_post="$(
     /usr/bin/lsappinfo list |
-      /usr/bin/awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' |
+      /usr/bin/awk -F= '/bundleID/ {gsub(/"/,""); print $NF}' |
       /usr/bin/sort -u
   )"
   # waiter "DEBUG"
@@ -173,7 +183,9 @@ function restarter {
   if test "${#restart_req}" -eq 0; then
     # { set +x; }
     print
-    printf 1>&2 "%s\n" "No apps need to be restarted..."
+    # Want to output `cmd` without expansion
+    # shellcheck disable=SC2016
+    printf 1>&2 "%s\n" 'After `brew upgrade`: No apps need to be restarted...'
     return
   fi
   { set +x; }
@@ -229,6 +241,9 @@ brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
         next
       }
     }
+
+    # Keep printing until the New Formulae or New Casks section ends
+    # https://github.com/Homebrew/brew/blob/master/Library/Homebrew/cmd/update-report.rb
 
     if ($2 ~ /(Outdated|Renamed|Deleted|Modified)/) {
       f = 0
@@ -293,6 +308,7 @@ END {
   # New Formulae
   for (i in formulae) {
     cf = 1
+    break
   }
   if (cf) {
     if (! pf) {
@@ -301,13 +317,16 @@ END {
       pf = 1
     }
     cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --formula %"
-    for (i in formulae) printf "%s%c", formulae[i], 0 | cmd
+    for (i in formulae) {
+      printf("%s%c", formulae[i], 0) | cmd
+    }
     close(cmd)
   }
 
   # New Casks
   for (i in casks) {
     cc = 1
+    break
   }
   if (cc) {
     if (! pc) {
@@ -316,7 +335,9 @@ END {
       pc = 1
     }
     cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --cask %"
-    for (i in casks) printf "%s%c", casks[i], 0 | cmd
+    for (i in casks) {
+      printf("%s%c", casks[i], 0) | cmd
+    }
     close(cmd)
   }
 
@@ -326,14 +347,14 @@ END {
     # Semver: New major or minor version
     printf "\n"
     print "⨀=> New Homebrew version: opening release notes in web browser..."
-    print rn | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+    print(rn) | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
   }
 
   if (ch) {
     # Semver: New patch version
     printf "\n"
     print "⨀=> New Homebrew patch version: opening changelog in web browser..."
-    print ch | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+    print(ch) | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
   }
 }
 ' "${TMPDIR:-/tmp/}bup.out"
