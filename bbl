@@ -26,12 +26,16 @@ trap 'exit 0' SIGINT
 
 # Warn about missing dependencies
 if ! command -v brew > /dev/null; then
-  printf 1>&2 "%s\n" "[Babble] Warning: Homebrew is required. See https://brew.sh." "Exiting..."
+  printf 1>&2 "%s\n" \
+    "[Babble] Warning: Homebrew is required. See https://brew.sh." \
+    "Exiting..."
   exit 2
 fi
 
 if ! command -v mas > /dev/null; then
-  printf 1>&2 "%s\n" "[Babble] Warning: mas-cli is required. See https://github.com/mas-cli/mas." "Exiting..."
+  printf 1>&2 "%s\n" \
+    "[Babble] Warning: mas-cli is required. See https://github.com/mas-cli/mas." \
+    "Exiting..."
   exit 3
 fi
 
@@ -39,15 +43,25 @@ fi
 # Force color output on non-TTY outputs
 typeset -x HOMEBREW_COLOR=1
 
+# Path to tput
+typeset TPUT
+TPUT="/usr/bin/tput"
+typeset -r TPUT
+
 typeset run_command next_section
 # Print a colored arrow followed by normal text
 # NOTE: Use escape sequences \001 and \002 (otherwise known as
 # RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE) to exclude the
 # counting of non-printing characters by read/readline.
-run_command="\001\033[33m\002-->\001\033[0m\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
-#run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
-next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
-#next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
+# [33m is yellow
+run_command="\001$("$TPUT" setaf 3)\002-->\001$("TPUT" sgr0)\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
+# run_command="\001\033[33m\002-->\001\033[0m\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
+# run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
+#
+# [35m is magenta
+next_section="\001$("$TPUT" setaf 5)\002-->\001$("TPUT" sgr0)\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
+# next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
+# next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
 typeset -r run_command next_section
 
 # App restart lists (bundle ids)
@@ -82,7 +96,7 @@ function waiter {
   # colorize the arrow.
   # print: -e Interpret backslash-escaped characters. This is the
   # default behavior. It reverses the effect of an earlier -r.
-  read -r -N 1 -d " " var?"$(print -- "${1:-\001\033[33m\002-->\001\033[0m\002 Press the Space bar to continue, or Ctrl-C to exit.}")" < /dev/tty
+  read -r -N 1 -d " " var?"$(print -- "${1:-"--> Press the Space bar to continue, or Ctrl-C to exit."}")" < /dev/tty
   #read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
   /bin/stty echo
   print
@@ -292,6 +306,10 @@ c {
   # New major or minor version: open the release notes
   # Match a semver in the url
   if ($0 ~ /https:\/\/brew\.sh\/blog\/(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0)/) {
+    # Remove leading and trailing whitespace
+    # Force awk to rebuild the entire record, using the current values of the fields and OFS
+    # When a value is assigned to a field variable, i.e., the value of $1 is assigned to field $1, awk rebuilds its $0 by concatenating the fields with the default output field separator (OFS), a space.
+    $1 = $1 # force record to be reconstituted
     rn = $0
   }
 }
@@ -299,6 +317,8 @@ c {
 {
   # New patch version: open the changelog
   if ($0 ~ /https:\/\/github\.com\/Homebrew\/brew\/releases\/tag/) {
+    # Remove leading and trailing whitespace
+    $1 = $1 # force record to be reconstituted
     ch = $0
   }
 }
@@ -313,6 +333,7 @@ END {
   if (cf) {
     if (! pf) {
       # Print a colored alert arrow followed by bold text
+      # [36m is cyan; [1m is bold
       printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions: New Formulae"
       pf = 1
     }
@@ -331,6 +352,7 @@ END {
   if (cc) {
     if (! pc) {
       # Print a colored alert arrow followed by bold text
+      # [36m is cyan; [1m is bold
       printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions: New Casks"
       pc = 1
     }
@@ -347,14 +369,18 @@ END {
     # Semver: New major or minor version
     printf "\n"
     print "⨀=> New Homebrew version: opening release notes in web browser..."
-    print(rn) | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+    cmd = "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+    print(rn) | cmd
+    close(cmd)
   }
 
   if (ch) {
     # Semver: New patch version
     printf "\n"
     print "⨀=> New Homebrew patch version: opening changelog in web browser..."
-    print(ch) | "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+    cmd = "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
+    print(ch) | cmd
+    close(cmd)
   }
 }
 ' "${TMPDIR:-/tmp/}bup.out"
@@ -467,6 +493,7 @@ fi
 # Conclusion
 print
 # Print a colored symbol (U+2A00) followed by normal text
+# [36m is cyan
 printf "\001\033[36m\002%s\001\033[0m\002 %s\n" \
   "⨀" \
   "[Babble] All finished! Exiting..."
