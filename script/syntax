@@ -1,0 +1,18 @@
+#! /bin/bash
+set -o errexit # -e
+cd "$(dirname "$0")/.."
+
+function ksh_syntax {
+  for file in "$@"; do
+    ksh -n "${file}"
+  done
+}
+
+function bash_syntax {
+  for file in "$@"; do
+    bash -n "${file}"
+  done
+}
+
+ksh_syntax bbl
+bash_syntax script/*
