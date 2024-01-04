@@ -4,6 +4,15 @@ on:
     branches:
       - main
   pull_request:
+env:
+  HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_ENV_HINTS: 1
+  # Installs Bundler RubyGems
+  # HOMEBREW_BOOTSNAP: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+  HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT: 1
+  HOMEBREW_NO_INSTALL_FROM_API:
 jobs:
   style:
     runs-on: ubuntu-latest
@@ -11,11 +20,27 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@main
 
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+          # - name: Set up Homebrew
+          #   # https://github.com/Homebrew/actions/blob/master/setup-homebrew/action.yml
+          #   uses: Homebrew/actions/setup-homebrew@master
+          #     with:
+          #       Update the `homebrew/cask` tap.
+          #       cask: false
+          #       Install the `homebrew/test-bot` tap.
+          #       test-bot: false
 
-      - name: Install shfmt
-        run: brew install shfmt
+          # - name: Set up Homebrew to install from API
+          #   run: echo HOMEBREW_NO_INSTALL_FROM_API= >> "$GITHUB_ENV"
+
+      - name: Add the pre-installed Homebrew to PATH
+        run: echo PATH="/home/linuxbrew/.linuxbrew/bin:$PATH" >> "$GITHUB_ENV"
+        # run: eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+      # shellcheck is installed by default but is an old version
+      # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
+      # https://github.com/actions/runner-images/blob/main/images/ubuntu/toolsets/toolset-2204.json#L199
+      - name: Install shellcheck and shfmt
+        run: /home/linuxbrew/.linuxbrew/bin/brew install shellcheck shfmt
 
       - run: script/style
   syntax:
@@ -24,10 +49,22 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@main
 
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+          # - name: Set up Homebrew
+          #   uses: Homebrew/actions/setup-homebrew@master
+          #   with:
+          #     # Update the `homebrew/cask` tap.
+          #     cask: false
+          #     # Install the `homebrew/test-bot` tap.
+          #     test-bot: false
+
+          # - name: Set up Homebrew to install from API
+          #   run: echo HOMEBREW_NO_INSTALL_FROM_API= >> "$GITHUB_ENV"
+
+      - name: Add the pre-installed Homebrew to PATH
+        run: echo PATH="/home/linuxbrew/.linuxbrew/bin:$PATH" >> "$GITHUB_ENV"
+          #   # run: eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
       - name: Install ksh93
-        run: brew install ksh93
+        run: /home/linuxbrew/.linuxbrew/bin/brew install ksh93
 
       - run: script/syntax
