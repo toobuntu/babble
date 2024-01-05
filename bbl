@@ -53,14 +53,21 @@ typeset run_command next_section
 # NOTE: Use escape sequences \001 and \002 (otherwise known as
 # RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE) to exclude the
 # counting of non-printing characters by read/readline.
+# for i in $(seq 1 9); do tput setaf $i; echo "$i: base"; tput bold; echo "$i: bold"; tput sgr0; done
 # [33m is yellow
-run_command="\001$("$tput" setaf 3)\002--> [Run command]\001$("$tput" sgr0)\002 Press Space bar to continue, or Ctrl-C to exit."
+run_command="\001$("$tput" setaf 3)\002--> \001$(
+  tput sgr0
+  tput bold
+)\002Run\001$("$tput" sgr0)\002 command: Press Space bar to continue, or Ctrl-C to exit."
 # run_command="\001$("$tput" setaf 3)\002-->\001$("$tput" sgr0)\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 # run_command="\001\033[33m\002-->\001\033[0m\002 [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 # run_command="--> [Run command] Press the Space bar to continue, or Ctrl-C to exit."
 #
 # [35m is magenta
-next_section="\001$("$tput" setaf 5)\002--> [Next section]\001$("$tput" sgr0)\002 Press Space bar to continue, or Ctrl-C to exit."
+next_section="\001$("$tput" setaf 5)\002--> \001$(
+  tput sgr0
+  tput bold
+)\002Next\001$("$tput" sgr0)\002 section: Press Space bar to continue, or Ctrl-C to exit."
 # next_section="\001$("$tput" setaf 5)\002-->\001$("$tput" sgr0)\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
 # next_section="\001\033[35m\002-->\001\033[0m\002 [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
 # next_section="--> [Next §] Press the Space bar to go to the next section, or Ctrl-C to exit."
@@ -73,16 +80,18 @@ typeset -r run_command next_section
 # additional restart method will need to be added to handle that task.
 typeset -a restart_list_brew
 restart_list_brew=(
+  ch.protonvpn.mac
   com.github.SokoloffA.Radiola
   com.intelliscapesolutions.caffeine
   com.knollsoft.Rectangle
   com.mowglii.ItsycalApp
   eu.exelban.Stats
+  net.hovancik.stretchly
 )
 typeset -r restart_list_brew
 # NOTE: These come from:
-# brew install --no-quarantine sokoloffa/radiola/radiola
-# brew install caffeine itsycal rectangle stats
+# brew install --no-quarantine sokoloffa/radiola/radiola stretchly
+# brew install caffeine itsycal protonvpn rectangle stats
 
 typeset -a restart_list_mas
 restart_list_mas=(
@@ -107,10 +116,11 @@ function waiter {
 function gen_restart_list {
   # From a list of apps requiring a restart after being upgraded,
   # generate a list of those running prior to the upgrade.
-  # Want to output `cmd` without expansion
-  # Silence warning that backticks don't expand in single quotes.
-  # shellcheck disable=SC2016
-  printf "%s\n" '⨀ Before `brew upgrade`: Generating an app restart list...'
+  typeset cmd
+  cmd="$1"
+  typeset -r cmd
+  shift
+  printf 1>&2 "%s\n" "⨀ Before \`$cmd upgrade\`: Generating an app restart list..."
   typeset -a restart_list
   typeset open_apps_pre
   unset -v -- restart_req_export
@@ -144,10 +154,7 @@ function gen_restart_list {
   # set -x
   if test "${#restart_req_export}" -eq 0; then
     # { set +x; }
-    # Want to output `cmd` without expansion
-    # Silence warning that backticks don't expand in single quotes.
-    # shellcheck disable=SC2016
-    printf 1>&2 "%s\n" 'Before `brew upgrade`: No apps need to be restarted...'
+    printf 1>&2 "%2s%s\n" "" "Null: No apps on the watchlist are running..."
     print
     return
   fi
@@ -164,15 +171,16 @@ function gen_restart_list {
 function restarter {
   # waiter "$run_command"
 
+  typeset cmd
+  cmd="$1"
+  typeset -r cmd
+
   # No apps on the watchlist were running prior to the upgrade
   # set -x
   if test "${#restart_req_export}" -eq 0; then
     # { set +x; }
     print
-    # Want to output `cmd` without expansion
-    # Silence warning that backticks don't expand in single quotes.
-    # shellcheck disable=SC2016
-    printf 1>&2 "%s\n" '⨀ After `brew upgrade`: No apps need to be restarted...'
+    printf 1>&2 "%s\n" "⨀ After \`$cmd upgrade\`: No apps need to be restarted..."
     return
   fi
   { set +x; }
@@ -202,10 +210,7 @@ function restarter {
   if test "${#restart_req}" -eq 0; then
     # { set +x; }
     print
-    # Want to output `cmd` without expansion
-    # Silence warning that backticks don't expand in single quotes.
-    # shellcheck disable=SC2016
-    printf 1>&2 "%s\n" '⨀ After `brew upgrade`: No apps need to be restarted...'
+    printf 1>&2 "%s\n" "⨀ After \`$cmd upgrade\`: No apps need to be restarted..."
     return
   fi
   { set +x; }
@@ -214,7 +219,7 @@ function restarter {
 
   # There is something to restart
   print
-  printf "%s\n" "Restarting apps from the restart list..."
+  printf "%s\n" "⨀ After \`$cmd upgrade\`: Restarting apps from the restart list..."
   set -x
   # Disable word splitting by setting IFS=""
   while IFS="" read -r line; do
@@ -420,13 +425,13 @@ printf "%s\n" \
   'Would run `brew upgrade`'
 waiter "$run_command"
 
-gen_restart_list "${restart_list_brew[@]}"
+gen_restart_list "brew" "${restart_list_brew[@]}"
 
 set -x
 brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times
 { set +x; }
 
-restarter
+restarter "brew"
 waiter "$next_section"
 
 # Mac App Store
@@ -457,13 +462,13 @@ if test -n "$outie"; then
     'Would run `mas upgrade`'
   waiter "$run_command"
 
-  gen_restart_list "${restart_list_mas[@]}"
+  gen_restart_list "mas" "${restart_list_mas[@]}"
 
   set -x
   mas upgrade
   { set +x; }
 
-  restarter
+  restarter "mas"
 fi
 waiter "$next_section"
 
