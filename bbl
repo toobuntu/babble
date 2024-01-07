@@ -306,11 +306,11 @@ brew update 2>&1 | /usr/bin/tee "${TMPDIR:-/tmp/}bup.out"
 }
 
 f {
-  formulae[$0] = $0
+  formulae[FNR] = $0
 }
 
 c {
-  casks[$0] = $0
+  casks[FNR] = $0
 }
 
 # New Homebrew version
@@ -381,8 +381,8 @@ END {
     # Semver: New major or minor version
     printf "\n"
     print "⨀=> New Homebrew version: opening release notes in web browser..."
-    cmd = "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
-    print(rn) | cmd
+    cmd = "/usr/bin/xargs -0 -I % /usr/bin/open -u '\''%'\'' 2> /dev/null"
+    printf("%s%c", rn, 0) | cmd
     close(cmd)
   }
 
@@ -390,8 +390,8 @@ END {
     # Semver: New patch version
     printf "\n"
     print "⨀=> New Homebrew patch version: opening changelog in web browser..."
-    cmd = "/usr/bin/xargs /usr/bin/open -u 2> /dev/null"
-    print(ch) | cmd
+    cmd = "/usr/bin/xargs -0 -I % /usr/bin/open -u '\''%'\'' 2> /dev/null"
+    printf("%s%c", ch, 0) | cmd
     close(cmd)
   }
 }
@@ -514,5 +514,5 @@ print
 # [36m is cyan
 printf "\001\033[36m\002%s\001\033[0m\002 %s\n" \
   "⨀" \
-  "[Babble] All finished! Exiting..."
+  "Babble: All finished! Exiting..."
 #printf "\n%s\n" "[🔄 Babble] All finished! Exiting..."
