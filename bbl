@@ -318,6 +318,9 @@ c {
   # New major or minor version: open the release notes
   # Match a semver in the url
   if ($0 ~ /https:\/\/brew\.sh\/blog\/(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0)/) {
+    # Remove ANSI escape sequences (the URL is printed with underscore)
+    # Underscore: `tput smul` or `\033[4m`
+    gsub(/\x01?(\x1B\(B)?\x1B\[([0-9;]*)?[JKmsu]\x02?/, "")
     # Remove leading and trailing whitespace
     # Force awk to rebuild the entire record, using the current values of the fields and OFS
     # When a value is assigned to a field variable, i.e., the value of $1 is assigned to field $1, awk rebuilds its $0 by concatenating the fields with the default output field separator (OFS), a space.
@@ -329,6 +332,8 @@ c {
 {
   # New patch version: open the changelog
   if ($0 ~ /https:\/\/github\.com\/Homebrew\/brew\/releases\/tag/) {
+    # Remove ANSI escape sequences (the url has underscores)
+    gsub(/\x1b\[[0-9;]*[mGKHF]/, "")
     # Remove leading and trailing whitespace
     $1 = $1 # force record to be reconstituted
     ch = $0
@@ -346,7 +351,7 @@ END {
     if (! pf) {
       # Print a colored alert arrow followed by bold text
       # [36m is cyan; [1m is bold
-      printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions: New Formulae"
+      printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions of New Formulae"
       pf = 1
     }
     cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --formula %"
@@ -365,7 +370,7 @@ END {
     if (! pc) {
       # Print a colored alert arrow followed by bold text
       # [36m is cyan; [1m is bold
-      printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions: New Casks"
+      printf "\n\001\033[36m\002%s\001\033[0m\002 \001\033[1m\002%s\001\033[0m\002\n", "⨀=>", "Descriptions of New Casks"
       pc = 1
     }
     cmd = "/usr/bin/xargs -0 -J % brew desc --eval-all --cask %"
