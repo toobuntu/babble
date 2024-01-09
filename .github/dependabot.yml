@@ -17,6 +17,14 @@ updates:
       day: "sunday"
     groups:
       all-actions:
-        # A wildcard that matches all dependencies in the package
-        # ecosystem. Note: using "*" may open a large pull request.
-        patterns: [ "*" ]
+        patterns:
+          # A wildcard that matches all dependencies in the package
+          # ecosystem. Note: using "*" may open a large pull request.
+          - "*"
+        update-types:
+          # Any packages where the highest resolvable version is minor
+          # or patch will be grouped together. Dependabot will create a
+          # separate pull request for any package that doesn't update to
+          # a minor or patch version.
+          - "minor"
+          - "patch"
