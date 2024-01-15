@@ -318,25 +318,31 @@ c {
   # New major or minor version: open the release notes
   # Match a semver in the url
   if ($0 ~ /https:\/\/brew\.sh\/blog\/(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0)/) {
-    # Remove ANSI escape sequences (the URL is printed with underscore)
-    # Underscore: `tput smul` or `\033[4m`
+    # Strip ANSI escape sequences (the URL is formatted in underscore)
+    # See https://github.com/Homebrew/brew/blob/master/Library/Homebrew/utils/formatter.rb#L61-#L63. Invoked as #{Formatter.url("https://...")}.
+    # NOTE: Underscore: `tput smul` or `\033[4m` or `\x1b[4m`
     gsub(/\x01?(\x1B\(B)?\x1B\[([0-9;]*)?[JKmsu]\x02?/, "")
+    # NOTE: This gsub suffices. Depending on Formula.ansifilter (208k,
+    # writen in C++) is therefore unnecessary.
+    # $1 = $1; af = ("$HOMEBREW_PREFIX/bin/ansifilter <<< " $0); af | getline rn; close(af); next
     # Remove leading and trailing whitespace
-    # Force awk to rebuild the entire record, using the current values of the fields and OFS
-    # When a value is assigned to a field variable, i.e., the value of $1 is assigned to field $1, awk rebuilds its $0 by concatenating the fields with the default output field separator (OFS), a space.
+    # NOTE: Force awk to rebuild the entire record, using the current values of the fields and OFS
+    # NOTE: When a value is assigned to a field variable, i.e., the value of $1 is assigned to field $1, awk rebuilds its $0 by concatenating the fields with the default output field separator (OFS), a space.
     $1 = $1 # force record to be reconstituted
     rn = $0
+    next
   }
 }
 
 {
   # New patch version: open the changelog
   if ($0 ~ /https:\/\/github\.com\/Homebrew\/brew\/releases\/tag/) {
-    # Remove ANSI escape sequences (the url has underscores)
-    gsub(/\x1b\[[0-9;]*[mGKHF]/, "")
+    # Strip ANSI escape sequences (the URL is formatted in underscore)
+    gsub(/\x01?(\x1B\(B)?\x1B\[([0-9;]*)?[JKmsu]\x02?/, "")
     # Remove leading and trailing whitespace
     $1 = $1 # force record to be reconstituted
     ch = $0
+    next
   }
 }
 
