@@ -4,7 +4,13 @@ cd "$(dirname "$0")/.."
 
 function ksh_syntax {
   for file in "$@"; do
-    ksh -n "${file}"
+    # Pipe stderr to awk
+    ksh -n "${file}" 3>&2 2>&1 1>&3 |
+      /usr/bin/awk '
+        # \047 is the octal escape code for single quote
+        /^(bbl|script\/release-notes): warning: line [[:digit:]]+: \047 quote may be missing$/ {next}
+        {print}
+      '
   done
 }
 
@@ -14,5 +20,7 @@ function bash_syntax {
   done
 }
 
-ksh_syntax bbl
+# Use the ksh syntax checker on bash code, too. It is better than the
+# built-in bash syntax checking. script/ contains only bash scripts.
+ksh_syntax bbl script/*
 bash_syntax script/*
