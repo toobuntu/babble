@@ -1,0 +1,106 @@
+#! /bin/bash
+set -o errexit # -e
+
+## Variables
+# Git repo
+typeset REPO REMOTE _REPO
+REPO="babble"
+REMOTE="origin"
+_REPO="$REPO\$"
+typeset -r REPO REMOTE _REPO
+
+## Functions
+function is_git_repo {
+  if test "$(
+    git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --show-toplevel 2>&1 |
+      awk -v repo="$REPO" -v _repo="$_REPO" '
+      NR == 1 && $0 ~ /^fatal: [nN]ot a git repository/ {
+        print("fatal: not a git repository") > "/dev/stderr"
+        close("/dev/stderr")
+        exit 1
+      }
+
+      NR == 1 && $0 ~ /^.git$/ {
+        ret += 1
+        next
+      }
+
+      NR == 2 && $0 ~ /^false$/ {
+        ret += 1
+        next
+      }
+
+      NR == 3 && $0 ~ /^false$/ {
+        ret += 1
+        next
+      }
+
+      NR == 4 && $0 ~ /^true$/ {
+        ret += 1
+        next
+      }
+
+      NR == 5 && $0 ~ _repo {
+        if (ret == 4) {
+          print ("success: is the " repo " git repository")
+        }
+      }
+
+      NR > 5 {
+        print("awk: unspecified error") > "/dev/stderr"
+        close("/dev/stderr")
+        exit 2
+      }
+      '
+  )" != "success: is the $REPO git repository"; then
+    printf 1>&2 "%s\n" "error: not the $REPO repository"
+    exit 3
+  fi
+}
+
+function git_fetch_tags {
+  git fetch --quiet "$REMOTE" 'refs/tags/*:refs/tags/*'
+}
+
+function git_log_since_latest_tag {
+  git log "$(git describe --tags --abbrev=0)"..HEAD --no-merges
+}
+
+function main {
+  is_git_repo
+  git_fetch_tags
+  git_log_since_latest_tag
+}
+main
+
+## Unused functions
+function repo_is_dirty {
+  # Check whether a repository has staged changes (not yet committed)
+  if ! git diff-index --quiet --cached HEAD --; then
+    printf 1>&2 "%s\n" "warning: repository has staged changes (not yet committed)"
+    exit 4
+  fi
+  # Check whether a working tree has changes that could be staged
+  if ! git diff-files --quiet; then
+    printf 1>&2 "%s\n" "warning: working tree has changes that could be staged"
+    exit 5
+  fi
+  # Check whether the combination of the index and the tracked files in the working tree have changes with respect to HEAD
+  if ! git diff-index --quiet HEAD --; then
+    printf 1>&2 "%s\n" "warning: the combination of the index and the tracked files in the working tree have changes with respect to HEAD"
+    exit 6
+  fi
+  # Check for untracked files (will include ignored files, if present)
+  # git ls-files --others
+  # Check for untracked and unignored files
+  # git ls-files --others --exclude-standard
+}
+
+function pull_rebase {
+  # Want to output `cmd` without expansion
+  # Silence warning that backticks don't expand in single quotes.
+  # shellcheck disable=SC2016
+  printf "%s\n" 'Will run `git pull --rebase`. Have you pushed all staged commits?'
+  read -r -s -d " " -p "$(printf "\001$(tput setaf 3)-->$(tput sgr0)\002 %s" "Press Space bar to continue, or Ctrl-C to exit.")" < /dev/tty
+  git pull --rebase
+}

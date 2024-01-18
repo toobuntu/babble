@@ -1,0 +1,95 @@
+#! /bin/bash
+set -o errexit # -e
+
+# Copy all commit messages since the latest git tag (release) and
+# format for Release Notes in Markdown.
+# NOTE: There will be a trailing newline after pasting. Just delete it.
+
+## Variables
+# Git repo
+typeset REPO REMOTE _REPO
+REPO="babble"
+REMOTE="origin"
+_REPO="$REPO\$"
+typeset -r REPO REMOTE _REPO
+
+## Functions
+function is_git_repo {
+  if test "$(
+    git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --show-toplevel 2>&1 |
+      awk -v repo="$REPO" -v _repo="$_REPO" '
+      NR == 1 && $0 ~ /^fatal: [nN]ot a git repository/ {
+        print("fatal: not a git repository") > "/dev/stderr"
+        close("/dev/stderr")
+        exit 1
+      }
+
+      NR == 1 && $0 ~ /^.git$/ {
+        ret += 1
+        next
+      }
+
+      NR == 2 && $0 ~ /^false$/ {
+        ret += 1
+        next
+      }
+
+      NR == 3 && $0 ~ /^false$/ {
+        ret += 1
+        next
+      }
+
+      NR == 4 && $0 ~ /^true$/ {
+        ret += 1
+        next
+      }
+
+      NR == 5 && $0 ~ _repo {
+        if (ret == 4) {
+          print ("success: is the " repo " git repository")
+        }
+      }
+
+      NR > 5 {
+        print("awk: unspecified error") > "/dev/stderr"
+        close("/dev/stderr")
+        exit 2
+      }
+      '
+  )" != "success: is the $REPO git repository"; then
+    printf 1>&2 "%s\n" "error: not the $REPO repository"
+    exit 3
+  fi
+}
+
+function git_fetch_tags {
+  git fetch --quiet "$REMOTE" 'refs/tags/*:refs/tags/*'
+}
+
+function clear_pasteboard {
+  # Clear the general pasteboard
+  /usr/bin/pbpaste 1> /dev/null 2>&1
+}
+
+function generate_release_notes {
+  # Print the first line of each commit message since the latest tag.
+  git log "$(git describe --tags --abbrev=0)"..HEAD --no-merges --oneline |
+    /usr/bin/awk '
+    NR == 1 {
+      printf "%s\n\n", "## What'\''s Changed"
+    }
+
+    {
+      print "-", (substr($0, index($0, $2)))
+    }
+    ' |
+    /usr/bin/pbcopy
+}
+
+function main {
+  is_git_repo
+  git_fetch_tags
+  clear_pasteboard
+  generate_release_notes
+}
+main
