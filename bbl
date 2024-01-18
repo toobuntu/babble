@@ -80,12 +80,15 @@ typeset -r run_command next_section
 # additional restart method will need to be added to handle that task.
 typeset -a restart_list_brew
 restart_list_brew=(
+  app.codeedit.CodeEdit
   ch.protonvpn.mac
+  com.coteditor.CotEditor
   com.github.SokoloffA.Radiola
-  com.intelliscapesolutions.caffeine
   com.knollsoft.Rectangle
   com.mowglii.ItsycalApp
+  dev.zed.Zed
   eu.exelban.Stats
+  net.domzilla.caffeine
   net.hovancik.stretchly
 )
 typeset -r restart_list_brew
