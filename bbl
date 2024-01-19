@@ -80,13 +80,11 @@ typeset -r run_command next_section
 # additional restart method will need to be added to handle that task.
 typeset -a restart_list_brew
 restart_list_brew=(
-  app.codeedit.CodeEdit
   ch.protonvpn.mac
   com.coteditor.CotEditor
   com.github.SokoloffA.Radiola
   com.knollsoft.Rectangle
   com.mowglii.ItsycalApp
-  dev.zed.Zed
   eu.exelban.Stats
   net.domzilla.caffeine
   net.hovancik.stretchly
@@ -94,7 +92,8 @@ restart_list_brew=(
 typeset -r restart_list_brew
 # NOTE: These come from:
 # brew install --no-quarantine sokoloffa/radiola/radiola stretchly
-# brew install caffeine itsycal protonvpn rectangle stats
+# brew install coteditor domzilla-caffeine itsycal protonvpn rectangle stats
+# NOTE: uninstall quit was removed from the casks of: vscodium, visual-studio-code, codeedit and zed because "after discussions this change will hard quit the application on upgrade and that behavior is not desired."
 
 typeset -a restart_list_mas
 restart_list_mas=(
