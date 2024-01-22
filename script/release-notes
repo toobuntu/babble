@@ -50,6 +50,14 @@ function is_git_repo {
         }
       }
 
+      NR == 5 {
+        if ((ret != 4) || $0 !~ _repo) {
+          print("awk: unspecified error") > "/dev/stderr"
+          close("/dev/stderr")
+          exit 2
+        }
+      }
+
       NR > 5 {
         print("awk: unspecified error") > "/dev/stderr"
         close("/dev/stderr")
