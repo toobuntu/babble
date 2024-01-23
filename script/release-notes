@@ -10,7 +10,7 @@ set -o errexit # -e
 typeset REPO REMOTE _REPO
 REPO="babble"
 REMOTE="origin"
-_REPO="$REPO\$"
+_REPO="/$REPO\$"
 typeset -r REPO REMOTE _REPO
 
 ## Functions
