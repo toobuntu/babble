@@ -11,9 +11,92 @@
 # 21-Jan-2024 NOTE Homebrew's behavior was changed to no longer quit
 #                  apps on upgrade or reinstall (quits on uninstall).
 #                  See https://github.com/Homebrew/brew/pull/16507.
+# 22-Jan-2024 NOTE Homebrew 4.2.5 was released, with this change.
+#                  See https://github.com/Homebrew/brew/releases/tag/4.2.5.
 # 23-Jan-2024 TODO Rewrite the "restart specified apps after upgrade"
 #                  code. Instead, provide a list of apps to both quit
 #                  prior to and restart after `brew upgrade`.
+#                  See how Homebrew does it: https://github.com/Homebrew/brew/blob/master/Library/Homebrew/cask/artifact/abstract_uninstall.rb#L190-L265.
+#                  Homebrew also offers uninstall signal: for when
+#                  uninstall quit: does not work.
+#                  -> Signals are sent to a different procedure in the
+#                  app than putting something on the message queue. The
+#                  SIGTERM signal is a generic signal used to cause
+#                  program termination. Unlike SIGKILL, this signal can
+#                  be blocked, handled, and ignored. It is the normal
+#                  way to politely ask a program to terminate.
+#                  The issue is SIGTERM is not as graceful as osascript
+#                  in practice. Apps should handle SIGTERM but it is not
+#                  the main message loop and many ignore it. Also the
+#                  osascript method allows the app to ask the user if
+#                  they are sure. Since SIGKILL cannot be handled, you
+#                  should generate it only as a last resort, after first
+#                  trying a less drastic method such as SIGINT (Ctrl-C)
+#                  or SIGTERM.
+#                  function quit_is_gui {
+#                    # Return whether the user has an active GUI session.
+#                    who |
+#                      /usr/bin/awk -F" {3,}" -v user="$(id -un)" '
+#                        {
+#                          if ($2 ~ /^console$/ && $1 == user) {
+#                            exit 0
+#                          } else {
+#                            exit 1
+#                          }
+#                        }
+#                      '
+#                  }
+#                  if ! test quit_is_gui; then
+#                    printf 1>&2 "%s\n" \
+#                      "⨀=> Warning: Not logged into a GUI; skipping quitting applications."
+#                  fi
+#
+#                  function quit_apps {
+#                    for i in "$@"; do # ARGV is an array of bundleids
+#                      # Return whether the app is running.
+#                      # osascript -e "running of app id \"$i\"" # returns true or false
+#                      if test -z /usr/bin/lsappinfo info -only bundleid "$i" | awk -F= '{gsub(/"/, ""); print(substr($0, index($0, $2)))}'; then
+#                        # DEBUG
+#                        # printf 1>&2 "%s\n" \
+#                        #   "DEBUG: Application $i is not running."
+#                        return 1
+#
+#                        # Attempt to quit gracefully
+#                        printf 1>&2 "%s\n" \
+#                          "⨀=> Quitting application $i..."
+#                        if test /usr/bin/osascript -e "quit app id \"$i\""; then
+#                          printf 1>&2 "%s\n" \
+#                            "Application $i quit successfully."
+#                        else
+#                          printf 1>&2 "%s\n" \
+#                            "Warning: Application $i did not quit." \
+#                            "Enable Automation access for "Terminal → System Events" in:" \
+#                            "  System Settings → Privacy & Security → Automation" \
+#                            "if you haven't already."
+#                        fi
+#                      fi
+#                    done
+#                  }
+#                  quit_apps "${restart_list_brew[@]}" # or restart_list_mas
+#
+#                  # Attempt to quit less gracefully, risking data loss
+#                  function quit_risk_data_loss {
+#                    unset -v -- quit_name pkill_args;
+#                    for i in "$@"; do # ARGV is an array of bundleids
+#                      typeset quit_name
+#                      quit_name="$(/usr/bin/lsappinfo info -only name "$i" | awk -F= '{gsub(/"/, ""); print(substr($0, index($0, $2)))}')"
+#                      typeset -a pkill_args
+#                      pkill_args+=("-f")
+#                      pkill_args+=("-u $(id -u)")
+#                      pkill_args+=("$quit_name")
+#                      pkill_args+=("2> /dev/null")
+#                      /usr/bin/pkill "${pkill_args[@]}" # default signal is SIGTERM
+#                      /usr/bin/pkill -SIGINT "${pkill_args[@]}"
+#                      /usr/bin/pkill -SIGKILL "${pkill_args[@]}"
+#                      unset -v -- quit_name pkill_args;
+#                    done
+#                  }
+#                  # quit_risk_data_loss "${restart_list_brew[@]}" # or restart_list_mas
 #
 # NOTE: One cannot rely on Homebrew Git and the JSON API being in sync.
 # If this causes issues, prefix the invocation of Babble (`bbl`) with
