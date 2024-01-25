@@ -3,55 +3,59 @@ set -o errexit # -e
 
 # Copy all commit messages since the latest git tag (release) and
 # format for Release Notes in Markdown.
-# NOTE: There will be a trailing newline after pasting. Just delete it.
 
 ## Variables
 # Git repo
-typeset REPO REMOTE _REPO
-REPO="babble"
-REMOTE="origin"
-_REPO="/$REPO\$"
-typeset -r REPO REMOTE _REPO
+typeset repo remote repo_dirname
+repo="babble"
+remote="origin"
+repo_dirname="/$repo\$"
+typeset -r repo remote repo_dirname
 
 ## Functions
 function is_git_repo {
   if test "$(
     git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --show-toplevel 2>&1 |
-      awk -v repo="$REPO" -v _repo="$_REPO" '
+      awk -v repo="$repo" -v repo_dirname="$repo_dirname" '
       NR == 1 && $0 ~ /^fatal: [nN]ot a git repository/ {
         print("fatal: not a git repository") > "/dev/stderr"
         close("/dev/stderr")
         exit 1
       }
 
+      # --git-dir
       NR == 1 && $0 ~ /^.git$/ {
         ret += 1
         next
       }
 
+      # --is-inside-git-dir
       NR == 2 && $0 ~ /^false$/ {
         ret += 1
         next
       }
 
+      # --is-bare-repository
       NR == 3 && $0 ~ /^false$/ {
         ret += 1
         next
       }
 
+      # --is-inside-work-tree
       NR == 4 && $0 ~ /^true$/ {
         ret += 1
         next
       }
 
-      NR == 5 && $0 ~ _repo {
+      # --show-toplevel
+      NR == 5 && $0 ~ repo_dirname {
         if (ret == 4) {
           print ("success: is the " repo " git repository")
         }
       }
 
       NR == 5 {
-        if ((ret != 4) || $0 !~ _repo) {
+        if ((ret != 4) || $0 !~ repo_dirname) {
           print("awk: unspecified error") > "/dev/stderr"
           close("/dev/stderr")
           exit 2
@@ -64,14 +68,14 @@ function is_git_repo {
         exit 2
       }
       '
-  )" != "success: is the $REPO git repository"; then
-    printf 1>&2 "%s\n" "error: not the $REPO repository"
+  )" != "success: is the $repo git repository"; then
+    printf 1>&2 "%s\n" "error: not the $repo repository"
     exit 3
   fi
 }
 
 function git_fetch_tags {
-  git fetch --quiet "$REMOTE" 'refs/tags/*:refs/tags/*'
+  git fetch --quiet "$remote" 'refs/tags/*:refs/tags/*'
 }
 
 function clear_pasteboard {
@@ -83,12 +87,25 @@ function generate_release_notes {
   # Print the first line of each commit message since the latest tag.
   git log "$(git describe --tags --abbrev=0)"..HEAD --no-merges --oneline |
     /usr/bin/awk '
+    NR == 0 {
+      next
+    }
+
     NR == 1 {
       printf "%s\n\n", "## What'\''s Changed"
     }
 
+    NR > 1 {
+      print line
+    }
+
     {
-      print "-", (substr($0, index($0, $2)))
+      line = "- " (substr($0, index($0, $2)))
+    }
+
+    END {
+      ORS = ""
+      print line
     }
     ' |
     /usr/bin/pbcopy
