@@ -52,6 +52,8 @@
 #                  fi
 #
 #                  function quit_apps {
+#                    # This works:
+#                    # i="com.adobe.Reader"; bid="\"$i\""; echo $bid; osascript -e "if app id $bid is running then quit app id $bid"; unset -v -- i bid;
 #                    for i in "$@"; do # ARGV is an array of bundleids
 #                      # Return whether the app is running.
 #                      # osascript -e "running of app id \"$i\"" # returns true or false
@@ -81,6 +83,30 @@
 #
 #                  # Attempt to quit less gracefully, risking data loss
 #                  function quit_risk_data_loss {
+#                  # Workaround for cask adobe-acrobat-reader
+#                  osascript << \EOS                    (main) [~/devel/github/babble]
+: << \EOS
+set quitbundleids to {"com.adobe.Reader", "com.adobe.AdobeRdrCEF", "com.adobe.AdobeCRDaemon", "com.adobe.AdobeRdrCEFHelper"}
+
+try
+	with timeout of 3 seconds
+		repeat with i in quitbundleids
+			if application id i is running then quit application id i
+		end repeat
+	end timeout
+on error errormsg
+	log errormsg
+	log ("Error: Attempting to quit bundleid " & i as text) & " less gracefully, risking data loss"
+	do shell script ("killall -eu \"${USER}\" -m 'Adobe*|RdrCEF*|AcroCEF*'")
+end try
+EOS
+# -->
+# ** Current investigation **
+# Working, specific to Acrobat Reader:
+# /usr/bin/lsappinfo list | /usr/bin/awk -F= '/[Aa]dobe|[Aa]crobat/ {if ($0 ~ /[Bb]undle[Ii][Dd]/) {gsub(/"/, ""); print(substr($0, index($0, $2))); next}}' | /usr/bin/xargs -I % /usr/bin/osascript -e "try" -e "with timeout of 3 seconds" -e "quit app id \"%\"" -e "end timeout" -e "on error errormsg" -e "log errormsg" -e "return 1" -e "end try"; /usr/bin/lsappinfo list | /usr/bin/awk -F= '/[Aa]dobe|[Aa]crobat/ {if ($0 ~ /executable path=/) {gsub(/"/, ""); print(substr($0, index($0, $2))); next}}' | /usr/bin/xargs -I % /usr/bin/pkill -u "$USER" -fx %;
+# Test with: ps aux | grep -iE 'adobe|communicator|smjobblesshelper'
+# <--
+#                  killall -Ieu "${USER}" -m 'Adobe*|RdrCEF*|AcroCEF*' # Seems AcroCEF* is for Acrobat Pro; remove -I to be non-interactive; default signal is TERM
 #                    unset -v -- quit_name pkill_args;
 #                    for i in "$@"; do # ARGV is an array of bundleids
 #                      typeset quit_name
@@ -131,6 +157,8 @@ fi
 # Declare variables and functions
 # Force color output on non-TTY outputs
 typeset -x HOMEBREW_COLOR=1
+# Do not verify cryptographic attestations of build provenance for bottles
+typeset -x HOMEBREW_NO_VERIFY_ATTESTATIONS=1
 
 # Path to tput
 typeset tput
@@ -184,12 +212,31 @@ typeset -r restart_list_brew
 # brew install coteditor domzilla-caffeine itsycal protonvpn rectangle stats
 # NOTE: uninstall quit was removed from the casks of: vscodium, visual-studio-code, codeedit and zed because "after discussions this change will hard quit the application on upgrade and that behavior is not desired."
 
+# Define the associative array for brew with token:bundle_id pairs
+# In this case, the double quotes are not strictly necessary due to the absence of spaces or special characters in the array values.
+# Use double quotes in associative array definitions when the values may contain spaces or special characters.
+typeset -A brew_token_bundle_array=(
+  ["protonvpn"]="ch.protonvpn.mac"
+  [coteditor]=com.coteditor.CotEditor
+  [radiola]=com.github.SokoloffA.Radiola
+  [rectangle]=com.knollsoft.Rectangle
+  [itsycal]=com.mowglii.ItsycalApp
+  [stats]=eu.exelban.Stats
+  ["domzilla-caffeine"]=net.domzilla.caffeine
+  [stretchly]=net.hovancik.stretchly
+)
+
 typeset -a restart_list_mas
 restart_list_mas=(
   iapp.monitorcontrol.MonitorControlLite
   com.sindresorhus.Pandan
 )
 typeset -r restart_list_mas
+
+typeset -A mas_appid_bundle_array=(
+  [1595464182]=app.monitorcontrol.MonitorControlLite
+  [1569600264]=com.sindresorhus.Pandan
+)
 
 function waiter {
   /bin/stty -echo
@@ -202,6 +249,15 @@ function waiter {
   #read -r -N 1 -d " " var?"${1:---> Press the Space bar to continue, or Ctrl-C to exit.}" < /dev/tty
   /bin/stty echo
   print
+}
+
+function quit_apps {
+  typeset bundle_id="$1"
+  osascript -e "
+    if app id \"$bundle_id\" is running then
+      quit app id \"$bundle_id\"
+    end if
+    "
 }
 
 function gen_restart_list {
@@ -325,6 +381,7 @@ printf "%s\n" \
   "-----------------------------------------------------------------------" \
   "| ⨀ Babble: An upgrade routine for Homebrew, Mac App Store and macOS. |" \
   "-----------------------------------------------------------------------"
+/bin/date
 print
 
 # Homebrew
@@ -529,8 +586,57 @@ waiter "$run_command"
 
 gen_restart_list "brew" "${restart_list_brew[@]}"
 
+# Attempt to gracefully quit the running apps on the watchlist
+typeset -a outdated_tokens
+# outdated_tokens=($(brew info --cask --json=v2 --installed | jq -r '.casks[] | select(.outdated == true) | .token' | awk 'NF > 0'))
+# SC2207: Explicitly split command output instead of relying on shell globbing. Homebrew tokens should not pose a problem, but do it anyway to silence the shellcheck complaint.
+brew info --cask --json=v2 --installed | jq -r '.casks[] | select(.outdated == true) | .token' | awk 'NF > 0' | while IFS="" read -r line; do outdated_tokens+=("$line"); done
+if test "${#outdated_tokens[@]}" -gt 0; then
+  for token in "${outdated_tokens[@]}"; do
+    for bundleid in ${brew_token_bundle_array["$token"]}; do
+      if test -n "$bundleid"; then
+        quit_apps "$bundleid"
+      fi
+    done
+  done
+fi
+
 set -x
-brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times
+# The following routine is due to https://github.com/orgs/Homebrew/discussions/5226
+function repeat_command {
+  typeset cmd="$1"
+  typeset fallback_func="$2"
+  typeset -i attempts="$3"
+  # Counter
+  typeset -i i=0
+
+  while [ "$i" -lt "$attempts" ]; do
+    if $cmd; then
+      break
+    else
+      $fallback_func
+      # [35m is magenta
+      printf 1>&2 "\001\033[35m\002%s\001\033[0m\002 \001\033[1;35m\002%u attempts remaining.\001\033[0m\002\n" \
+        "⨀=>" \
+        $((attempts - i))
+      i=$((i + 1))
+    fi
+  done
+}
+typeset command_to_repeat="brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times"
+function fallback_commands {
+  # Print a colored symbol (U+2A00) followed by normal text
+  # [36m is cyan
+  # Want to output `cmd` without expansion
+  # Silence warning that backticks don't expand in single quotes.
+  # shellcheck disable=SC2016
+  printf 1>&2 "\001\033[36m\002%s\001\033[0m\002 %s\n" \
+    "⨀=>" \
+    '`brew upgrade` encountered a problem. Cleaning cache...'
+  /bin/rm -rf "$HOME/Library/Caches/Homebrew/bootsnap"
+}
+typeset -i max_attempts=10
+repeat_command "$command_to_repeat" fallback_commands "$max_attempts"
 { set +x; }
 
 restarter "brew"
@@ -549,6 +655,8 @@ typeset outie
 outie="$(
   set -x
   mas outdated
+  # mas outdated | /usr/bin/awk 'NF > 0' # Remove blank lines
+  # Alternatively, mas outdated | /usr/bin/grep --invert-match '^[[:space:]]*$' # Remove blank lines
   { set +x; }
 )"
 
@@ -565,6 +673,25 @@ if test -n "$outie"; then
   waiter "$run_command"
 
   gen_restart_list "mas" "${restart_list_mas[@]}"
+
+  # Attempt to gracefully quit the running apps on the watchlist
+  typeset -a outdated_appids
+  # SC2207: Explicitly split command output instead of relying on shell globbing. Mac App Store appids should not pose a problem, but do it anyway to silence the shellcheck complaint.
+  # outdated_appids=($(mas outdated | awk 'NF > 0 {print $1}')) # NF > 0 to remove blank lines
+  mas outdated | awk 'NF > 0 {print $1}' | while IFS="" read -r line; do outdated_appids+=("$line"); done # NF > 0 to remove blank lines
+  if test "${#outdated_appids[@]}" -gt 0; then
+    for appid in "${outdated_appids[@]}"; do
+      for bundleid in ${mas_appid_bundle_array["$appid"]}; do
+        if test -n "$bundleid"; then
+          quit_apps "$bundleid" # 2> /dev/null
+        fi
+      done
+    done
+  fi
+
+  #  for app in "${restart_list_mas[@]}"; do
+  #    quit_apps "$app"
+  #  done
 
   set -x
   mas upgrade
@@ -617,4 +744,5 @@ print
 printf "\001\033[36m\002%s\001\033[0m\002 %s\n" \
   "⨀" \
   "Babble: All finished! Exiting..."
+date
 #printf "\n%s\n" "[🔄 Babble] All finished! Exiting..."
