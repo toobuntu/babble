@@ -8,6 +8,10 @@
 
 An upgrade routine for Homebrew, Mac App Store and macOS
 
+## Example session
+
+![Example](assets/demo-241211-2018-x2.svg)
+
 ## Install
 
 ```shell
