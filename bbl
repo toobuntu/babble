@@ -157,6 +157,8 @@ fi
 # Declare variables and functions
 # Force color output on non-TTY outputs
 typeset -x HOMEBREW_COLOR=1
+# As of 03 Dec 2024, the experimental Homebrew verification feature is currently hitting GitHub rate limits (60/hr), so disable it for now.
+# See https://github.com/Homebrew/brew/issues/18544.
 # Do not verify cryptographic attestations of build provenance for bottles
 typeset -x HOMEBREW_NO_VERIFY_ATTESTATIONS=1
 
