@@ -39,9 +39,9 @@
 #                      /usr/bin/awk -F" {3,}" -v user="$(id -un)" '
 #                        {
 #                          if ($2 ~ /^console$/ && $1 == user) {
-#                            exit 0
+#                            return 0
 #                          } else {
-#                            exit 1
+#                            return 1
 #                          }
 #                        }
 #                      '
@@ -123,6 +123,10 @@ EOS
 #                    done
 #                  }
 #                  # quit_risk_data_loss "${restart_list_brew[@]}" # or restart_list_mas
+#
+# NOTE: This doesn't work over SSH or in tmux.
+# Detect terminal: case "$OSTYPE" in darwin*) if "$TERM_PROGRAM" == "$token"; then print -u "Warning: The currently active terminal program $token is queued for an upgrade. Please restart $token after it is upgraded or you will experience issues. Better yet, quit $token and perform the upgrade from a different terminal program."; fi ;; *) ;; esac
+# "Restart to keep using $token ($TERM_PROGRAM). An update to $token started in the background. You'll need to restart to finish the update. Be sure to save your current work, if necessary, prior to restarting."
 #
 # NOTE: One cannot rely on Homebrew Git and the JSON API being in sync.
 # If this causes issues, prefix the invocation of Babble (`bbl`) with
