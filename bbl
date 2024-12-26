@@ -574,21 +574,44 @@ print
 printf "%s\n" \
   "Listing installed packages which are outdated..." \
   'Would run `brew outdated`'
-# By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
 waiter "$run_command"
-set -x
-brew outdated --greedy-auto-updates --fetch-HEAD --verbose
-{ set +x; }
-waiter "$next_section"
+# set -x
+# # By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
+# brew outdated --greedy-auto-updates --fetch-HEAD --verbose
+# { set +x; }
+# waiter "$next_section"
 
-print
-# Want to output `cmd` without expansion
-# Silence warning that backticks don't expand in single quotes.
-# shellcheck disable=SC2016
-printf "%s\n" \
-  "Upgrading outdated packages..." \
-  'Would run `brew upgrade`'
-waiter "$run_command"
+# COPY/PASTE START
+unset -v -- outie
+typeset outie
+outie="$(
+  set -x
+  # By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
+  brew outdated --greedy-auto-updates --fetch-HEAD --verbose
+  { set +x; }
+)"
+
+if test -n "$outie"; then
+  printf "%s\n" "$outie"
+  waiter "$next_section"
+  print
+  # Want to output `cmd` without expansion
+  # Silence warning that backticks don't expand in single quotes.
+  # shellcheck disable=SC2016
+  printf "%s\n" \
+    "Upgrading outdated packages..." \
+    'Would run `brew upgrade`'
+  waiter "$run_command"
+# COPY/PASTE END
+
+# print
+# # Want to output `cmd` without expansion
+# # Silence warning that backticks don't expand in single quotes.
+# # shellcheck disable=SC2016
+# printf "%s\n" \
+#   "Upgrading outdated packages..." \
+#   'Would run `brew upgrade`'
+# waiter "$run_command"
 
 gen_restart_list "brew" "${restart_list_brew[@]}"
 
@@ -646,6 +669,7 @@ repeat_command "$command_to_repeat" fallback_commands "$max_attempts"
 { set +x; }
 
 restarter "brew"
+fi
 waiter "$next_section"
 
 # Mac App Store
@@ -657,6 +681,7 @@ printf "%s\n" \
   "Listing outdated Mac App Store apps..." \
   'Would run `mas outdated`'
 waiter "$run_command"
+unset -v -- outie
 typeset outie
 outie="$(
   set -x
