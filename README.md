@@ -33,7 +33,6 @@ bbl
 
 - Use a configuration file to supply a list of GUI apps which should be quit prior to upgrading them and restarted after the upgrade is completed.
 - Remove extraneous code comments.
-- Only run `brew upgrade` if `brew outdated` reports something upgradable, similar to how `mas` is already handled in Babble.
 - Do not attempt to upgrade the terminal being used to run Babble itself.
 
 

@@ -574,78 +574,102 @@ print
 printf "%s\n" \
   "Listing installed packages which are outdated..." \
   'Would run `brew outdated`'
-# By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
 waiter "$run_command"
-set -x
-brew outdated --greedy-auto-updates --fetch-HEAD --verbose
-{ set +x; }
-waiter "$next_section"
+# set -x
+# # By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
+# brew outdated --greedy-auto-updates --fetch-HEAD --verbose
+# { set +x; }
+# waiter "$next_section"
 
-print
-# Want to output `cmd` without expansion
-# Silence warning that backticks don't expand in single quotes.
-# shellcheck disable=SC2016
-printf "%s\n" \
-  "Upgrading outdated packages..." \
-  'Would run `brew upgrade`'
-waiter "$run_command"
+# COPY/PASTE START
+unset -v -- outie
+typeset outie
+outie="$(
+  set -x
+  # By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
+  brew outdated --greedy-auto-updates --fetch-HEAD --verbose
+  { set +x; }
+)"
 
-gen_restart_list "brew" "${restart_list_brew[@]}"
-
-# Attempt to gracefully quit the running apps on the watchlist
-typeset -a outdated_tokens
-# outdated_tokens=($(brew info --cask --json=v2 --installed | jq -r '.casks[] | select(.outdated == true) | .token' | awk 'NF > 0'))
-# SC2207: Explicitly split command output instead of relying on shell globbing. Homebrew tokens should not pose a problem, but do it anyway to silence the shellcheck complaint.
-brew info --cask --json=v2 --installed | jq -r '.casks[] | select(.outdated == true) | .token' | awk 'NF > 0' | while IFS="" read -r line; do outdated_tokens+=("$line"); done
-if test "${#outdated_tokens[@]}" -gt 0; then
-  for token in "${outdated_tokens[@]}"; do
-    for bundleid in ${brew_token_bundle_array["$token"]}; do
-      if test -n "$bundleid"; then
-        quit_apps "$bundleid"
-      fi
-    done
-  done
-fi
-
-set -x
-# The following routine is due to https://github.com/orgs/Homebrew/discussions/5226
-function repeat_command {
-  typeset cmd="$1"
-  typeset fallback_func="$2"
-  typeset -i attempts="$3"
-  # Counter
-  typeset -i i=0
-
-  while [ "$i" -lt "$attempts" ]; do
-    if $cmd; then
-      break
-    else
-      $fallback_func
-      # [35m is magenta
-      printf 1>&2 "\001\033[35m\002%s\001\033[0m\002 \001\033[1;35m\002%u attempts remaining.\001\033[0m\002\n" \
-        "⨀=>" \
-        $((attempts - i))
-      i=$((i + 1))
-    fi
-  done
-}
-typeset command_to_repeat="brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times"
-function fallback_commands {
-  # Print a colored symbol (U+2A00) followed by normal text
-  # [36m is cyan
+if test -n "$outie"; then
+  printf "%s\n" "$outie"
+  waiter "$next_section"
+  print
   # Want to output `cmd` without expansion
   # Silence warning that backticks don't expand in single quotes.
   # shellcheck disable=SC2016
-  printf 1>&2 "\001\033[36m\002%s\001\033[0m\002 %s\n" \
-    "⨀=>" \
-    '`brew upgrade` encountered a problem. Cleaning cache...'
-  /bin/rm -rf "$HOME/Library/Caches/Homebrew/bootsnap"
-}
-typeset -i max_attempts=10
-repeat_command "$command_to_repeat" fallback_commands "$max_attempts"
-{ set +x; }
+  printf "%s\n" \
+    "Upgrading outdated packages..." \
+    'Would run `brew upgrade`'
+  waiter "$run_command"
+  # COPY/PASTE END
 
-restarter "brew"
+  # print
+  # # Want to output `cmd` without expansion
+  # # Silence warning that backticks don't expand in single quotes.
+  # # shellcheck disable=SC2016
+  # printf "%s\n" \
+  #   "Upgrading outdated packages..." \
+  #   'Would run `brew upgrade`'
+  # waiter "$run_command"
+
+  gen_restart_list "brew" "${restart_list_brew[@]}"
+
+  # Attempt to gracefully quit the running apps on the watchlist
+  typeset -a outdated_tokens
+  # outdated_tokens=($(brew info --cask --json=v2 --installed | jq -r '.casks[] | select(.outdated == true) | .token' | awk 'NF > 0'))
+  # SC2207: Explicitly split command output instead of relying on shell globbing. Homebrew tokens should not pose a problem, but do it anyway to silence the shellcheck complaint.
+  brew info --cask --json=v2 --installed | jq -r '.casks[] | select(.outdated == true) | .token' | awk 'NF > 0' | while IFS="" read -r line; do outdated_tokens+=("$line"); done
+  if test "${#outdated_tokens[@]}" -gt 0; then
+    for token in "${outdated_tokens[@]}"; do
+      for bundleid in ${brew_token_bundle_array["$token"]}; do
+        if test -n "$bundleid"; then
+          quit_apps "$bundleid"
+        fi
+      done
+    done
+  fi
+
+  set -x
+  # The following routine is due to https://github.com/orgs/Homebrew/discussions/5226
+  function repeat_command {
+    typeset cmd="$1"
+    typeset fallback_func="$2"
+    typeset -i attempts="$3"
+    # Counter
+    typeset -i i=0
+
+    while [ "$i" -lt "$attempts" ]; do
+      if $cmd; then
+        break
+      else
+        $fallback_func
+        # [35m is magenta
+        printf 1>&2 "\001\033[35m\002%s\001\033[0m\002 \001\033[1;35m\002%u attempts remaining.\001\033[0m\002\n" \
+          "⨀=>" \
+          $((attempts - i))
+        i=$((i + 1))
+      fi
+    done
+  }
+  typeset command_to_repeat="brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times"
+  function fallback_commands {
+    # Print a colored symbol (U+2A00) followed by normal text
+    # [36m is cyan
+    # Want to output `cmd` without expansion
+    # Silence warning that backticks don't expand in single quotes.
+    # shellcheck disable=SC2016
+    printf 1>&2 "\001\033[36m\002%s\001\033[0m\002 %s\n" \
+      "⨀=>" \
+      '`brew upgrade` encountered a problem. Cleaning cache...'
+    /bin/rm -rf "$HOME/Library/Caches/Homebrew/bootsnap"
+  }
+  typeset -i max_attempts=10
+  repeat_command "$command_to_repeat" fallback_commands "$max_attempts"
+  { set +x; }
+
+  restarter "brew"
+fi
 waiter "$next_section"
 
 # Mac App Store
@@ -657,6 +681,7 @@ printf "%s\n" \
   "Listing outdated Mac App Store apps..." \
   'Would run `mas outdated`'
 waiter "$run_command"
+unset -v -- outie
 typeset outie
 outie="$(
   set -x
