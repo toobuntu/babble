@@ -669,6 +669,9 @@ if test -n "$outie"; then
   { set +x; }
 
   restarter "brew"
+  print "The brew upgrade completed or encountered a fatal error..."
+else
+  print "There are no outdated apps to upgrade with Homebrew..."
 fi
 waiter "$next_section"
 
