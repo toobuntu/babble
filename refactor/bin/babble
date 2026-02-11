@@ -1,0 +1,163 @@
+#!/bin/bash
+
+# Refactored to align with "${HOMEBREW_PREFIX}/.vscode/ruby-lsp-activate.sh"
+# Purpose: Use the same Ruby interpreter as Homebrew.
+
+# trap 'echo -e "\033[31m❌ Error at ${BASH_SOURCE[0]} line $LINENO: Command [$BASH_COMMAND] exited with code $?\033[0m"' ERR
+
+# # This might be sourced from zsh, so support both
+# if [[ -n "${BASH_SOURCE[0]}" ]]; then
+#     SCRIPT_PATH="${BASH_SOURCE[0]}"
+# elif [[ -n "${ZSH_VERSION}" ]]; then
+#     # This is zsh-specific syntax.
+#     # shellcheck disable=SC2296
+#     SCRIPT_PATH="${(%):-%x}"
+# else
+#     SCRIPT_PATH="$0"
+# fi
+# printf "[debug] SCRIPT_PATH='%s'\n" "$SCRIPT_PATH" 1>&2
+
+# Function to initialize Homebrew environment variables
+initialize_homebrew() {
+  if command -v brew >/dev/null 2>&1; then
+    HOMEBREW_PREFIX="$(brew --prefix)" || {
+      echo "Error: 'brew --prefix' failed." >&2
+      exit 1
+    }
+    # HOMEBREW_LIBRARY="${HOMEBREW_PREFIX}/Library"
+
+    # Required for 'brew vendor-install'
+    # HOMEBREW_BREW_FILE="$(command -v brew 2> /dev/null)" || {
+    #   echo "Error: 'command -v brew' failed." >&2
+    #   exit 1
+    # }
+
+    # Required for utils/ruby.sh
+    # HOMEBREW_PATH="${HOMEBREW_PATH:-$PATH}"
+  fi
+}
+initialize_homebrew
+# HOMEBREW_PREFIX="$(cd "$(dirname "${SCRIPT_PATH}")"/../ && pwd)"
+# printf "[debug] HOMEBREW_PREFIX='%s'\n" "$HOMEBREW_PREFIX" 1>&2
+
+# These are used by the functions needed from utils/ruby.sh
+export HOMEBREW_BREW_FILE="${HOMEBREW_PREFIX}/bin/brew"
+export HOMEBREW_LIBRARY="${HOMEBREW_PREFIX}/Library"
+# export BUNDLE_WITH=""
+# export BUNDLE_WITH="style:typecheck"
+
+# shellcheck disable=SC1091
+. "${HOMEBREW_PREFIX}/Library/Homebrew/utils/ruby.sh"
+
+setup-ruby-path
+# printf "[debug] HOMEBREW_RUBY_PATH='%s'\n" "$HOMEBREW_RUBY_PATH" 1>&2
+# setup-gem-home-bundle-gemfile
+# ensure-bundle-dependencies
+
+# setup-ruby-path doesn't add Homebrew's ruby to PATH
+homebrew_ruby_bin="$(dirname "${HOMEBREW_RUBY_PATH}")"
+export PATH="${homebrew_ruby_bin}:${PATH}"
+
+# 
+# # Function to set platform-specific variables
+# set_platform_variables() {
+#   case "${OSTYPE}" in
+#     darwin*)
+#       HOMEBREW_SYSTEM="Darwin"
+#       HOMEBREW_MACOS="1"
+#       ;;
+#     linux*)
+#       HOMEBREW_SYSTEM="Linux"
+#       HOMEBREW_LINUX="1"
+#       ;;
+#     *)
+#       HOMEBREW_SYSTEM="$(uname -s)"
+#       ;;
+#   esac
+# }
+# 
+# # Function to source Ruby utilities and setup Ruby
+# setup_ruby() {
+#   if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]; then
+#     echo "HOMEBREW_FORCE_VENDOR_RUBY is set. Forcing Portable Ruby." >&2
+#   fi
+# 
+#   # Using `brew setup-ruby` will not work here because it does not
+#   # expose HOMEBREW_RUBY_PATH which is used here for the Ruby inter-
+#   # preter. Instead, call its homebrew-setup-ruby function directly.
+#   if [ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/setup-ruby.sh" ]; then
+#     . "${HOMEBREW_LIBRARY}/Homebrew/cmd/setup-ruby.sh"
+#     # cmd/setup-ruby.sh: Installs and configures Homebrew's Ruby. If
+#     # `command` is passed, it will only run Bundler if necessary for
+#     # that command. It is intended to be run to ensure that the next
+#     # invocation of brew will not need to try to install Ruby or
+#     # Bundler gems.
+#     # * homebrew-setup-ruby() in cmd/setup-ruby.sh:
+#     #   * Sources utils/helpers.sh for odie(), which is used for error
+#     #     handling in utils/ruby.sh.
+#     #   * Sources utils/ruby.sh and calls its setup-ruby-path()
+#     #     function to set HOMEBREW_RUBY_PATH.
+#     #   * Installs Bundler gems if HOMEBREW_DEVELOPER is set and a
+#     #     developer command requiring gems is provided as an argument.
+#     # * Below, HOMEBREW_DEVELOPER is temporarily unset to prevent
+#     #   Bundler setup, because the commands being executed require only
+#     #   a base Ruby environment, without third party gems.
+#     # * NOTE: setup-ruby-path() in utils/ruby.sh may return exit
+#     #   code 1 due to internal logic (e.g., outdated system Ruby), but
+#     #   Homebrew does not check this exit status in its callers
+#     #   (homebrew-setup-ruby() and brew.sh). What matters is that
+#     #   HOMEBREW_RUBY_PATH gets set up correctly.
+#     HOMEBREW_DEVELOPER="" homebrew-setup-ruby || {
+#       echo -e "\033[31mFatal error: Ruby setup failed\033[0m" >&2
+#       exit 1
+#     }
+#     # setup_status=$?
+#     # echo "HOMEBREW_RUBY_PATH after homebrew-setup-ruby() in cmd/setup-ruby.sh: $HOMEBREW_RUBY_PATH" >&2
+#     # echo "homebrew-setup-ruby() in cmd/setup-ruby.sh exit status: $setup_status" >&2
+#   else
+#     echo "Error: cmd/setup-ruby.sh not found." >&2
+#     exit 1
+#   fi
+# 
+#   # HOMEBREW_RUBY_PATH set by utils/ruby.sh
+#   # shellcheck disable=SC2154
+#   if [[ -z "${HOMEBREW_RUBY_PATH}" || ! -x "${HOMEBREW_RUBY_PATH}" ]]; then
+#     echo "Installing Homebrew's Portable Ruby..." >&2
+#     brew vendor-install ruby || {
+#       echo "Error: Failed to install Homebrew's Portable Ruby!" >&2
+#       exit 1
+#     }
+#   fi
+# }
+# 
+# Function to execute Ruby with the correct interpreter
+execute_ruby() {
+  # From brew.sh
+
+  if [[ -z "${HOMEBREW_DEVELOPER}" ]]; then
+    # Don't allow non-developers to customise Ruby warnings.
+    unset HOMEBREW_RUBY_WARNINGS
+  fi
+
+  if [[ -z "${HOMEBREW_RUBY_WARNINGS}" ]]; then
+  # HOMEBREW_RUBY_WARNINGS="${HOMEBREW_RUBY_WARNINGS:-"-W1"}"
+    export HOMEBREW_RUBY_WARNINGS="-W1"
+  fi
+
+  # HOMEBREW_RUBY_DISABLE_OPTIONS set by utils/ruby.sh
+  # shellcheck disable=SC2154
+  exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" "$@"
+}
+execute_ruby "$@"
+# 
+# # Main function to call all other functions
+# main() {
+#   initialize_homebrew
+#   set_platform_variables
+#   setup_ruby "${1:-}"
+#   # echo "DEBUG: HOMEBREW_RUBY_PATH after setup-ruby in main(): $HOMEBREW_RUBY_PATH" >&2
+#   execute_ruby "$@"
+# }
+# 
+# # Entry point
+# main "$@"

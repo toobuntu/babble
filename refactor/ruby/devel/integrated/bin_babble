@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# This is a wrapper for Ruby. Its purpose is to use the same Ruby
+# interpreter that is used by Homebrew. In most cases, that will be
+# Homebrew's vendored portable-ruby v3.3+ (as of 28 Mar 2025).
+
+if command -v brew >/dev/null 2>&1; then
+  # HOMEBREW_LIBRARY must be set before sourcing utils.sh.
+  HOMEBREW_PREFIX="$(brew --prefix)"
+  HOMEBREW_LIBRARY="${HOMEBREW_PREFIX}/Library"
+fi
+
+# If HOMEBREW_PATH is not set, default to the current PATH
+HOMEBREW_PATH="${HOMEBREW_PATH:-$PATH}"
+
+# Set platform-specific variables
+case "${OSTYPE}" in
+  darwin*)
+    HOMEBREW_SYSTEM="Darwin"
+    HOMEBREW_MACOS="1"
+    ;;
+  linux*)
+    HOMEBREW_SYSTEM="Linux"
+    HOMEBREW_LINUX="1"
+    ;;
+  *)
+    HOMEBREW_SYSTEM="$(uname -s)"
+    ;;
+esac
+
+# Source Homebrew helpers
+if [ -f "${HOMEBREW_LIBRARY}/Homebrew/utils/helpers.sh" ]; then
+  . "${HOMEBREW_LIBRARY}/Homebrew/utils/helpers.sh"
+else
+  echo "Error: utils/helpers.sh not found." >&2
+  exit 1
+fi
+
+# Source Ruby utilities and setup Ruby
+if [ -f "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh" ]; then
+  . "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
+else
+  echo "Error: utils/ruby.sh not found." >&2
+  exit 1
+fi
+
+# Respect HOMEBREW_FORCE_VENDOR_RUBY from the environment
+# HOMEBREW_FORCE_VENDOR_RUBY is checked in setup-ruby-path in utils/ruby.sh
+if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]; then
+  echo "HOMEBREW_FORCE_VENDOR_RUBY is set. Forcing Portable Ruby." >&2
+fi
+
+if ! setup-ruby-path; then
+  echo "setup-ruby-path failed." >&2
+  : # Allow setup-ruby-path to fail gracefully
+fi
+
+# Debug setup-ruby-path execution
+# echo "Debug: HOMEBREW_RUBY_PATH=${HOMEBREW_RUBY_PATH}"
+
+# Initialize Ruby warnings
+unset HOMEBREW_RUBY_WARNINGS
+if [[ -z "${HOMEBREW_RUBY_WARNINGS}" ]]; then
+  export HOMEBREW_RUBY_WARNINGS="-W1"
+fi
+
+# Execute Ruby with the correct interpreter
+# Pass HOMEBREW_RUBY_DISABLE_OPTIONS as is, respecting user environment
+exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" "$@"
+
+# if command -v ruby >/dev/null 2>&1; then
+#   exec ruby myapp "$@"
+# else
+#   echo "Error: Ruby not found. Please install Ruby." >&2
+#   exit 1
+# fi

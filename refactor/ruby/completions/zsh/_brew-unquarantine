@@ -1,0 +1,16 @@
+# _brew-unquarantine
+
+#compdef brew-unquarantine
+
+_brew_unquarantine() {
+  local -a tokens
+  tokens=(${(f)"$(ls /opt/homebrew/Caskroom 2>/dev/null)"})
+
+  _arguments -s \\
+    '--status[Check quarantine status only]' \\
+    '--debug[Enable debug output]' \\
+    '--help[Show help]' \\
+    '1:token:->tokens' && _values 'installed casks' $tokens
+}
+
+_brew_unquarantine "$@"

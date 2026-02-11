@@ -1,0 +1,81 @@
+import Cocoa
+
+// Function to print errors to stderr
+func printError(_ message: String) {
+    if let data = "\(message)\n".data(using: .utf8) {
+        FileHandle.standardError.write(data)
+    }
+}
+
+// Ensure exactly 2 arguments are provided: app_name, icon_choice
+guard CommandLine.arguments.count == 3 else {
+    printError("Usage: update_dialog <app_name> <icon_choice>")
+    printError("<icon_choice>: 'brew' | 'mas' | <file_path>")
+    exit(1)
+}
+
+let appName = CommandLine.arguments[1]
+let iconChoice = CommandLine.arguments[2]
+
+// Create the alert
+let alert = NSAlert()
+alert.messageText = "\(appName) cannot be open during installation."
+alert.informativeText = "Click Continue to quit \"\(appName)\" and begin the update. The application will open when the update is complete."
+alert.alertStyle = .warning
+
+// Determine icon based on choice
+switch iconChoice {
+case "mas":
+    alert.icon = NSImage(byReferencingFile: "/System/Applications/App Store.app/Contents/Resources/AppIcon.icns")
+    if let iconSize = alert.icon?.size {
+        printError("Icon size being displayed: \(iconSize.width) × \(iconSize.height) pixels")
+    }
+case "brew":
+    let homebrewPath = "/opt/homebrew/package/resources/Homebrew.png"
+    if FileManager.default.fileExists(atPath: homebrewPath) {
+        printError("Loading the PNG file.")
+    }
+        // Load the PNG and resize it to 128 × 128 pixels
+        if let originalImage = NSImage(byReferencingFile: homebrewPath) {
+            let resizedImage = NSImage(size: NSSize(width: 128, height: 128))
+            resizedImage.lockFocus()
+            originalImage.draw(in: NSRect(x: 0, y: 0, width: 128, height: 128))
+            resizedImage.unlockFocus()
+            alert.icon = resizedImage
+            if let iconSize = alert.icon?.size {
+                printError("Icon size being displayed: \(iconSize.width) × \(iconSize.height) pixels")
+            }
+        } else {
+            printError("Failed to load the PNG file.")
+        }
+    } else {
+        // Use the 🍺 emoji fallback as previously discussed
+        let targetSize = NSSize(width: 128, height: 128)
+        let emojiImage = NSImage(size: targetSize)
+        emojiImage.lockFocus()
+        NSString(string: "\u{1F37A}").draw(
+            in: NSRect(origin: .zero, size: targetSize),
+            withAttributes: [.font: NSFont.systemFont(ofSize: 100)]
+        )
+        emojiImage.unlockFocus()
+        alert.icon = emojiImage
+        if let iconSize = alert.icon?.size {
+            printError("Icon size being displayed: \(iconSize.width) × \(iconSize.height) pixels")
+        }
+    }
+default:
+    if FileManager.default.fileExists(atPath: iconChoice) {
+        alert.icon = NSImage(byReferencingFile: iconChoice)
+    } else {
+        // Print warning if the custom path is invalid
+        printError("Warning: Icon path '\(iconChoice)' is invalid or inaccessible. Proceeding without an icon.")
+    }
+}
+
+// Add system-localized buttons
+alert.addButton(withTitle: NSLocalizedString("Cancel", comment: ""))
+alert.addButton(withTitle: NSLocalizedString("Continue", comment: ""))
+
+// Run the dialog and handle the response
+let response = alert.runModal()
+exit(response == .alertSecondButtonReturn ? 0 : 1)

@@ -1,0 +1,17 @@
+# brew-unquarantine completion
+
+_brew_unquarantine() {
+  local cur opts tokens
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--status --debug --help"
+
+  if [[ ${COMP_CWORD} -eq 1 ]]; then
+    tokens=$(ls /opt/homebrew/Caskroom 2>/dev/null)
+    COMPREPLY=( $(compgen -W "${tokens}" -- "$cur") )
+  else
+    COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
+  fi
+}
+
+complete -F _brew_unquarantine brew-unquarantine

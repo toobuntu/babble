@@ -1,0 +1,127 @@
+* add validation to bash entry point that the file to be executed exists and is executable, else print an error
+* add bypass_gatekeeper
+* add do not upgrade a formula which is running, such as vim
+* add do not upgrade an app which is running (e.g., iTerm2)
+
+brew list
+brew outdated
+mas list
+mas outdated
+
+Ruby
+terminal_emulator = ENV["TERM_PROGRAM"]
+puts "Terminal Emulator: #{terminal_emulator}"
+
+resolve_cask_paths.sh:
+# readlink `-f` was introduced in macOS 12.3 Monterey.
+/usr/bin/find "$(brew --caskroom)/$token" \
+  -mindepth 2 -maxdepth 2 \
+  \( -type l -o -type d \) \
+  -iname '*.app' \
+  -execdir /bin/ksh -c '
+    resolved="$(readlink -f "$1")"
+    [ -d "$resolved" ] && [ -f "$resolved/Contents/Info.plist" ] &&
+    print "$resolved"
+' _ {} \; | xargs -I % /bin/ksh -c '
+/usr/bin/sudo /usr/bin/xattr -d -r com.apple.provenance %
+/usr/bin/sudo /usr/bin/xattr -d -r com.apple.quarantine %
+'
+
+
+token="adobe-acrobat-reader"
+brew info --json=v2 --casks --installed | jq --raw-output --arg token "$token" '
+  .casks[] |
+  select(.token == $token) |
+  .artifacts[]? |
+  (.uninstall[]?.quit? | if type == "array" then .[] else . end),
+  (.app[]?),
+  (.uninstall[]?.delete? | if type == "array" then .[] else . end | select(.? and test("\\.app$")))
+'
+brew info --json=v2 --casks --installed | jq --arg token "$token" '
+  .casks[] |
+  select(.token == $token) |
+  .artifacts[]? |
+  (.uninstall[]?.quit? | if type == "array" then .[] elif type == "string" then . end | "Quit processes: " + .),
+  (.app[]? | "App files: " + .),
+  (.uninstall[]?.delete? | if type == "array" then .[] elif type == "string" then . end | select(.? and . != null and test("\\.app$")) | "Delete paths ending with .app: " + .)
+'
+jq '
+  [ .. | select(type == "object" and has("appdir")) | .appdir |
+    select(. != null and type == "string")
+  ] |
+  unique |
+  .[] | "appdir: " + .
+' "$(brew --caskroom)/$token/.metadata/config.json"
+# jq '
+  [.explicit?.appdir?, .env?.appdir?, .default?.appdir?] |
+  map(select(. != null)) |
+  unique |
+  "appdir: " + .[]
+' "$(brew --caskroom)/$token/.metadata/config.json"
+unset -v token
+
+
+# To determine if an application is running before attempting to upgrade it in a Ruby program, here are some approaches you could consider:
+
+# Combine MAS and Brew Logic
+brew_token = "zoom-us"
+mas_app_name = "Zoom.us"
+
+processes = `ps x`
+brew_normalized = brew_token.downcase.gsub(/\s+/, "-")
+mas_regex = Regexp.new(Regexp.escape(mas_app_name).gsub(" ", ".*"), Regexp::IGNORECASE)
+
+if processes.include?(brew_normalized) || processes.match?(mas_regex)
+  puts "#{brew_token} or #{mas_app_name} is running."
+else
+  puts "#{brew_token} or #{mas_app_name} is not running."
+end
+
+
+# OR
+# Normalize Brew Tokens for Matching
+brew_token = "zoom-us" # Example token from brew list
+processes = `ps x`.downcase.gsub(/\s+/, "-") # Normalize output to match brew token format
+
+if processes.include?(brew_token)
+  puts "#{brew_token} is running."
+else
+  puts "#{brew_token} is not running."
+end
+
+# Flexible MAS Matching
+app_name = "Zoom.us"
+processes = `ps x`
+
+regex = Regexp.new(Regexp.escape(app_name).gsub(" ", ".*"), Regexp::IGNORECASE) # Handle spaces and casing
+if processes.match?(regex)
+  puts "#{app_name} is running."
+else
+  puts "#{app_name} is not running."
+end
+
+# OR
+# Use pgrep to match the process name or command-line arguments without requiring the full path
+app_name = "zoom.us"
+if system("pgrep -f #{app_name}")
+  puts "#{app_name} is running."
+else
+  puts "#{app_name} is not running."
+end
+
+# OR
+# Dynamic Path Resolution
+app_name = "zoom.us"
+common_path = "/Applications/#{app_name}.app"
+if system("ps x").stdout.match?(common_path)
+  puts "#{app_name} is running."
+else
+  puts "#{app_name} is not running."
+end
+
+
+* refactor brew_upgrade to split out config_manager
+* reuse config_manager in mas_update
+* add waiter/UI to brew and mas
+* add entry point to the ruby utils for the bash caller
+* integrate GUI swift/quit_alert?
