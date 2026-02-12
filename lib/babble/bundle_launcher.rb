@@ -51,7 +51,7 @@ module Babble
         raise "invalid bundle id" unless raw
 
         id = raw.to_s.gsub(/[[:cntrl:]]/, "").strip
-        raise "invalid bundle id" unless /\A[a-z0-9_.-]+(?:\.[a-z0-9_.-]+)+\z/i.match?(id)
+        raise "invalid bundle id" unless /\A[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?(?:\.[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?)+\z/i.match?(id)
 
         id
       end
