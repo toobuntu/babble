@@ -23,4 +23,4 @@ function shell_style {
   shellcheck "$@"
 }
 
-shell_style bbl script/*
+shell_style bbl script/* bin/babble

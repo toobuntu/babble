@@ -1,0 +1,28 @@
+# Cache directory
+.cache/
+
+# Compiled binaries
+*.o
+*.a
+*.dylib
+*.so
+
+# macOS
+.DS_Store
+._*
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Ruby
+*.gem
+.bundle/
+vendor/bundle/
+
+# Temp files
+*.tmp
+*.bak
