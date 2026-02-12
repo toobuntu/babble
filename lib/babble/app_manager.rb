@@ -4,11 +4,12 @@
 require "open3"
 require "json"
 require "fileutils"
+require_relative "constants"
 require_relative "bundle_launcher"
 
 module Babble
   class AppManager
-    SWIFT_CACHE_DIR = File.expand_path("~/.cache/babble")
+    SWIFT_CACHE_DIR = CACHE_DIR
     QUIT_ALERT_BINARY = File.join(SWIFT_CACHE_DIR, "quit_alert")
 
     class << self

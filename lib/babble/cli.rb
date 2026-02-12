@@ -24,9 +24,9 @@ module Babble
       def find_config_file
         script_dir = File.expand_path("..", __dir__)
         repo_root = File.expand_path("../..", script_dir)
-        
+
         config_file = File.join(repo_root, "config", "apps.yml")
-        
+
         return config_file if File.exist?(config_file)
 
         File.join(script_dir, "config", "apps.yml")

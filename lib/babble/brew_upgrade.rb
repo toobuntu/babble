@@ -4,6 +4,7 @@
 require "json"
 require "open3"
 require "fileutils"
+require_relative "constants"
 require_relative "config_manager"
 require_relative "app_manager"
 require_relative "quarantine_purger"
@@ -42,7 +43,7 @@ module Babble
 
         puts "\nPreparing to upgrade all outdated packages..."
         Waiter.waiter("run_command", continuation_message: "Upgrading outdated packages...")
-        
+
         upgrade_packages
 
         if apps_to_manage.any?
@@ -55,7 +56,7 @@ module Babble
       private
 
       def update_if_needed
-        last_update_file = File.expand_path("~/.cache/babble/last_brew_update")
+        last_update_file = File.join(CACHE_DIR, "last_brew_update")
         
         if !File.exist?(last_update_file) || (Time.now - File.mtime(last_update_file)) > 3600
           puts "Updating Homebrew..."
@@ -148,7 +149,7 @@ module Babble
 
             app_name = entry["token"].split("-").map(&:capitalize).join(" ")
             puts "Reopening #{app_name}..."
-            
+
             AppManager.reopen_app(bundle_id, timeout: 10)
             sleep 0.5
           end
