@@ -1,0 +1,85 @@
+#!/bin/bash
+# Bash wrapper to execute Ruby orchestrator using Homebrew's portable Ruby
+#
+# This wrapper:
+# - Finds Homebrew and exports required variables
+# - Loads brew.env configuration files
+# - Sources Homebrew's utils/ruby.sh to find HOMEBREW_RUBY_PATH
+# - Execs the Ruby orchestrator with full environment
+
+set -euo pipefail
+
+# Load a single brew.env file (simplified from bin/brew)
+load_env_file() {
+  [[ -r "$1" ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Only HOMEBREW_* vars (matching bin/brew regex)
+    [[ "${line}" =~ ^(HOMEBREW_|SUDO_ASKPASS=|(all|no|ftp|https?)_proxy=) ]] || continue
+    
+    # Don't override what we set
+    case "${line%%=*}" in
+      HOMEBREW_PREFIX|HOMEBREW_LIBRARY|HOMEBREW_BREW_FILE) continue ;;
+    esac
+    
+    export "${line}"
+  done < "$1"
+}
+
+# Find Homebrew and export required variables
+initialize_homebrew() {
+  HOMEBREW_PREFIX="$(brew --prefix)" || exit 1
+  export HOMEBREW_PREFIX
+  export HOMEBREW_BREW_FILE="${HOMEBREW_PREFIX}/bin/brew"
+  export HOMEBREW_LIBRARY="${HOMEBREW_PREFIX}/Library"
+}
+
+# Load brew.env files (same order as bin/brew)
+load_homebrew_env_files() {
+  load_env_file "/etc/homebrew/brew.env"
+  [[ -n "${HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY:-}" ]] && SYS_PRIORITY=1
+  load_env_file "${HOMEBREW_PREFIX}/etc/homebrew/brew.env"
+  if [[ -n "${XDG_CONFIG_HOME:-}" ]]; then
+    load_env_file "${XDG_CONFIG_HOME}/homebrew/brew.env"
+  else
+    load_env_file "${HOME}/.homebrew/brew.env"
+  fi
+  [[ -n "${SYS_PRIORITY:-}" ]] && load_env_file "/etc/homebrew/brew.env"
+}
+
+# Get Homebrew's Ruby (technique from .vscode/ruby-lsp-activate.sh)
+setup_ruby() {
+  # shellcheck disable=SC1091
+  . "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
+  setup-ruby-path
+}
+
+# Execute with Homebrew's Ruby
+execute_ruby() {
+  # Handle Ruby warnings (from brew.sh)
+  [[ -z "${HOMEBREW_DEVELOPER:-}" ]] && unset HOMEBREW_RUBY_WARNINGS
+
+  # Find the Ruby CLI entry point relative to this script
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  ruby_cli="${script_dir}/../lib/babble/cli.rb"
+
+  exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS:-"-W1"}" \
+       "${HOMEBREW_RUBY_DISABLE_OPTIONS}" "${ruby_cli}" "$@"
+}
+
+# Main orchestration
+main() {
+  # Step 1: Find Homebrew and export core variables
+  initialize_homebrew
+
+  # Step 2: Load brew.env files (now that we have HOMEBREW_PREFIX)
+  load_homebrew_env_files
+
+  # Step 3: Setup Homebrew's Ruby path
+  setup_ruby
+
+  # Step 4: Execute the Ruby script with full environment
+  execute_ruby "$@"
+}
+
+# Entry point
+main "$@"
