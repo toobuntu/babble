@@ -23,6 +23,12 @@ curl --silent "https://raw.githubusercontent.com/toobuntu/babble/main/bbl" --out
 
 Change `<path>` to the path of your choice. `"$HOME/Downloads"`, `"$HOME/bin"` and `"$HOME/devel"` are all common possibilities.
 
+## Features
+
+- **Automatic Terminal Detection**: Babble automatically detects the terminal application (iTerm2, Terminal.app, Alacritty, etc.) it's running in and excludes it from upgrades to prevent disruption.
+- **Smart App Restart**: Automatically quits and restarts designated apps after upgrade to ensure smooth updates.
+- **Comprehensive Upgrades**: Updates Homebrew packages, Mac App Store apps, and macOS system updates in one convenient routine.
+
 ## Usage
 
 ```sh
@@ -33,7 +39,6 @@ bbl
 
 - Use a configuration file to supply a list of GUI apps which should be quit prior to upgrading them and restarted after the upgrade is completed.
 - Remove extraneous code comments.
-- Do not attempt to upgrade the terminal being used to run Babble itself.
 
 
 ---
