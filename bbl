@@ -232,6 +232,20 @@ typeset -A brew_token_bundle_array=(
   [stretchly]=net.hovancik.stretchly
 )
 
+# Define the mapping of terminal bundle IDs to Homebrew cask tokens
+typeset -A terminal_bundle_to_token=(
+  [com.apple.Terminal]=terminal
+  [com.googlecode.iterm2]=iterm2
+  [io.alacritty]=alacritty
+  [net.kovidgoyal.kitty]=kitty
+  [com.github.wez.wezterm]=wezterm
+  [co.zeit.hyper]=hyper
+  [org.gnu.Emacs]=emacs
+  [org.vim.MacVim]=macvim
+  [com.microsoft.VSCode]=visual-studio-code
+  [com.vscodium]=vscodium
+)
+
 typeset -a restart_list_mas
 restart_list_mas=(
   iapp.monitorcontrol.MonitorControlLite
@@ -264,6 +278,86 @@ function quit_apps {
       quit app id \"$bundle_id\"
     end if
     "
+}
+
+function detect_running_terminal {
+  # Detect the terminal application running Babble
+  # Returns the Homebrew cask token for the terminal, if found
+  typeset terminal_bundle_id=""
+  typeset terminal_token=""
+  
+  # Method 1: Check TERM_PROGRAM environment variable (works for many modern terminals)
+  if test -n "${TERM_PROGRAM}"; then
+    case "${TERM_PROGRAM}" in
+      "Apple_Terminal")
+        terminal_bundle_id="com.apple.Terminal"
+        ;;
+      "iTerm.app")
+        terminal_bundle_id="com.googlecode.iterm2"
+        ;;
+      "Alacritty")
+        terminal_bundle_id="io.alacritty"
+        ;;
+      "WezTerm")
+        terminal_bundle_id="com.github.wez.wezterm"
+        ;;
+      "Hyper")
+        terminal_bundle_id="co.zeit.hyper"
+        ;;
+      "vscode")
+        terminal_bundle_id="com.microsoft.VSCode"
+        ;;
+      *)
+        # Unknown terminal, will try process tree traversal
+        ;;
+    esac
+  fi
+  
+  # Method 2: Walk up the process tree to find a .app bundle
+  # This is a fallback if TERM_PROGRAM is not set or not recognized
+  if test -z "$terminal_bundle_id"; then
+    typeset current_pid=$$
+    typeset parent_pid
+    typeset proc_path
+    
+    # Walk up to 20 levels to find the terminal app
+    typeset -i level=0
+    while test "$level" -lt 20 && test "$current_pid" -gt 1; do
+      parent_pid=$(ps -p "$current_pid" -o ppid= 2>/dev/null | tr -d ' ')
+      if test -z "$parent_pid" || test "$parent_pid" = "1"; then
+        break
+      fi
+      
+      # Get the executable path of the parent process
+      proc_path=$(ps -p "$parent_pid" -o comm= 2>/dev/null)
+      
+      # Check if this is inside a .app bundle
+      if test -n "$proc_path" && echo "$proc_path" | grep -q '\.app/'; then
+        # Extract the .app path and get its bundle identifier
+        typeset app_path
+        app_path=$(echo "$proc_path" | sed 's/\(.*\.app\).*/\1/')
+        
+        if test -f "${app_path}/Contents/Info.plist"; then
+          # Use PlistBuddy to extract the bundle identifier
+          terminal_bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "${app_path}/Contents/Info.plist" 2>/dev/null)
+          if test -n "$terminal_bundle_id"; then
+            break
+          fi
+        fi
+      fi
+      
+      current_pid="$parent_pid"
+      level=$((level + 1))
+    done
+  fi
+  
+  # Map the bundle ID to a Homebrew cask token
+  if test -n "$terminal_bundle_id"; then
+    terminal_token="${terminal_bundle_to_token[$terminal_bundle_id]}"
+  fi
+  
+  # Return the token (may be empty if not found)
+  print "$terminal_token"
 }
 
 function gen_restart_list {
@@ -604,14 +698,18 @@ if test -n "$outie"; then
   waiter "$run_command"
   # COPY/PASTE END
 
-  # print
-  # # Want to output `cmd` without expansion
-  # # Silence warning that backticks don't expand in single quotes.
-  # # shellcheck disable=SC2016
-  # printf "%s\n" \
-  #   "Upgrading outdated packages..." \
-  #   'Would run `brew upgrade`'
-  # waiter "$run_command"
+  # Detect and exclude the running terminal from upgrade
+  typeset running_terminal_token
+  running_terminal_token="$(detect_running_terminal)"
+  if test -n "$running_terminal_token"; then
+    # Print a colored alert arrow followed by normal text
+    # [36m is cyan
+    printf 1>&2 "\001\033[36m\002%s\001\033[0m\002 %s\n" \
+      "⨀=>" \
+      "Detected running terminal: $running_terminal_token"
+    printf 1>&2 "%2s%s\n" "" "This terminal will be excluded from the upgrade to avoid disruption."
+    print
+  fi
 
   gen_restart_list "brew" "${restart_list_brew[@]}"
 
@@ -652,7 +750,12 @@ if test -n "$outie"; then
       fi
     done
   }
-  typeset command_to_repeat="brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times"
+  typeset command_to_repeat
+  if test -n "$running_terminal_token"; then
+    command_to_repeat="brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times --except=$running_terminal_token"
+  else
+    command_to_repeat="brew upgrade --greedy-auto-updates --fetch-HEAD --no-quarantine --display-times"
+  fi
   function fallback_commands {
     # Print a colored symbol (U+2A00) followed by normal text
     # [36m is cyan
