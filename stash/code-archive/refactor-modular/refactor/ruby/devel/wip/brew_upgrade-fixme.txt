@@ -1,0 +1,60 @@
+bash ./refactor/bin/babble ./refactor/ruby/lib/brew_upgrade.rb 2> /dev/null
+
+Mon Apr 14 23:05:03 EDT 2025
+All Bundle ID validation tests passed.
+All Homebrew token validation tests passed.
+
+Listing installed packages which are outdated...
+Would run `brew outdated`
+--> Run command: Press Space bar to continue, or Ctrl-C to exit.
+Continuing...
+Outdated packages:
+boost (1.87.0_1) < 1.88.0
+stats (2.11.39) != 2.11.40
+Proceeding with upgrades...
+The following casks are scheduled for upgrade and will require quitting/reopening:
+  stats
+Quitting eu.exelban.Stats...
+Successfully quit application: eu.exelban.Stats
+Upgrading all outdated packages...
+
+Upgrading outdated packages...
+Would run `brew upgrade`
+--> Run command: Press Space bar to continue, or Ctrl-C to exit.
+Continuing...
+==> Upgrading 2 outdated packages:
+boost 1.87.0_1 -> 1.88.0
+==> Downloading https://ghcr.io/v2/homebrew/core/boost/manifests/1.88.0
+==> Fetching boost
+==> Downloading https://ghcr.io/v2/homebrew/core/boost/blobs/sha256:40110dc77bd85db9
+==> Verifying attestation for boost
+==> Upgrading boost
+  1.87.0_1 -> 1.88.0
+==> Pouring boost--1.88.0.arm64_sequoia.bottle.tar.gz
+🫧  /opt/homebrew/Cellar/boost/1.88.0: 16,266 files, 346.2MB
+==> Running `brew cleanup boost`...
+Removing: /opt/homebrew/Cellar/boost/1.87.0_1... (16,155 files, 345.3MB)
+Removing: /Users/<user>/Library/Caches/Homebrew/boost_bottle_manifest--1.87.0_1... (27.6KB)
+Removing: /Users/<user>/Caches/Homebrew/boost--1.87.0_1... (59MB)
+==> Casks with 'version :latest' will not be upgraded; pass `--greedy-latest` to upg
+==> Upgrading 1 outdated package:
+stats 2.11.39 -> 2.11.40
+==> Upgrading stats
+==> Downloading https://github.com/exelban/stats/releases/download/v2.11.40/Stats.dm
+==> Downloading from https://objects.githubusercontent.com/github-production-release
+==> Backing App 'Stats.app' up to '/opt/homebrew/Caskroom/stats/2.11.39/Stats.app'
+==> Removing App '/Applications/Stats.app'
+==> Moving App 'Stats.app' to '/Applications/Stats.app'
+==> Purging files for version 2.11.39 of Cask stats
+🫧  stats was successfully upgraded!
+==> `brew cleanup` has not been run in the last 1 days, running now...
+Removing: /Users/<user>/Library/Caches/Homebrew/Cask/stats--2.11.39.dmg... (6.6MB)
+Removing: /Users/<user>/Library/Caches/Homebrew/bootsnap/9e755130333c2bce79d139988ba7cde929c857c484cec3993b05d94d7458623d... (1,931 files, 13.6MB)
+Pruned 0 symbolic links and 2 directories from /opt/homebrew
+==> Installation times
+boost                     5.059 s
+stats                     4.628 s
+Reopening eu.exelban.Stats...
+Upgrade process complete.
+Reopened necessary applications after upgrade.
+Mon Apr 14 23:08:49 EDT 2025

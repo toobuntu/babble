@@ -1,0 +1,145 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Purpose: Use the same Ruby interpreter as Homebrew.
+
+trap 'echo "❌ Error at line $LINENO: Command [$BASH_COMMAND] exited with code $?"' ERR
+
+# Function to initialize Homebrew environment variables
+initialize_homebrew() {
+  if command -v brew >/dev/null 2>&1; then
+    # HOMEBREW_LIBRARY must be set before sourcing utils.sh.
+    HOMEBREW_PREFIX="$(brew --prefix)"
+    HOMEBREW_LIBRARY="${HOMEBREW_PREFIX}/Library"
+
+    # Required for `brew vendor-install`
+    HOMEBREW_BREW_FILE="$(command -v brew 2> /dev/null)"
+  fi
+  HOMEBREW_PATH="${HOMEBREW_PATH:-$PATH}"
+}
+
+# Function to set platform-specific variables
+set_platform_variables() {
+  case "${OSTYPE}" in
+    darwin*)
+      HOMEBREW_SYSTEM="Darwin"
+      HOMEBREW_MACOS="1"
+      ;;
+    linux*)
+      HOMEBREW_SYSTEM="Linux"
+      HOMEBREW_LINUX="1"
+      ;;
+    *)
+      HOMEBREW_SYSTEM="$(uname -s)"
+      ;;
+  esac
+}
+
+# Function to source Homebrew helpers
+source_homebrew_helpers() {
+  # if [ -f "${HOMEBREW_REPO}/bin/brew" ]; then
+  #   . "${HOMEBREW_REPO}/bin/brew"
+  # else
+  #   echo "Error: bin/brew not found." >&2
+  #   exit 1
+  # fi
+
+  # Set ohai and opoo, which are required for XXX
+  if [ -f "${HOMEBREW_LIBRARY}/Homebrew/utils/helpers.sh" ]; then
+    . "${HOMEBREW_LIBRARY}/Homebrew/utils/helpers.sh"
+  else
+    echo "Error: utils/helpers.sh not found." >&2
+    exit 1
+  fi
+}
+
+# Function to source Ruby utilities and setup Ruby
+setup_ruby() {
+  if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]; then
+    echo "HOMEBREW_FORCE_VENDOR_RUBY is set. Forcing Portable Ruby." >&2
+  fi
+
+  # HOMEBREW_COMMAND="--version"
+  . "${HOMEBREW_LIBRARY}/Homebrew/cmd/setup-ruby.sh"
+  HOMEBREW_DEVELOPER= homebrew-setup-ruby
+  setup_status=$?
+  echo "HOMEBREW_RUBY_PATH after homebrew-setup-ruby() in cmd/setup-ruby.sh: $HOMEBREW_RUBY_PATH"
+  echo "homebrew-setup-ruby() in setup-ruby.sh exit status: $setup_status" >&2
+
+  ## if [ -f "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh" ]; then
+  ##   echo "Sourcing ${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh" >&2
+  ##   . "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
+  ## else
+  ##   echo "Error: utils/ruby.sh not found." >&2
+  ##   exit 1
+  ## fi
+
+  ## # Debugging before calling setup-ruby-path
+  ## echo "Running setup-ruby-path..." >&2
+  ## echo "Current PATH: $PATH" >&2
+  ## echo "HOMEBREW_PREFIX: $HOMEBREW_PREFIX" >&2
+  ## echo "HOMEBREW_LIBRARY: $HOMEBREW_LIBRARY" >&2
+
+  ## export PS4='+${BASH_SOURCE}:${LINENO}: '
+  ## set -x  # Enable shell debug mode to trace execution
+  ## unset HOMEBREW_DEVELOPER
+  ## setup-ruby-path
+  ## setup_status=$?
+  ## set +x  # Disable debug mode
+
+  ## echo "HOMEBREW_RUBY_PATH after setup-ruby-path: $HOMEBREW_RUBY_PATH"
+  ## echo "setup-ruby-path exit status: $setup_status" >&2
+
+  # if [[ -z "$HOMEBREW_RUBY_PATH" ]]; then
+  #   echo "Error: HOMEBREW_RUBY_PATH is empty after setup-ruby-path." >&2
+  #   exit 1
+  # fi
+
+  if [[ -z "${HOMEBREW_RUBY_PATH}" || ! -x "${HOMEBREW_RUBY_PATH}" ]]; then
+    echo "Installing Homebrew's Portable Ruby..." >&2
+    brew vendor-install ruby || {
+      echo "Error: Failed to install Homebrew's Portable Ruby!" >&2
+      exit 1
+    }
+  fi
+}
+
+# setup_ruby() {
+#   if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]; then
+#     echo "HOMEBREW_FORCE_VENDOR_RUBY is set. Forcing Portable Ruby." >&2
+#   fi
+# 
+#   if [ -f "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh" ]; then
+#     . "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
+#   else
+#     echo "Error: utils/ruby.sh not found." >&2
+#     exit 1
+#   fi
+# 
+#   if ! setup-ruby-path; then
+#     : # Allow setup-ruby-path to fail gracefully
+#   fi
+# }
+
+# Function to execute Ruby with the correct interpreter
+execute_ruby() {
+  unset HOMEBREW_RUBY_WARNINGS
+  HOMEBREW_RUBY_WARNINGS="${HOMEBREW_RUBY_WARNINGS:-"-W1"}"
+  exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" "$@"
+}
+
+# Main function to call all other functions
+main() {
+  initialize_homebrew
+  set_platform_variables
+  source_homebrew_helpers
+  setup_ruby
+  echo "HOMEBREW_RUBY_PATH after setup-ruby in main(): $HOMEBREW_RUBY_PATH" >&2
+  execute_ruby "$@"
+}
+
+# Entry point
+main "$@"

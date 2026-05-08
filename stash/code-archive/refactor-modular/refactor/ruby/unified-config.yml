@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# TO DO: Refactor to split out quit and reopen bundle_ids:
+#     bundle_ids:
+#       quit_and_reopen: com.adobe.Reader # string
+#       quit_only: # array
+#         - com.adobe.AdobeRdrCEFHelper
+#         - com.adobe.Reader.helper
+apps:
+  homebrew:
+    - token: iterm2
+      bundle_ids:
+        - com.googlecode.iterm2
+      unsafe_to_quit: true
+    - token: adobe-acrobat-reader
+      # acrobat spawns several open bundle ids
+      bundle_ids:
+        - com.adobe.AdobeRdrCEFHelper
+        - com.adobe.Reader
+        - com.adobe.Reader.helper
+      unsafe_to_quit: false
+    - token: coteditor
+      bundle_ids:
+        - com.coteditor.CotEditor
+      unsafe_to_quit: true
+    - token: domzilla-caffeine
+      bundle_ids:
+        - net.domzilla.caffeine
+    - token: pikachuexe-freetube
+      bundle_ids:
+        - io.freetubeapp.freetube
+    - token: google-chrome
+      bundle_ids:
+        - com.google.Chrome
+      unsafe_to_quit: true
+    - token: itsycal
+      bundle_ids:
+        # test comment
+        - com.mowglii.ItsycalApp
+    - token: protonvpn
+      bundle_ids:
+        - ch.protonvpn.mac
+    - token: radiola
+      bundle_ids:
+        - com.github.SokoloffA.Radiola
+    - token: rectangle
+      bundle_ids:
+        - com.knollsoft.Rectangle
+    - token: stats
+      bundle_ids:
+        - eu.exelban.Stats
+    - token: stretchly
+      bundle_ids:
+        - net.hovancik.stretchly
+    - token: zed
+      bundle_ids:
+        - dev.zed.Zed
+      unsafe_to_quit: true
+  mas:
+    - app_id: 1595464182
+      name: MonitorControlLite
+      bundle_ids:
+        - app.monitorcontrol.MonitorControlLite
+      unsafe_to_quit: true
+    - app_id: 1569600264
+      name: Pandan
+      bundle_ids:
+        - com.sindresorhus.Pandan
+      unsafe_to_quit: false
+    - app_id: 6714467650
+      name: Perplexity
+      bundle_ids:
+        - ai.perplexity.mac

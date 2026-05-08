@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+apps:
+  homebrew:
+    - token: adobe-acrobat-reader
+      bundle_ids:
+        - com.adobe.Reader
+      unsafe_to_quit: false
+    - token: google-chrome
+      bundle_ids:
+        - com.google.Chrome
+      unsafe_to_quit: true
+
+  mas:
+    - app_id: 497799835
+      name: Xcode
+      bundle_ids:
+        - com.apple.dt.Xcode
+      unsafe_to_quit: true
+    - app_id: 409201541
+      name: Pages
+      bundle_ids:
+        - com.apple.iWork.Pages
+      unsafe_to_quit: false
+    - app_id: 1569600264
+      name: Pandan
+      bundle_ids:
+        - com.sindresorhus.Pandan
+      unsafe_to_quit: false

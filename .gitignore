@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Personal session artifacts (never commit)
+/OPENING_PROMPT.txt
+
+# Saved iterations of working files
+*.md.[0-9]
+*.sh.[0-9]
+
+# Local-only working directory (year+ of pre-rm-rf prototypes; preserved on disk for reference but not committed since refactor/modular branch supersedes it)
+/archive/
+
+# Cache directory
+.cache/
+
+# Compiled binaries
+*.o
+*.a
+*.dylib
+*.so
+
+# macOS
+.DS_Store
+._*
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Ruby
+*.gem
+.bundle/
+vendor/bundle/
+
+# Temp files
+*.tmp
+*.bak

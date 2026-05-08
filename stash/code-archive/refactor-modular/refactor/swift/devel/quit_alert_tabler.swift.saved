@@ -1,0 +1,116 @@
+import Cocoa
+import Foundation
+
+// Function to print errors to stderr
+func printError(_ message: String) {
+    if let data = "\(message)\n".data(using: .utf8) {
+        FileHandle.standardError.write(data)
+    }
+}
+
+func printDebug(_ message: String) {
+    // Check if debugging is enabled via --debug or DEBUG_MODE environment variable
+    let isDebugMode = CommandLine.arguments.contains("--debug") ||
+        ProcessInfo.processInfo.environment["DEBUG_MODE"] != nil
+
+    if isDebugMode {
+        if let data = "\(message)\n".data(using: .utf8) {
+            FileHandle.standardError.write(data)
+        }
+    }
+}
+
+// Base64-encoded Tabler icon refresh-dot-dark SVG
+let refreshDotDarkSvgBase64 = """
+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uIGljb24tdGFibGVyIGljb24tdGFibGVyLXJlZnJlc2gtZG90IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZT0iYmxhY2siIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggc3Ryb2tlPSJub25lIiBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwIDExYTguMSA4LjEgMCAwIDAgLTE1LjUgLTJtLS41IC00djRoNCIgLz48cGF0aCBkPSJNNCAxM2E4LjEgOC4xIDAgMCAwIDE1LjUgMm0uNSA0di00aC00IiAvPjxwYXRoIGQ9Ik0xMiAxMm0tMSAwYTEgMSAwIDEgMCAyIDBhMSAxIDAgMSAwIC0yIDAiIC8+PC9zdmc+Cg==
+"""
+
+// Base64-encoded Tabler icon refresh-dot-light SVG
+let refreshDotLightSvgBase64 = """
+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uIGljb24tdGFibGVyIGljb24tdGFibGVyLXJlZnJlc2gtZG90IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZT0id2hpdGUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggc3Ryb2tlPSJub25lIiBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwIDExYTguMSA4LjEgMCAwIDAgLTE1LjUgLTJtLS41IC00djRoNCIgLz48cGF0aCBkPSJNNCAxM2E4LjEgOC4xIDAgMCAwIDE1LjUgMm0uNSA0di00aC00IiAvPjxwYXRoIGQ9Ik0xMiAxMm0tMSAwYTEgMSAwIDEgMCAyIDBhMSAxIDAgMSAwIC0yIDAiIC8+PC9zdmc+Cg==
+"""
+
+func getAppearanceMode() -> String {
+    let appleInterfaceStyle = UserDefaults.standard.string(forKey: "AppleInterfaceStyle") ?? "Light"
+    return appleInterfaceStyle
+}
+
+// Check for optional --debug flag
+let isDebugMode = CommandLine.arguments.contains("--debug")
+
+// Filter out the optional flags to isolate positional arguments
+let positionalArgs = CommandLine.arguments.filter { !$0.hasPrefix("--") }
+
+// Ensure exactly 1 positional argument is provided: app_name
+guard positionalArgs.count == 2 else {
+    printError("Usage: quit_alert [--debug] <app_name>")
+    exit(3) // General error
+}
+
+let appName = positionalArgs[1]
+
+func chooseIcon() -> String {
+    let appearanceMode = getAppearanceMode()
+    let icon: String
+
+    switch appearanceMode {
+    case "Dark":
+        printDebug("Dark mode detected.")
+        // Attempt to decode and render the SVG first
+        if let svgData = Data(base64Encoded: refreshDotLightSvgBase64),
+           let refreshDotLightSvgImage = NSImage(data: svgData)
+        {
+            printDebug("SVG decoding succeeded!")
+            icon = refreshDotLightSvgImage
+            if let iconSize = icon?.size {
+                printDebug("Tabler icon refresh-dot-light SVG icon size being displayed: \(iconSize.width) × \(iconSize.height) pixels.")
+            }
+        } else {
+            // Handle complete failure gracefully
+            printDebug("SVG decoding failed. Exiting with failure.")
+            exit(2) // Icon load failure
+        }
+    case "Light":
+        printDebug("Light mode detected.")
+        // Attempt to decode and render the SVG first
+        if let svgData = Data(base64Encoded: refreshDotDarkSvgBase64),
+           let refreshDotDarkSvgImage = NSImage(data: svgData)
+        {
+            printDebug("SVG decoding succeeded!")
+            icon = refreshDotDarkSvgImage
+            if let iconSize = icon?.size {
+                printDebug("Tabler icon refresh-dot-dark SVG icon size being displayed: \(iconSize.width) × \(iconSize.height) pixels.")
+            }
+        } else {
+            // Handle complete failure gracefully
+            printDebug("SVG decoding failed. Exiting with failure.")
+            exit(2) // Icon load failure
+        }
+    default:
+        exit(2) // Icon load failure
+    }
+
+    func displayQuitAlert(appName: String) {
+        // Create the alert
+        let alert = NSAlert()
+        alert.messageText = "\(appName) cannot be open during installation."
+        alert.informativeText = "Click Continue to quit \"\(appName)\" and begin the update. The application will open when the update is complete."
+        alert.alertStyle = .warning
+
+        let iconChoice = chooseIcon()
+        alert.icon = NSImage(iconChoice)
+        if let iconSize = alert.icon?.size {
+            printDebug("Icon size being displayed: \(iconSize.width) × \(iconSize.height) pixels")
+        }
+    }
+
+    // Add system-localized buttons
+    alert.addButton(withTitle: NSLocalizedString("Cancel", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("Continue", comment: ""))
+
+    // Run the dialog and handle the response
+    let response = alert.runModal()
+    exit(response == .alertSecondButtonReturn ? 0 : 1)
+}
+
+displayQuitAlert(appName)
