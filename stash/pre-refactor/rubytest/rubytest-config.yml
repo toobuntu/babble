@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# yq --inplace eval 'sort_keys(..) | (.[] | .bundle_ids) |= sort' config.yml
+adobe-acrobat-reader:
+  # acrobat spawns several open bundle ids
+  bundle_ids:
+    - com.adobe.AdobeRdrCEFHelper
+    - com.adobe.Reader
+    - com.adobe.Reader.helper
+coteditor:
+  bundle_ids:
+    - com.coteditor.CotEditor
+  unsafe_quit: true
+domzilla-caffeine:
+  bundle_ids:
+    - net.domzilla.caffeine
+google-chrome:
+  bundle_ids:
+    - com.google.Chrome
+itsycal:
+  bundle_ids:
+    # test comment
+    - com.mowglii.ItsycalApp
+protonvpn:
+  bundle_ids:
+    - ch.protonvpn.mac
+radiola:
+  bundle_ids:
+    - com.github.SokoloffA.Radiola
+rectangle:
+  bundle_ids:
+    - com.knollsoft.Rectangle
+stats:
+  bundle_ids:
+    - eu.exelban.Stats
+stretchly:
+  bundle_ids:
+    - net.hovancik.stretchly
+zed:
+  bundle_ids:
+    - dev.zed.Zed
+  unsafe_quit: true

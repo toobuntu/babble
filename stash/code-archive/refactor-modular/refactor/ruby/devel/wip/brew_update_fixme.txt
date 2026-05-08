@@ -1,0 +1,18 @@
+The commit that added descriptions for new formulae and casks was introduced in PR #20167: "cmd/update-report: display descriptions for new formulae and casks."
+You can view the PR here: https://github.com/Homebrew/brew/pull/20167
+
+The update report (which prints new formulae and casks) is not gated by an extrinsic factor like HOMEBREW_DEVELOPER=1. Instead, its execution depends on the internal logic of the update-report command, specifically:
+
+* The report will list new formulae and casks if there are any, unless Homebrew is running in a special mode where update reports are suppressed (e.g., Homebrew::EnvConfig.no_update_report_new?).
+* The descriptions for new formulae and casks are only shown if Homebrew is installing from the API (i.e., if no_install_from_api? is false).
+
+To suppress the display of new formulae and casks (and their descriptions) in the update report, the following environment variables are relevant:
+  HOMEBREW_NO_INSTALL_FROM_API=1 If this is set, Homebrew will not fetch from the API, and the description for new formulae and casks will not be shown; descriptions are suppressed, but the names of new formulae/casks will still appear.
+  HOMEBREW_NO_UPDATE_REPORT_NEW=1 If this is set, the entire section of the update report showing new formulae and casks will be suppressed; neither the names nor descriptions of new formulae/casks will be shown.
+
+Conclusion
+Ensure that neither HOMEBREW_NO_INSTALL_FROM_API nor HOMEBREW_NO_UPDATE_REPORT_NEW is set in your environment if you want the new formulae/cask section and their descriptions to appear in the update report.
+
+So will now need to check if those are set and skip the logic if they are. Also check the output of the New Formulae and New Casks sections. If they contain a colon or empty space, then they already have the desc so skip the brew desc logic. Proceed with brew desc otherwise. Example output of brew update with the description:
+==> New Formulae
+gemini-cli: Interact with Google Gemini AI models from the command-line

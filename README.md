@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 ![bbl](assets/refresh-dot-light.svg#gh-dark-mode-only)![bbl](assets/refresh-dot-dark.svg#gh-light-mode-only)
 
 <!--

@@ -1,0 +1,89 @@
+# These are notes for posterity.
+
+# NOTE: One cannot rely on Homebrew Git and the JSON API being in sync.
+# If this causes issues, prefix the invocation of Babble (`bbl`) with
+# HOMEBREW_NO_INSTALL_FROM_API=1 on a case-by-case basis.
+# > In v4.0.0 (16-Feb-2023), Homebrew migrated from Git-cloned taps
+# to JSON downloads (API) to enable significantly faster Homebrew-
+# maintained tap updates. However, the API data can lag behind Git.
+# Sometimes, a release is pulled and this is updated in Git, but the
+# API hasn't yet synced and a download fails when trying to upgrade.
+# To get the most up-to-date information, prefix the brew commands with
+# HOMEBREW_NO_INSTALL_FROM_API=1 on a case-by-case basis.
+
+# NOTE: Use escape sequences \001 and \002 (otherwise known as
+# RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE) to exclude the
+# counting of non-printing characters by read/readline.
+
+# NOTE:
+# Get an app's bundle id with `osascript -e 'id of app "appname"'`
+
+# INSERTION: A more elegant and resource-efficient method is
+# mwa+=(com.knollsoft.Rectangle); mwa+=(com.sindresorhus.Pandan); mwa+=(eu.exelban.Stats); mwa+=(com.intelliscapesolutions.caffeine); mwab="$(for i in "${mwa[@]}"; do /usr/bin/lsappinfo info -only bundleid -app "$i" | /usr/bin/awk -F= '{gsub(/\"/,""); print $NF}'; done | sort -u)"; mwaa="$(/usr/bin/lsappinfo list | awk -F= '/bundleID/ {gsub(/\"/,""); print $NF}' | sort -u)"; comm -12 <(tr "[:space:]" "\n" <<< "${mwa[@]}") <(tr "[:space:]" "\n" <<< "$mwaa"); while IFS="" read -r line; do /usr/bin/lsappinfo info -only name "$line" | /usr/bin/awk -F= '{gsub(/\"/,""); print $NF}'; done <<< "$mwab"; unset -v mwa mwab mwaa line i;
+# Comparing mwa[@] to mwaa is more efficient than creating mwab. mwab is listed here only for its syntax.
+
+# Arrays cannot be exported. Commas are disallowed in a
+# bundle ID. So print each element as a comma-terminated
+# string, concatenate, and export that.
+#
+# NOTE: On macOS, a bundle ID uniquely identifies a
+# single app throughout the system. The bundle ID string
+# must contain only alphanumeric characters (A–Z, a–z,
+# and 0–9), hyphens (-), and periods (.). Bundle IDs are
+# case-insensitive.
+# https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier
+#
+# NOTE: It is common to use NUL-terminated strings, but
+# NUL cannot be stored in a variable because it is the
+# character used to delimit the end of a variable. (One
+# can use any binary data, including NUL, in pipes and
+# files.) So use a temporary file (which can contain
+# NUL) or base64 encode the data in the variable.
+# Exporting a base64 encoded variable did not work as
+# intended except with openssl. Using a temp file is
+# not necessary because bundle IDs cannot contain
+# commas. Therefore, use comma-separated values.
+#
+# Print the ASCII NUL character (character code 0) via
+# printf "%c" 0 or printf "\000" or printf "%b" "\000",
+# and use it like find ... -print0 | xargs -0.
+#
+# macOS 14 Sonoma comes with /usr/bin/openssl,
+# /usr/bin/base64 and /usr/bin/uu{en,de}code, which can
+# do base64 encoding and decoding, but only uuencode is
+# POSIX. That said, openssl is used in Babble.
+# openssl base64 -A | openssl base64 -d -a -A, or
+# openssl enc -base64 -A | openssl enc -base64 -d -a -A
+# base64 | base64 -d
+# uuencode -mr - | uudecode -mrp
+# DEBUG: Check for '\0' (nul) by piping to od -acAn.
+
+# Unused #2
+# Big thanks to William 'talkingmoose' Smith for this way of parsing lsappinfo
+# restart_apps=("$(/usr/bin/lsappinfo list | /usr/bin/awk -F '\\) "|" ASN' 'NF > 1 && tolower($2) ~ /stats/ {print $2}')")
+# Unused #1
+# restart_apps="$(/usr/bin/lsappinfo info -app eu.exelban.Stats | /usr/bin/awk '$1 == "pid" {print $3}')"; test -n "$restart_apps" && open -b eu.exelban.Stats || :
+
+	# Restart apps from the saved list
+	typeset -a restart_req
+	/usr/bin/openssl base64 -d -a -A <<< "$restart_req_export" | tr "\0" "\n" | \
+		while IFS="" read -r line; do
+			restart_req+=("$line")
+		done
+	# NOTE: rr=( $(...) ) was abandoned in favor of shellcheck's
+	# suggestion to use while read; do; done.
+	# shellcheck disable=SC2207
+	#restart_req=( $(printf "%s" "$restart_req_export" | /usr/bin/tr "," "\n") )
+
+	# Unset any empty array elements
+	for i in "${!restart_req[@]}"; do
+		test -z "${restart_req[$i]}" && \
+			unset -v -- restart_req[$i];
+	done
+
+# When f == 1, the "1" is a condition that is always true, and will
+# trigger the default action which is to print the current line.
+/usr/bin/awk '/==> New/{f = 1; next} /==> (Outdated|Renamed|Deleted|Modified)/{f = 0} /^You have/{f = 0} /^Already up-to-date.$/{f = 0}; f' "${TMPDIR:-/tmp/}bup.out" | /usr/bin/xargs -J % brew desc --eval-all %
+
+# By default, version information is displayed in interactive shells, and suppressed otherwise. Use --verbose to include detailed version information.
+brew outdated --greedy-auto-updates --fetch-HEAD --verbose

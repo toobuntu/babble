@@ -1,0 +1,105 @@
+# lib/config/reorganizer.rb
+# frozen_string_literal: true
+#
+require "English"
+
+module Config
+  # This class reorders a YAML configuration file using yq, ensuring each
+  # mapping conforms to an explicit key order while removing keys with null
+  # values.
+  #
+  # For apps.homebrew, the desired order is:
+  #   "token", "bundle_ids", "unsafe_to_quit", "quit_message", "bypass_gatekeeper".
+  #
+  # For apps.mas, the desired order is:
+  #   "app_id", "name", "bundle_ids", "unsafe_to_quit", "quit_message".
+  #
+  # It also sorts the apps.homebrew array by "token" and the apps.mas array by "name",
+  # as well as the bundle_ids arrays.
+  #
+  # Example:
+  #   Config::Reorganizer.reorder_file("./Bundlefile.yml")
+  #
+  class Reorganizer
+    class << self
+      def run(file_path)
+        return unless File.exist?(file_path)
+        reorder_file(file_path)
+      end
+      
+      private
+      
+      def reorder_file(file_path)
+        return unless File.exist?(file_path)
+        return unless yq_available?
+
+        original = File.read(file_path)
+        # Use a multiline yq expression (via a heredoc) for readability.
+        expr = <<~YQ.strip
+          .apps.homebrew |= map(
+            {
+              "token": .token,
+              "bundle_ids": (.bundle_ids // []),
+              "unsafe_to_quit": .unsafe_to_quit,
+              "quit_message": .quit_message,
+              "bypass_gatekeeper": .bypass_gatekeeper
+            } | with_entries(select(.value != null))
+          ) | .apps.homebrew |= sort_by(.token) |
+          .apps.mas |= map(
+            {
+              "app_id": .app_id,
+              "name": .name,
+              "bundle_ids": (.bundle_ids // []),
+              "unsafe_to_quit": .unsafe_to_quit,
+              "quit_message": .quit_message
+            } | with_entries(select(.value != null))
+          ) | .apps.mas |= sort_by(.name) |
+          (.apps.homebrew[].bundle_ids) |= sort |
+          (.apps.mas[].bundle_ids) |= sort
+        YQ
+
+        system("yq", "--exit-status", "--inplace", "eval", expr, file_path)
+        if $CHILD_STATUS.success? && (original != File.read(file_path))
+          $stderr.puts "Reordered file: #{file_path}"
+        end
+      rescue StandardError => e
+        $stderr.puts "Error reordering #{file_path}: #{e.message}"
+      end
+
+      # private
+
+      def yq_available?
+        ENV["PATH"].split(File::PATH_SEPARATOR).any? do |dir|
+          File.executable?(File.join(dir, "yq"))
+        end
+      end
+    end
+  end
+end
+
+# Allow the script to run when executed
+if __FILE__ == $PROGRAM_NAME
+  puts
+  puts Time.now.strftime("%a %b %e %H:%M:%S %Z %Y")
+
+  # Ensure exactly one argument is passed
+  if ARGV.size != 1
+    puts "Error: Exactly one file path argument is required."
+    exit(1)
+  end
+
+  file_path = ARGV.first
+
+  # Validate the file path
+  unless File.exist?(file_path)
+    puts "Error: File not found at path '#{file_path}'."
+    exit(1)
+  end
+
+  # Call the main method with the file path
+  Config::Reorganizer.run(file_path)
+
+  puts Time.now.strftime("%a %b %e %H:%M:%S %Z %Y")
+end
+
+# copilot
