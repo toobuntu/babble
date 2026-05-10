@@ -105,17 +105,251 @@ promotion from `devel/`:
   refactor/modular branch tip may show the older versions
   depending on what was last pushed)
 
-**Carries to W3?** Yes, with module renaming. As an external
-command, the namespace becomes `Homebrew::Cmd::Babble` for the
-entry class and `Babble::*` for substantive modules. The split
-between `BrewUpdate`, `BrewUpgrade`, `MasUpgrade`, `MacOSUpdate`,
+**Carries to W3?** Yes, with namespace flattening. As an
+external command, the entry point is the class
+`Homebrew::Cmd::Babble < AbstractCommand`; substantive
+components live in `Babble::*`. The split between
+`BrewUpdate`, `BrewUpgrade`, `MasUpgrade`, `MacOSUpdate`,
 `AppManager`, `BundleLauncher`, `Waiter`, plus the new
-`Config::{Loader, Validator, Reorganizer}` triple and the new
-`TerminalDetector`, follows refactor/modular's boundaries with
-the configuration concerns extracted to their own namespace.
-The `MacUtils::*` and `MacOSInterface::*` namespaces collapse
-into `Babble::*` — there's no good reason to maintain
-sub-namespaces in a single-purpose external command.
+`Config::{Loader, Validator, Merger, Reorganizer}` quartet
+and the new `TerminalDetector`, follows refactor/modular's
+boundaries with the configuration concerns extracted to
+their own namespace. The `MacUtils::*` and `MacOSInterface::*`
+namespaces collapse into `Babble::*` — there's no good reason
+to maintain sub-namespaces in a single-purpose external
+command.
+
+**Whether each is shaped as a class or a module** is a
+separate question — see [Class-vs-module decomposition
+pattern](#class-vs-module-decomposition-pattern) below.
+
+## Class-vs-module decomposition pattern
+
+The "Module decomposition" section above lists *which* logical
+units exist; this section addresses *how* each is shaped — as
+a class or as a module-with-module-functions.
+
+### Pattern guidance
+
+The two Ruby idioms differ in whether they encapsulate state:
+
+**Classes for state-bearing components.** Use a class when the
+component has fields that multiple methods read and modify
+during a single run: configuration loaded from disk, lists of
+running apps captured at one point and consumed later, retry
+counters, cached lookups. State lives in `@instance_variables`;
+dependencies arrive via the constructor; multiple instances
+are possible (useful for testing).
+
+**Modules for pure utilities.** Use a module-with-`module_function`
+or `class << self` block when each method takes its inputs as
+arguments and returns its outputs without reading or mutating
+shared state. Shell-out helpers, retry-with-backoff,
+prefix-the-message helpers, env-file loaders.
+
+### Reasoning
+
+This is what Homebrew's own code does. Inspecting the active
+codebase:
+
+- `Homebrew::Cmd::Upgrade < AbstractCommand` — class (entry
+  point with parsed args + `run` method)
+- `Homebrew::Cleanup` — class with `attr_reader`, `initialize`
+  (state-bearing)
+- `Homebrew::Reinstall` — module with `module_function`
+- `Cask::Caskroom` — module with module methods
+- `Formula.installed` — class method on the Formula class
+
+Pattern: classes for stateful domain objects, modules for
+pure utilities, single-instance entry-point classes extending
+`AbstractCommand`.
+
+The pre-refactor archive at `stash/pre-refactor/lib/` got
+this right for the components there: `class AppManager`
+initialized from `@config_files`, `class ConfigManager`
+similarly. Multiple methods sharing state across a run —
+class is correct.
+
+Refactor/modular's all-modules approach is uneven on this
+question. Some modules are pure utilities (`MasUpgrade`'s
+parsing, `DarkMode.enabled?`) — module is correct. Others
+have state that they hide in `class << self` blocks plus
+`@class_variables` (`BrewUpgrade` carries running-apps
+snapshots, the upgrade list, retry counters at module level).
+That hybrid is the worst of both worlds: it feels like a
+class but loses encapsulation, makes testing harder, and
+prevents multiple parallel instances.
+
+W3 chooses explicitly per component.
+
+### W3 component classification
+
+**Classes (state-bearing):**
+
+- `Homebrew::Cmd::Babble < AbstractCommand` — entry point;
+  parsed CLI args + `run` method per Homebrew's external
+  command idiom
+- `Babble::Config::{Loader, Validator, Merger, Reorganizer}` —
+  each holds its slice of state (loaded files, validation
+  results, merged config, reorganized output)
+- `Babble::Config` — top-level façade holding the merged
+  validated config; exposes `#valid?`, `#errors`, `#warnings`,
+  `#conflicts`, `#homebrew_entries`, `#mas_entries`
+- `Babble::AppManager` — holds `@config` reference + cached
+  running-app snapshots; methods orchestrate quit/reopen
+  across the upgrade lifecycle
+- `Babble::BrewUpdate`, `BrewUpgrade`, `MasUpgrade`,
+  `MacOSUpdate` — each phase is a class taking
+  `(app_manager:, config:)` in the constructor and exposing
+  `#run`. Phase-local state (which casks are outdated, which
+  apps need reopening, retry counters) lives in instance vars.
+
+**Modules (pure utilities):**
+
+- `Babble::Sh` — shell-out wrappers (or use Homebrew's
+  `SystemCommand::Mixin` directly)
+- `Babble::Retry` — retry-with-backoff helper
+  (`Babble::Retry.with_retry { ... }`)
+- `Babble::Env` — env-file loader; mutates `ENV` but doesn't
+  carry state across calls
+- `Babble::TerminalDetector` — one-shot detection
+  (`Babble::TerminalDetector.host_terminal_casks`)
+- `Babble::DarkMode` — `Babble::DarkMode.enabled?`
+- `Babble::Formatter` — prefix-the-message helpers, if any
+  beyond what Homebrew's `oh1`/`ohai`/`opoo`/`ofail` provide
+
+### Entry point shape
+
+```ruby
+# cmd/babble.rb (Homebrew external command)
+require "abstract_command"
+
+module Homebrew
+  module Cmd
+    class Babble < AbstractCommand
+      cmd_args do
+        description <<~EOS
+          An upgrade routine for Homebrew, Mac App Store, and macOS.
+        EOS
+
+        switch "--no-update",
+               description: "Skip the brew update phase."
+        switch "--always-descriptions",
+               description: "Force descriptions for new formulae and casks."
+        # ...
+      end
+
+      sig { override.void }
+      def run
+        Babble::Env.load_default_locations
+
+        config = Babble::Config.load
+        config.report_warnings_and_conflicts!
+
+        app_manager = Babble::AppManager.new(config: config)
+
+        Babble::BrewUpdate.new(app_manager: app_manager, args: args).run
+        Babble::BrewUpgrade.new(app_manager: app_manager, config: config, args: args).run
+        Babble::MasUpgrade.new(app_manager: app_manager, args: args).run
+        Babble::MacOSUpdate.new(args: args).run
+      end
+    end
+  end
+end
+```
+
+### Phase class shape
+
+```ruby
+# cmd/babble/brew_upgrade.rb
+module Babble
+  class BrewUpgrade
+    sig {
+      params(app_manager: AppManager, config: Config, args: T.untyped).void
+    }
+    def initialize(app_manager:, config:, args:)
+      @app_manager = app_manager
+      @config = config
+      @args = args
+      @outdated_casks = T.let([], T::Array[String])
+      @running_at_start = T.let(nil, T.nilable(T::Array[String]))
+    end
+
+    sig { void }
+    def run
+      list_outdated
+      capture_running_apps
+      quit_apps_for_outdated_casks
+      run_upgrade
+      reopen_quit_apps
+    end
+
+    private
+
+    sig { void }
+    def list_outdated
+      # ... populates @outdated_casks
+    end
+
+    sig { void }
+    def capture_running_apps
+      @running_at_start = @app_manager.running_bundle_ids
+    end
+
+    # ... etc
+  end
+end
+```
+
+### Module shape (pure utility)
+
+```ruby
+# cmd/babble/retry.rb
+module Babble
+  module Retry
+    class << self
+      sig do
+        type_parameters(:T)
+          .params(
+            max:     Integer,
+            on_fail: T.proc.params(attempt: Integer).void,
+            block:   T.proc.returns(T.type_parameter(:T)),
+          )
+          .returns(T.nilable(T.type_parameter(:T)))
+      end
+      def with_retry(max: 10, on_fail: ->(_n) {}, &block)
+        attempts = 0
+        loop do
+          result = yield
+          return result if result
+          attempts += 1
+          break if attempts >= max
+          on_fail.call(attempts)
+        end
+        nil
+      end
+    end
+  end
+end
+```
+
+The body of the method takes its inputs as arguments and
+returns its outputs. No state across calls. Module is
+correct.
+
+### Why not `module_function` everywhere?
+
+`module_function` makes methods callable as both module
+methods and instance methods (via `include`). For a single-
+purpose external command like babble, no caller is going to
+`include Babble::Retry` to get `with_retry` as an instance
+method. The `class << self` form is more explicit and equally
+ergonomic.
+
+`module_function` is appropriate when the pattern of "include
+me for a mixin" is genuinely useful (e.g., `Homebrew::Reinstall`
+gets included by `Cmd::Reinstall`). Babble doesn't have that
+shape.
 
 ## Module-level imports and dependencies
 
@@ -378,22 +612,134 @@ BABBLE_CONFIRM_DEFAULT=gui
 BABBLE_QUIET=1
 ```
 
-Lookup order:
+Lookup order, two tiers (user and system) with user winning
+by default:
 
-1. Process environment (set by user shell, command-line
-   prefix, or parent process) — always wins
-2. `${XDG_CONFIG_HOME:-$HOME/.config}/babble/babble.env`
-3. `/etc/babble/babble.env`
+1. **Process environment** (set by user shell, CLI prefix, or
+   parent process) — always wins; no file load can override
+2. **User**:
+   `${XDG_CONFIG_HOME:-$HOME/.config}/babble/babble.env`
+3. **System**: `/etc/babble/babble.env`
 
-No upward directory walk for `babble.env` — these are user
-preferences, not per-project settings. The settings travel
-with the user, not with the directory.
+**Default precedence**: process env > user > system. Loading
+order achieves this via `ENV[key] ||= value` (set only if not
+already set): user loads first, system fills in remaining gaps,
+process env was already in place before either file load.
 
-**Format**: shell-source-compatible `KEY=VALUE` pairs, one
-per line. Comments start with `#`. No quoting required for
-simple values; double-quotes for values with spaces. Babble
-reads the file and sets `ENV[key] = value` for each pair
-before phase orchestration begins; CLI flags override.
+**Sysadmin override**: setting
+`BABBLE_SYSTEM_ENV_TAKES_PRIORITY=1` in the process environment
+inverts the file precedence: system > user. Useful for
+corporate-managed macOS fleets where IT enforces /etc-defined
+defaults that user-set values can't override. Independent of
+Homebrew's `HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY`; the two
+variables are deliberately not coupled (babble and Homebrew
+are separate entities; sysadmins who want both behaviors
+should set both flags explicitly).
+
+The `BABBLE_SYSTEM_ENV_TAKES_PRIORITY` flag itself must be
+set in the process environment to take effect — setting it in
+`babble.env` would create a chicken-and-egg situation since
+the flag controls how `babble.env` is loaded. Document this
+constraint in the user-facing docs.
+
+**Why no prefix tier?** Homebrew's `brew.env` has a third
+tier at `${HOMEBREW_PREFIX}/etc/homebrew/brew.env` because
+Homebrew itself lives at HOMEBREW_PREFIX; per-prefix Homebrew
+config is meaningful when a machine has multiple Homebrew
+installations (Apple Silicon `/opt/homebrew` plus Rosetta
+`/usr/local`). Babble is an external command tap inside
+Homebrew — the tap directory is at
+`${HOMEBREW_PREFIX}/Library/Taps/toobuntu/homebrew-babble/`,
+not `${HOMEBREW_PREFIX}/etc/babble/`. Babble's behavior
+shouldn't differ per Homebrew prefix; user preferences travel
+with the user, not with the install location. The prefix tier
+doesn't carry the same conceptual weight for babble that it
+does for Homebrew, so it's omitted.
+
+No upward directory walk for `babble.env` either — these are
+user/host preferences, not per-project settings.
+
+**Format**: line-based `KEY=VALUE` pairs. The parser is pure
+Ruby (`Babble::Env.load_file`) — no shell sourcing.
+
+Semantics, mirroring Homebrew's `bin/brew`
+`export_homebrew_env_file`:
+
+- One pair per line, matched by the anchored regex
+  `\A([A-Z][A-Z0-9_]*)=(.*)\z`
+- Lines that don't match (comments, blank lines, malformed)
+  are silently skipped
+- Filter to `BABBLE_*` prefix only — other variables are
+  ignored
+- Value is everything after the first `=`, taken **literally**:
+  no shell expansion (`$VAR` stays as `$VAR`), no command
+  substitution (`$(...)` stays as `$(...)`), no quote
+  stripping (`"value"` stays as `"value"` with the quotes)
+- Process environment wins: the parser uses
+  `ENV[key] ||= value`, so an already-set value is preserved.
+  CLI invocations can prefix the variable
+  (`BABBLE_QUIET=1 brew babble`) and that takes priority over
+  the file.
+
+The pure-Ruby parser is mandated by the external command
+shape: Homebrew sources its own `brew.env` in `bin/brew`
+(bash) before the external command's Ruby runs. Babble can't
+insert a pre-Ruby bash step; the parser must run inside Ruby.
+
+```ruby
+module Babble
+  module Env
+    KEY_PATTERN = /\A([A-Z][A-Z0-9_]*)=(.*)\z/
+
+    class << self
+      sig { params(path: T.any(String, Pathname)).void }
+      def load_file(path)
+        return unless File.readable?(path)
+        File.foreach(path) do |line|
+          next unless (m = KEY_PATTERN.match(line.chomp))
+          key, value = m[1], m[2]
+          next unless key.start_with?("BABBLE_")
+          ENV[key] ||= value
+        end
+      end
+
+      sig { void }
+      def load_default_locations
+        xdg_home = ENV["XDG_CONFIG_HOME"] || File.join(ENV.fetch("HOME"), ".config")
+        user_path   = File.join(xdg_home, "babble", "babble.env")
+        system_path = "/etc/babble/babble.env"
+
+        # Each call uses ENV[key] ||= value (set only if not
+        # already set), so the first load to provide a value
+        # wins. The process env (set before babble runs) is
+        # already in ENV and pre-empts every file load.
+        if system_takes_priority?
+          # Sysadmin override: load system first so its values
+          # stick, then user fills in remaining gaps.
+          load_file(system_path)
+          load_file(user_path)
+        else
+          # Default: load user first so user values stick,
+          # then system fills in remaining gaps.
+          load_file(user_path)
+          load_file(system_path)
+        end
+      end
+
+      private
+
+      sig { returns(T::Boolean) }
+      def system_takes_priority?
+        value = ENV["BABBLE_SYSTEM_ENV_TAKES_PRIORITY"]
+        !value.nil? && !value.empty?
+      end
+    end
+  end
+end
+```
+
+Called from `Homebrew::Cmd::Babble#run` before any other
+phase orchestration starts.
 
 **Why not a `settings:` section in `babble.apps.yml`?**
 
@@ -680,9 +1026,20 @@ fail Gatekeeper on Apple Silicon (no Apple Developer cert →
 no codesign → can't distribute). It pivoted to auto-compiling
 on first run via `xcrun swiftc`.
 
-**Carries to W3?** Auto-compile pattern wins. See
+**Carries to W3?** Auto-compile pattern wins, with
+source-hash verification and user-visible transparency on
+first compile. See
 [`adrs/0001-swift-quit-alert-build-strategy.md`](adrs/0001-swift-quit-alert-build-strategy.md)
-for the full ADR. Refactor/modular's pre-compile approach is
+for the full ADR, including the Safety and transparency
+design section that covers: SHA256 sidecar committed
+alongside the source (`quit_alert.swift.sha256`), CI
+enforcement of the sidecar via
+`shasum -a 256 -c`, runtime verification in
+`Babble::QuitAlertCompiler` with hard-fail on hash
+mismatch, `ohai` messages on first compile printing source
+path / target path / command / verified hash, and cache
+key derivation that auto-invalidates when the source
+changes. Refactor/modular's pre-compile approach is
 documented as superseded.
 
 ## yq-based config sorting and dedup detection
@@ -810,9 +1167,31 @@ reserves the right to refactor.
 
 The ksh original wrapped `brew upgrade` in a `repeat_command`
 loop. Up to 10 attempts; between attempts, clear
-`~/Library/Caches/Homebrew/bootsnap`. Added in response to
+`~/Library/Caches/Homebrew/bootsnap`. Added in commit 569b4e0
+in response to
 [Homebrew/brew discussion #5226](https://github.com/orgs/Homebrew/discussions/5226)
-about transient bootsnap-cache corruption.
+about transient bootsnap-cache corruption (the
+`cannot load such file -- json/pure (LoadError)` failure mode).
+
+Upstream may have addressed the original cause:
+- [Homebrew/brew#16977](https://github.com/Homebrew/brew/pull/16977)
+  (31 Mar 2024): "cleanup: fix various cases where cache wasn't
+  being removed properly"
+- [Homebrew/brew#18240](https://github.com/Homebrew/brew/pull/18240)
+  (4 Sep 2024): "Invalidate Bootsnap cache on Gemfile.lock
+  changes"
+- [Homebrew/brew#18246](https://github.com/Homebrew/brew/pull/18246)
+  (4 Sep 2024): "startup/bootsnap: base key on in install state
+  rather than projection"
+
+Whether bootsnap-specific corruption still surfaces in current
+Homebrew is open. The retry mechanism is **kept regardless**:
+it's general defense against any transient `brew upgrade`
+failure (network blips, intermittent rate limits, partial
+downloads), not just bootsnap. The bootsnap-cleanup hook is
+harmless if the cache isn't corrupt — clearing a healthy cache
+costs a few seconds of cache rebuild on the next brew launch,
+no correctness impact.
 
 Refactor/modular's `brew_upgrade.rb` did not port this loop —
 the comment in `run_upgrade_process` notes it as a regression
@@ -947,19 +1326,137 @@ Refactor/modular's modules carry `# typed: strict` and
 out (Sorbet not actively enforced in the year+ work, but the
 shape is ready).
 
-**Carries to W3?** Yes, with active enforcement. As an
-external command, babble inherits Homebrew's Sorbet
-configuration. `# typed: strict` files in the babble code
-get checked in CI via `brew typecheck` (works because the
-file is linked into Homebrew's `cmd/` for CI). Sigs become
-real:
+**Carries to W3?** Yes, with active enforcement.
+
+**Discipline:**
+
+- **Every file is `# typed: strict`** unless there's a
+  documented reason otherwise (rare; only for files that
+  must accept genuinely dynamic input from a non-typed
+  boundary).
+- **Every method has a `sig`**, including private helpers.
+  At `typed: strict`, Sorbet enforces this.
+- **`void` only when justified**: methods that genuinely
+  return nothing meaningful. `initialize` (Ruby convention),
+  `run` entry points on phase classes, and pure side-effect
+  methods that mutate state. Methods with a meaningful return
+  value get the proper return type, never `void`.
+- **`T.untyped` only where unavoidable**: e.g., the `args`
+  object from Homebrew's `cmd_args do ... end` builder is
+  intrinsically dynamic. Everywhere else, prefer specific
+  types: `T::Array[String]`, `T::Hash[String, Integer]`,
+  `T.nilable(String)`, `T::Boolean`, etc.
+- **Type parameters for generic helpers**: `Babble::Retry.with_retry`
+  uses `type_parameters(:T)` so the block's return type
+  flows through.
+- **CI enforcement**: `brew typecheck` (which runs
+  `srb tc`) is a required CI status check. Failures block
+  merge.
+- **Local enforcement**: maintainer runs `brew style` plus
+  `brew typecheck` before each commit. The pre-commit hook
+  (synced from repo-foundation) runs the same.
+
+Example of strict typing in practice:
 
 ```ruby
-sig { params(bundle_id: String, timeout: Integer).returns(T::Boolean) }
-def self.launch(bundle_id, timeout: 10)
-  ...
+# typed: strict
+# frozen_string_literal: true
+
+require "abstract_command"
+require "sorbet-runtime"
+
+module Babble
+  class BrewUpgrade
+    extend T::Sig
+
+    sig { params(app_manager: AppManager, config: Config, args: T.untyped).void }
+    def initialize(app_manager:, config:, args:)
+      @app_manager = app_manager
+      @config = config
+      @args = args
+      @outdated_casks = T.let([], T::Array[String])
+      @running_at_start = T.let(nil, T.nilable(T::Array[String]))
+    end
+
+    sig { void }
+    def run
+      list_outdated
+      capture_running_apps
+      quit_apps_for_outdated_casks
+      run_upgrade
+      reopen_quit_apps
+    end
+
+    sig { returns(T::Array[String]) }
+    def outdated_casks = T.must(@outdated_casks)
+
+    private
+
+    sig { void }
+    def list_outdated
+      output = Utils.safe_popen_read(HOMEBREW_BREW_FILE, "outdated", "--cask", "--json=v2")
+      data = T.let(JSON.parse(output), T::Hash[String, T.untyped])
+      @outdated_casks = T.cast(
+        data.fetch("casks", []).map { |c| T.cast(c.fetch("name"), String) },
+        T::Array[String],
+      )
+    end
+
+    sig { void }
+    def capture_running_apps
+      @running_at_start = @app_manager.running_bundle_ids
+    end
+
+    sig { params(bundle_id: String).returns(T::Boolean) }
+    def app_was_running?(bundle_id)
+      T.must(@running_at_start).include?(bundle_id)
+    end
+  end
 end
 ```
+
+The pseudocode in the
+[Class-vs-module decomposition pattern](#class-vs-module-decomposition-pattern)
+section above shows mostly `void` methods because that's what
+the entry-point + run + state-mutation pattern produces.
+Helper methods, query methods, and computation methods get
+proper return types as shown here.
+
+## Testing discipline
+
+RSpec, with coverage for every component.
+
+**Discipline:**
+
+- **Per-component spec files** mirror the source layout:
+  `cmd/babble/brew_upgrade.rb` → `spec/babble/brew_upgrade_spec.rb`
+- **Public API gets coverage first**: every public method on
+  every class/module has at least one spec example
+- **Edge cases get explicit specs**: empty inputs, nil
+  returns, Unicode bundle IDs, casks with no description,
+  fonts (which intentionally have `desc nil`), etc.
+- **External boundaries are mocked**:
+  - `safe_system HOMEBREW_BREW_FILE, ...` mocked to return
+    canned output
+  - JXA quit calls mocked
+  - File system reads against fixture YAML files in
+    `spec/fixtures/`
+  - Process detection (`ps`, `lsappinfo`) mocked
+- **Integration boundary stays small**: a few spec examples
+  exercise the full phase orchestration end-to-end with
+  mocked boundaries; most specs are unit-level
+- **CI enforcement**: `brew tests` runs the spec suite as a
+  required check
+
+The validation tests already in refactor/modular's
+`BrewUpgrade.test_valid_*` methods (not real specs; just
+method-level sanity checks the maintainer ran manually) become
+proper spec examples in W3. They're a starting point, not the
+final coverage.
+
+Reference: Homebrew's own spec structure at
+`Library/Homebrew/test/` is the model. Each `cmd/foo.rb` has
+a corresponding `test/cmd/foo_spec.rb`. Use the same layout.
 
 ## REUSE/SPDX compliance
 
