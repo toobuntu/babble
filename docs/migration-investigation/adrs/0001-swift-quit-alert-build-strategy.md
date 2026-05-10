@@ -208,7 +208,7 @@ A sibling file `swift/src/quit_alert.swift.sha256` is
 committed alongside the source. Standard SHA256SUMS format
 (`<sha256>  <path>`):
 
-```
+```text
 <64-hex-chars>  swift/src/quit_alert.swift
 ```
 
@@ -220,10 +220,22 @@ shasum -a 256 -c swift/src/quit_alert.swift.sha256
 ```
 
 No Ruby required for the user to confirm the file matches
-what the maintainer committed. The .sha256 file is signed
-by the maintainer's GPG signature on the commit (per the
-org-wide signed-commits convention), so tampering with the
-.sha256 file requires breaking the signature too.
+what's committed in the tap. The recorded hash inherits the
+trust model of the tap content itself: GitHub's TLS-protected
+delivery via `brew update`, plus (forthcoming) cryptographic
+commit signing across the toobuntu org. The planned signing
+convention is SSH-based (GPG and x.509 also acceptable as
+alternative key types) and is distinct from the DCO-style
+`git commit --signoff` currently in use — `--signoff`
+records intent metadata but does not cryptographically
+authenticate the committer. Cryptographic commit signing
+is not yet enabled across toobuntu repos but is planned;
+until then, this hash sidecar provides integrity-against-
+corruption (catches accidental damage and surfaces
+filesystem-level tampering at runtime via
+`Babble::QuitAlertCompiler`'s verification step) but no
+authentication beyond GitHub's transport and the maintainer's
+account credentials.
 
 ### Maintenance flow
 
@@ -245,6 +257,7 @@ layers of defense:
    ```bash
    #!/usr/bin/env bash
    # SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+   #
    # SPDX-License-Identifier: GPL-3.0-or-later
    #
    # Pre-commit drop-in: regenerate quit_alert.swift's SHA256
@@ -254,7 +267,13 @@ layers of defense:
    set -euo pipefail
 
    main() {
-     cd "$(git rev-parse --show-toplevel)"
+     repo_root="$(git rev-parse --show-toplevel)" || {
+       printf '%s\n' "error: not inside a Git work tree" >&2
+       exit 1
+     }
+
+     cd "$repo_root" || exit 1
+
      update_quit_alert_sha256
    }
 
@@ -274,7 +293,7 @@ layers of defense:
      # staged commits produce a sidecar matching what's actually
      # going into the commit.
      local new_sha
-     new_sha=$(git show ":${source_file}" | shasum --algorithm 256 | awk '{print $1}')
+     new_sha=$(git show ":${source_file}" | /usr/bin/shasum --algorithm 256 | /usr/bin/awk '{print $1}')
      printf '%s  %s\n' "${new_sha}" "${source_file}" > "${sha_file}"
 
      # annotate.sh categorizes .sha256 files into the hash-files
@@ -321,9 +340,17 @@ layers of defense:
    ```sh
    #!/usr/bin/env bash
    set -euo pipefail
+
+   repo_root="$(git rev-parse --show-toplevel)" || {
+     printf '%s\n' "error: not inside a Git work tree" >&2
+     exit 1
+   }
+
+   cd "$repo_root" || exit 1
+
    source_file="swift/src/quit_alert.swift"
    sha_file="${source_file}.sha256"
-   shasum -a 256 -- "${source_file}" > "${sha_file}"
+   /usr/bin/shasum --algorithm 256 -- "${source_file}" > "${sha_file}"
    echo "Updated ${sha_file}"
    ```
 
@@ -366,20 +393,46 @@ module Babble
 
       sig { returns(String) }
       def expected_hash
-        line = sha256_path.read.lines.first
-        T.must(line).split(/\s+/, 2).first.to_s.tap do |hex|
-          if hex.length != 64 || hex !~ /\A[0-9a-f]+\z/
-            odie <<~MSG
-              Babble's quit_alert.swift.sha256 file is malformed.
-              Path: #{sha256_path}
-              Run `brew update` to restore the canonical version.
-            MSG
-          end
+        unless sha256_path.exist?
+          odie <<~MSG
+            Babble's quit_alert.swift.sha256 file is missing.
+            Path: #{sha256_path}
+            Run `brew update` to restore the canonical version.
+          MSG
         end
+
+        line = sha256_path.read.lines.first
+        if line.nil? || line.strip.empty?
+          odie <<~MSG
+            Babble's quit_alert.swift.sha256 file is empty.
+            Path: #{sha256_path}
+            Run `brew update` to restore the canonical version.
+          MSG
+        end
+
+        hex = T.must(line).split(/\s+/, 2).first.to_s
+        unless hex.length == 64 && hex =~ /\A[0-9a-f]+\z/
+          odie <<~MSG
+            Babble's quit_alert.swift.sha256 file is malformed
+            (expected SHA256SUMS format with a 64-hex-char hash).
+            Path: #{sha256_path}
+            Run `brew update` to restore the canonical version.
+          MSG
+        end
+
+        hex
       end
 
       sig { returns(String) }
       def actual_hash
+        unless source_path.exist?
+          odie <<~MSG
+            Babble's quit_alert.swift source file is missing.
+            Path: #{source_path}
+            Run `brew update` to restore the tap.
+          MSG
+        end
+
         Digest::SHA256.file(source_path).hexdigest
       end
 
@@ -462,7 +515,7 @@ end
 The `ohai` messages above (under `compile!`) print to stderr
 on every first compile. The user sees:
 
-```
+```console
 ==> Compiling babble's quit_alert helper (one-time)
   Source: /opt/homebrew/Library/Taps/toobuntu/homebrew-babble/swift/src/quit_alert.swift
   Target: /Users/<user>/Library/Caches/Homebrew/babble/quit_alert_arm64_a1b2c3d4e5f6
@@ -499,7 +552,7 @@ compile + transparency message cycle.
 The cache filename includes a 12-hex-character prefix of
 the source hash:
 
-```
+```text
 ~/Library/Caches/Homebrew/babble/quit_alert_arm64_a1b2c3d4e5f6
 ```
 
@@ -524,12 +577,14 @@ Properties:
 - **Compile failure** (`xcrun swiftc` errors): caught by
   `compile!`'s `rescue ErrorDuringExecution`. Falls
   through to the osascript fallback per the main decision.
-- **`.sha256` file missing or malformed**: `odie` with
-  recovery instructions. Without a recorded hash, babble
-  can't verify, so it won't compile.
+- **`.sha256` file missing, empty, or malformed**: `odie`
+  with recovery instructions specific to each case.
+  `expected_hash` checks for each before attempting to
+  parse, so the documented messages fire instead of an
+  uncaught Ruby exception.
 - **Source file missing**: should never happen (the file
-  ships with the tap), but if so, the `Digest::SHA256.file`
-  call raises and propagates through to a clear error.
+  ships with the tap), but `actual_hash` checks explicitly
+  and `odie`s with recovery instructions if it does.
 
 ## Consequences
 

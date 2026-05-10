@@ -627,14 +627,21 @@ already set): user loads first, system fills in remaining gaps,
 process env was already in place before either file load.
 
 **Sysadmin override**: setting
-`BABBLE_SYSTEM_ENV_TAKES_PRIORITY=1` in the process environment
-inverts the file precedence: system > user. Useful for
-corporate-managed macOS fleets where IT enforces /etc-defined
-defaults that user-set values can't override. Independent of
-Homebrew's `HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY`; the two
-variables are deliberately not coupled (babble and Homebrew
-are separate entities; sysadmins who want both behaviors
-should set both flags explicitly).
+`BABBLE_SYSTEM_ENV_TAKES_PRIORITY` to any non-empty value in
+the process environment inverts the file precedence: system
+> user. `1` is the idiomatic example value, but any
+non-empty value enables it — this mirrors Homebrew's
+upstream env-var convention (per `man brew`: "environment
+variables must have a value set to be detected… run
+`export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
+`export HOMEBREW_NO_INSECURE_REDIRECT`"; the `=1` is
+illustrative, not a contract). Useful for corporate-managed
+macOS fleets where IT enforces /etc-defined defaults that
+user-set values can't override. Independent of Homebrew's
+`HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY`; the two variables are
+deliberately not coupled (babble and Homebrew are separate
+entities; sysadmins who want both behaviors should set both
+flags explicitly).
 
 The `BABBLE_SYSTEM_ENV_TAKES_PRIORITY` flag itself must be
 set in the process environment to take effect — setting it in
@@ -728,6 +735,10 @@ module Babble
 
       private
 
+      # Mirrors Homebrew's upstream env-var convention: any
+      # non-empty value enables the flag. `1` is the idiomatic
+      # example, not the only accepted value. Per `man brew`,
+      # the variable need only be "set to be detected".
       sig { returns(T::Boolean) }
       def system_takes_priority?
         value = ENV["BABBLE_SYSTEM_ENV_TAKES_PRIORITY"]
