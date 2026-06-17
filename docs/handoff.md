@@ -88,7 +88,7 @@ instructions in `_claude-config-baseline/README.md` § "Initial setup
 
 Each Claude Code session in this plan runs at one of the four
 isolation tiers defined in
-`~/devel/claude/desktop/blackoutd/docs/decisions/0007-layered-isolation-strategy.md`.
+`~/devel/claude/desktop/toobuntu/blackoutd/docs/decisions/0007-layered-isolation-strategy.md`.
 Read the ADR if you haven't recently. Short summary:
 
 - **Tier 1** — Primary checkout, in-host Seatbelt + permission rules.
@@ -122,7 +122,7 @@ PR. Tier 4 doesn't appear because babble doesn't use Mach IPC and
 the work isn't adversarial-capability-tier.
 
 The `sandbox-enter.sh` script lives in
-`~/devel/claude/desktop/blackoutd/scripts/sandbox-enter.sh` (it
+`~/devel/claude/desktop/toobuntu/blackoutd/scripts/sandbox-enter.sh` (it
 hasn't been promoted to `scaffolding/scripts/` yet). Copy it into
 `babble-ruby/scripts/` during Block 0 so it's in place when Block B
 starts.
@@ -140,7 +140,7 @@ Before anything else, confirm the planning artifacts are in place
 and the prompt-text scrub worked:
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 ls -la docs/                   # README.md, handoff.md, tech-debt.md (or technical-debt.md), decisions/, reviews/
 ls -la docs/reviews/           # pr1-review.md, pr3-review.md
 ls -la archive/                # _OPENING_PROMPT.txt, _usr_local_bin_bbl, babble/
@@ -159,7 +159,7 @@ currently ships as `docs/tech-debt.md`; rename now while it's still
 unreferenced by external links:
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 git mv docs/tech-debt.md docs/technical-debt.md
 
 # Update the cross-references in handoff.md and README.md
@@ -195,7 +195,7 @@ also the audit trail for why the Ruby migration looks the way it
 does, and they belong with the code. Commit them on `main`.
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 
 # Clean up the working copies of this file
 rm docs/handoff.md.0 docs/handoff.md.1
@@ -289,7 +289,7 @@ the disk per our earlier discussion.
 
 ```sh
 # Tear down the planning-session worktrees
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 git worktree list               # confirm the 4 worktrees
 git worktree remove ../babble-pr1
 git worktree remove ../babble-pr3
@@ -307,7 +307,7 @@ git switch -c ruby-migration
 git push -u origin ruby-migration
 ```
 
-The original `~/devel/claude/desktop/babble/` clone now serves as
+The original `~/devel/claude/desktop/toobuntu/babble/` clone now serves as
 the "main / released versions" reference. The new
 `~/devel/claude/desktop/babble-ruby/` clone is where Ruby migration
 work happens. Two physical clones, two mental boxes.
@@ -399,7 +399,7 @@ git switch ruby-migration
 
 # Source paths — adjust if/when scaffolding/project/ gets populated
 B=~/devel/claude/desktop/_claude-config-baseline
-BD=~/devel/claude/desktop/blackoutd
+BD=~/devel/claude/desktop/toobuntu/blackoutd
 
 # Per-repo Claude Code config
 mkdir -p .claude scripts
@@ -902,8 +902,8 @@ Copy-paste the following into Claude Code:
 > `CLAUDE.md`, `docs/agent-principles.md`, `.claude/settings.json`,
 > sandbox scripts). I am running this session at Tier 3
 > (fresh-clone-no-remote). The reference repos to model on are
-> `~/devel/claude/desktop/homebrew-cask-tools/` and
-> `~/devel/claude/desktop/blackoutd/`.
+> `~/devel/claude/desktop/toobuntu/homebrew-cask-tools/` and
+> `~/devel/claude/desktop/toobuntu/blackoutd/`.
 >
 > Read these documents first, in order:
 >
@@ -919,13 +919,13 @@ Copy-paste the following into Claude Code:
 >    Ruby-toolchain part)
 > 5. `docs/reviews/pr1-review.md` (the rationale for why this
 >    branch exists)
-> 6. `~/devel/claude/desktop/homebrew-cask-tools/.github/workflows/ci.yml`
+> 6. `~/devel/claude/desktop/toobuntu/homebrew-cask-tools/.github/workflows/ci.yml`
 >    (the canonical model for `brew style` + `brew install-bundler-gems`
 >    in CI)
-> 7. `~/devel/claude/desktop/homebrew-cask-tools/cmd/purge-quarantine.rb`
+> 7. `~/devel/claude/desktop/toobuntu/homebrew-cask-tools/cmd/purge-quarantine.rb`
 >    (the canonical model for Sorbet sigs and `T.let`/`T.unsafe`
 >    patterns)
-> 8. `~/devel/claude/desktop/blackoutd/Gemfile` (template for a
+> 8. `~/devel/claude/desktop/toobuntu/blackoutd/Gemfile` (template for a
 >    minimal Gemfile)
 >
 > Decisions already locked (do not re-litigate):
@@ -1242,7 +1242,7 @@ Copy-paste the following into Claude Code:
 >    do NOT copy code wholesale; the entire reason we're rewriting
 >    is that those files have bugs. Use as architectural reference
 >    only.
-> 5. `~/devel/claude/desktop/babble/archive/babble/ruby/refactor/ruby/lib/utils/running_gui_bundle_ids.rb`
+> 5. `~/devel/claude/desktop/toobuntu/babble/archive/babble/ruby/refactor/ruby/lib/utils/running_gui_bundle_ids.rb`
 >    — the prototype's working `bundleID` parser
 >
 > **Scope of this session:**
@@ -1284,7 +1284,7 @@ Copy-paste the following into Claude Code:
 > **Sorbet sigs**: every public method gets a `sig`.
 > `T::Sig::WithoutRuntime` is fine for performance-sensitive paths
 > (none in this batch). Reference the `sig`/`T.let`/`T.unsafe`
-> patterns in `~/devel/claude/desktop/homebrew-cask-tools/cmd/purge-quarantine.rb`.
+> patterns in `~/devel/claude/desktop/toobuntu/homebrew-cask-tools/cmd/purge-quarantine.rb`.
 >
 > **Conventions** (per `docs/agent-principles.md`):
 > - Module namespace `Babble::*`

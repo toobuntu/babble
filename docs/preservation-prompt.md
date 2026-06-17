@@ -8,7 +8,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 Copy everything between the `>>>` markers into Claude Code. This
 runs at Tier 3 (fresh-clone-no-remote sandbox), launched from
-inside `~/devel/claude/desktop/babble/` after running
+inside `~/devel/claude/desktop/toobuntu/babble/` after running
 `./scripts/sandbox-enter.sh --mode=no-remote`.
 
 >>>
@@ -496,7 +496,7 @@ When done:
 - Don't modify `bbl` (the ksh script).
 - Don't touch any of the user's other repos
   (blackoutd, homebrew-cask-tools, brew, etc.) beyond reading
-  `~/devel/claude/desktop/blackoutd/scripts/` for the
+  `~/devel/claude/desktop/toobuntu/blackoutd/scripts/` for the
   annotate.sh and sandbox-enter.sh sources if they aren't
   already in babble's scripts/.
 - Don't touch `docs/handoff.md` or `docs/technical-debt.md`
