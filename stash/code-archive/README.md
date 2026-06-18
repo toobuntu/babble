@@ -11,6 +11,14 @@ from the archived branches. Each subdirectory corresponds to
 one source. Files preserve their original SPDX headers if
 present.
 
+> **Status — completed.** This extraction ran during the v0.5
+> preservation work; the `code-archive/` below is populated. The
+> `babble-base64` and `babble-pr1` worktrees it references were torn
+> down afterward (base64 archived as the `archive/2026-05-07-ksh-base64`
+> tag; PR-1 discarded). Their `~/devel/claude/desktop/babble-*` paths
+> predate the `toobuntu/` reorg and are kept as a historical record,
+> not live instructions.
+
 ## Subdirectories
 
 - `refactor-modular/` — extracts from
