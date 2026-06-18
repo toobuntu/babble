@@ -130,16 +130,20 @@ After approving the triage:
 
 1. Exit the sandbox.
 2. Fetch the branch from the sandbox:
+
    ```sh
    cd ~/devel/claude/desktop/toobuntu/babble
    git fetch /tmp/babble-sandbox/.git \
      preservation-archive:preservation-archive
    git switch preservation-archive
    ```
+
 3. Review the new `docs/migration-investigation/` directory:
+
    ```sh
    tree ~/devel/claude/desktop/toobuntu/babble/docs/migration-investigation/
    ```
+
 4. Read `00-meta-overview.md` and `01-decisions.md` carefully —
    these are the high-traffic entry points.
 5. Spot-check 2-3 of the `modules/*.md` files.
@@ -149,6 +153,7 @@ After approving the triage:
    (e.g., cherry-picks from a dead branch), review and apply
    those manually before pushing the preservation branch.
 8. Push and merge:
+
    ```sh
    git push origin preservation-archive
    gh pr create --base main \
