@@ -296,11 +296,11 @@ git worktree remove ../babble-pr3
 git worktree remove ../babble-refactor-modular
 git worktree remove ../babble-base64
 git worktree prune              # clean up administrative entries
-ls ../                          # confirm only `babble` remains under desktop/
+ls ../                          # confirm the babble-* worktrees are gone
 
 # Make a fresh full clone for the Ruby migration work.
-# This goes in ~/devel/claude/desktop/ so Filesystem MCP can reach it.
-cd ~/devel/claude/desktop
+# This goes in ~/devel/claude/desktop/toobuntu/ so Filesystem MCP can reach it.
+cd ~/devel/claude/desktop/toobuntu
 git clone https://github.com/toobuntu/babble.git babble-ruby
 cd babble-ruby
 git switch -c ruby-migration
@@ -309,7 +309,7 @@ git push -u origin ruby-migration
 
 The original `~/devel/claude/desktop/toobuntu/babble/` clone now serves as
 the "main / released versions" reference. The new
-`~/devel/claude/desktop/babble-ruby/` clone is where Ruby migration
+`~/devel/claude/desktop/toobuntu/babble-ruby/` clone is where Ruby migration
 work happens. Two physical clones, two mental boxes.
 
 ### A.7 — Add the GitHub branch protection ruleset
@@ -390,11 +390,11 @@ items at the end of this file).
 
 ### 0.1 — Copy the templates
 
-Working in `~/devel/claude/desktop/babble-ruby/` on the
+Working in `~/devel/claude/desktop/toobuntu/babble-ruby/` on the
 `ruby-migration` branch:
 
 ```sh
-cd ~/devel/claude/desktop/babble-ruby
+cd ~/devel/claude/desktop/toobuntu/babble-ruby
 git switch ruby-migration
 
 # Source paths — adjust if/when scaffolding/project/ gets populated
@@ -875,7 +875,7 @@ many times (every `git commit`, every `gh` invocation). Per ADR
 0007's escalation triggers, run at Tier 3:
 
 ```sh
-cd ~/devel/claude/desktop/babble-ruby
+cd ~/devel/claude/desktop/toobuntu/babble-ruby
 ./scripts/sandbox-enter.sh --mode=no-remote
 # This creates a fresh clone with no remote configured. The script
 # prints the sandbox path and may launch a sub-shell or print a
@@ -1114,7 +1114,7 @@ Copy-paste the following into Claude Code:
 >    this sandbox clone). The procedure is roughly:
 >
 >    ```sh
->    # In the primary checkout (~/devel/claude/desktop/babble-ruby):
+>    # In the primary checkout (~/devel/claude/desktop/toobuntu/babble-ruby):
 >    git fetch <sandbox-path>/.git b1-ruby-toolchain:b1-ruby-toolchain
 >    git switch b1-ruby-toolchain
 >    git push origin b1-ruby-toolchain
@@ -1135,7 +1135,7 @@ After Claude Code reports back:
    the sandbox dir so you can fetch from it.
 2. From the primary checkout, fetch the branch from the sandbox:
    ```sh
-   cd ~/devel/claude/desktop/babble-ruby
+   cd ~/devel/claude/desktop/toobuntu/babble-ruby
    git fetch /tmp/babble-ruby-sandbox b1-ruby-toolchain:b1-ruby-toolchain
    # Adjust path to whatever sandbox-enter.sh used
    ```
@@ -1216,7 +1216,7 @@ next prompt informed by what actually shipped.
 Same Tier 3 entry pattern as Block B:
 
 ```sh
-cd ~/devel/claude/desktop/babble-ruby
+cd ~/devel/claude/desktop/toobuntu/babble-ruby
 ./scripts/sandbox-enter.sh --mode=no-remote
 # Then launch Claude Code from inside the sandbox clone.
 ```
