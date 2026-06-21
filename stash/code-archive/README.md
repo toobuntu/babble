@@ -11,6 +11,14 @@ from the archived branches. Each subdirectory corresponds to
 one source. Files preserve their original SPDX headers if
 present.
 
+> **Status — completed.** This extraction ran during the v0.5
+> preservation work; the `code-archive/` below is populated. The
+> `babble-base64` and `babble-pr1` worktrees it references were torn
+> down afterward (base64 archived as the `archive/2026-05-07-ksh-base64`
+> tag; PR-1 discarded). Their `~/devel/claude/desktop/babble-*` paths
+> predate the `toobuntu/` reorg and are kept as a historical record,
+> not live instructions.
+
 ## Subdirectories
 
 - `refactor-modular/` — extracts from
@@ -38,9 +46,9 @@ The maintainer's existing worktrees:
 
 ```sh
 git worktree list
-# /Users/todd/devel/claude/desktop/babble                  [main]
+# /Users/todd/devel/claude/desktop/toobuntu/babble                  [main]
 # /Users/todd/devel/claude/desktop/babble-base64           [base64]
-# /Users/todd/devel/claude/desktop/babble-refactor-modular [refactor/modular]
+# /Users/todd/devel/claude/desktop/toobuntu/babble-refactor-modular [refactor/modular]
 ```
 
 (The PR-1 and PR-3 worktrees can be torn down before this
@@ -49,11 +57,11 @@ since those branches are being discarded.)
 
 ### Extract from refactor/modular
 
-Run from `~/devel/claude/desktop/babble-refactor-modular`:
+Run from `~/devel/claude/desktop/toobuntu/babble-refactor-modular`:
 
 ```sh
-cd ~/devel/claude/desktop/babble-refactor-modular
-DEST=~/devel/claude/desktop/babble/docs/migration-investigation/code-archive/refactor-modular
+cd ~/devel/claude/desktop/toobuntu/babble-refactor-modular
+DEST=~/devel/claude/desktop/toobuntu/babble/docs/migration-investigation/code-archive/refactor-modular
 
 # Mirror the relevant tree under refactor/ into the archive.
 # Use rsync to preserve permissions and skip .git stuff.
@@ -110,7 +118,7 @@ Run from `~/devel/claude/desktop/babble-base64`:
 
 ```sh
 cd ~/devel/claude/desktop/babble-base64
-DEST=~/devel/claude/desktop/babble/docs/migration-investigation/code-archive/base64
+DEST=~/devel/claude/desktop/toobuntu/babble/docs/migration-investigation/code-archive/base64
 
 mkdir -p "$DEST"
 
@@ -136,7 +144,7 @@ Run from `~/devel/claude/desktop/babble-pr1`:
 
 ```sh
 cd ~/devel/claude/desktop/babble-pr1
-DEST=~/devel/claude/desktop/babble/docs/migration-investigation/code-archive/pr1
+DEST=~/devel/claude/desktop/toobuntu/babble/docs/migration-investigation/code-archive/pr1
 
 mkdir -p "$DEST"
 
@@ -167,7 +175,7 @@ After extraction, run the annotate script (assuming it's
 been copied in as part of W2 setup):
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 bash scripts/annotate.sh
 
 # Verify reuse compliance

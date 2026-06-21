@@ -41,7 +41,7 @@ intermediate Ruby release.
 Verify the babble repo state before launching:
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 git status                       # clean on main
 git fetch --all --prune
 git branch --all --sort=-committerdate
@@ -67,9 +67,9 @@ session reads these to populate
 present:
 
 ```sh
-ls -la ~/devel/claude/desktop/babble/archive/babble/ruby/refactor/ruby/lib/
-ls -la ~/devel/claude/desktop/babble/archive/babble/ruby/refactor/ruby/lib/utils/
-ls -la ~/devel/claude/desktop/babble/archive/babble/ruby/refactor/ruby/lib/macos_interface/
+ls -la ~/devel/claude/desktop/toobuntu/babble/archive/babble/ruby/refactor/ruby/lib/
+ls -la ~/devel/claude/desktop/toobuntu/babble/archive/babble/ruby/refactor/ruby/lib/utils/
+ls -la ~/devel/claude/desktop/toobuntu/babble/archive/babble/ruby/refactor/ruby/lib/macos_interface/
 ```
 
 Expected files include `brew_cask_utils.rb`, `brew_update.rb`,
@@ -87,11 +87,11 @@ W2 needs `scripts/sandbox-enter.sh` (to enter Tier 3) and
 either. Copy from blackoutd before launching:
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 mkdir -p scripts
-cp ~/devel/claude/desktop/blackoutd/scripts/sandbox-enter.sh scripts/
-cp ~/devel/claude/desktop/blackoutd/scripts/sandbox-exit.sh scripts/
-cp ~/devel/claude/desktop/blackoutd/scripts/annotate.sh scripts/
+cp ~/devel/claude/desktop/toobuntu/blackoutd/scripts/sandbox-enter.sh scripts/
+cp ~/devel/claude/desktop/toobuntu/blackoutd/scripts/sandbox-exit.sh scripts/
+cp ~/devel/claude/desktop/toobuntu/blackoutd/scripts/annotate.sh scripts/
 chmod +x scripts/*.sh
 ```
 
@@ -101,16 +101,16 @@ blackoutd scripts work fine.
 
 ## Claude Code session: triage + preservation
 
-Run at Tier 3 from `~/devel/claude/desktop/babble/`:
+Run at Tier 3 from `~/devel/claude/desktop/toobuntu/babble/`:
 
 ```sh
-cd ~/devel/claude/desktop/babble
+cd ~/devel/claude/desktop/toobuntu/babble
 ./scripts/sandbox-enter.sh --mode=no-remote
 # Enter the sandbox dir; launch Claude Code from there.
 ```
 
 The Claude Code prompt is at
-`~/devel/claude/desktop/babble/docs/preservation-prompt.md`. Copy
+`~/devel/claude/desktop/toobuntu/babble/docs/preservation-prompt.md`. Copy
 the prompt body (between `>>>` markers) and paste.
 
 When Claude Code reports back, it will provide:
@@ -130,16 +130,20 @@ After approving the triage:
 
 1. Exit the sandbox.
 2. Fetch the branch from the sandbox:
+
    ```sh
-   cd ~/devel/claude/desktop/babble
+   cd ~/devel/claude/desktop/toobuntu/babble
    git fetch /tmp/babble-sandbox/.git \
      preservation-archive:preservation-archive
    git switch preservation-archive
    ```
+
 3. Review the new `docs/migration-investigation/` directory:
+
    ```sh
-   tree ~/devel/claude/desktop/babble/docs/migration-investigation/
+   tree ~/devel/claude/desktop/toobuntu/babble/docs/migration-investigation/
    ```
+
 4. Read `00-meta-overview.md` and `01-decisions.md` carefully —
    these are the high-traffic entry points.
 5. Spot-check 2-3 of the `modules/*.md` files.
@@ -149,6 +153,7 @@ After approving the triage:
    (e.g., cherry-picks from a dead branch), review and apply
    those manually before pushing the preservation branch.
 8. Push and merge:
+
    ```sh
    git push origin preservation-archive
    gh pr create --base main \
