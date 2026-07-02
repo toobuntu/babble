@@ -270,8 +270,8 @@ Per the agreed-on conventions for this and sister repos
   doing style/syntax/Sorbet, but RSpec needs macOS runners.
 
 This is significant work and is the largest single chunk of post-merge
-cleanup, but it's table-stakes for shipping. See `tech-debt.md` items in
-the P0 band for breakdown.
+cleanup, but it's table-stakes for shipping. See `technical-debt.md` items
+in the P0 band for breakdown.
 
 ### B9. `IMPLEMENTATION_SUMMARY.md` is committed at the repo root
 
