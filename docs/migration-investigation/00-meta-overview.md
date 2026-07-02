@@ -108,7 +108,7 @@ the external-command rewrite (W3 in master-plan):
   three-tier (`mdfind` → `lsregister -dump` → walker), to be
   upgraded in W3 to consume the seven-tier helper from
   cask-tools' `purge-quarantine` once it's extracted to
-  `Homebrew::Cask::BundleDiscovery` (workstream W7).
+  `Homebrew::CaskTools::BundleDiscovery` (workstream W7).
 - **Terminal exclusion design** — env-var-first
   (`TERM_PROGRAM`, `LC_TERMINAL`, `__CFBundleIdentifier`),
   process-tree fallback, allowlist-of-terminal-casks. PR #3's

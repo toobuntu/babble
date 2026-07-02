@@ -38,9 +38,10 @@ References to PR #1 and PR #3 review findings (B1, S3, etc.) point to
 ### P0.1 — Cut a fresh `ruby-migration` branch from `main`
 
 PR #1's branch carries enough wrong-as-implemented code (B1, B2, B5, B7
-in the PR #1 review) that incremental fixes aren't tractable. The
-architecture and the Bash entry point shape are keepers; the rest needs
-to be re-derived against tests we control.
+in the PR #1 review) that incremental fixes aren't tractable. The module
+decomposition is a keeper (the Bash entry point is gone under the
+external-command shape); the rest needs to be re-derived against tests
+we control.
 
 **Acceptance criteria:**
 
@@ -53,34 +54,41 @@ to be re-derived against tests we control.
 
 **Files:** new branch only.
 
-### P0.2 — Land the conventions stack in one commit
+### P0.2 — Land the tap toolchain (revised for the external-command shape)
 
 Every other piece of work on the new branch should sit on top of the
 agent / lint / test / license scaffolding shared with the sister repos.
 Doing this once, before any code, prevents the "we'll add tests later"
-trap and the "we'll add Sorbet later" trap. Reference templates live in
-`homebrew-cask-tools/` and `blackoutd/`.
+trap. The reference repo is `homebrew-cask-tools/` — babble runs inside
+Homebrew's Ruby process, so there is **no Gemfile, no `.rubocop.yml`,
+no `sorbet/` directory, and no `.rspec`**; the toolchain is
+`brew style` / `brew typecheck` / `brew tests`. Handoff Blocks 0 and B
+carry the split (agent scaffolding in Block 0, everything else here).
 
 **Acceptance criteria:**
 
-- [ ] `Gemfile`, `Gemfile.lock` with `sorbet`, `sorbet-runtime`, `rspec`,
-      `rubocop`, Homebrew style cops
-- [ ] `sorbet/config`, `sorbet/rbi/` after `srb init`
-- [ ] `.rspec`, `.rubocop.yml`
-- [ ] `LICENSES/GPL-3.0-or-later.txt` and `LICENSES/BSD-2-Clause.txt`
-      (matching the sister repos' dual-license approach)
-- [ ] `scripts/annotate.sh` — copy from `homebrew-cask-tools` and adapt
-- [ ] `.githooks/pre-commit` — `brew style --fix` if available, else
-      `rubocop -a` + `shfmt -w`; REUSE compliance check
-- [ ] `AGENTS.md`, `CLAUDE.md`, `docs/shared-guidelines.md`,
-      `docs/agent-principles.md` — reference the cask-tools versions and
-      adapt for babble's domain (no Homebrew tap conventions; this is an
-      end-user tool)
-- [ ] `docs/architecture.md` — initial draft with module overview, entry
-      flow, and config resolution
-- [ ] `.github/workflows/` — `ci.yml` with style + sorbet typecheck on
-      Ubuntu, `rspec.yml` on `macos-14`, REUSE check, actionlint
-- [ ] No babble logic changes in this commit
+- [ ] `cmd/babble.rb` stub (`Homebrew::Cmd::Babble < AbstractCommand`)
+      plus `cmd/babble/{version,formatter}.rb` (⨀ output helpers)
+- [x] `LICENSES/GPL-3.0-or-later.txt` (single license — babble is an
+      end-user tool; the sister repos' dual-license rationale does not
+      apply). Landed in W2.
+- [x] `scripts/annotate.sh` — landed in W2.
+- [ ] `scripts/run-tests.sh` — hardlink harness adapted from
+      cask-tools (including the `cmd/babble/` subtree)
+- [ ] `.githooks/pre-commit` — `brew style --fix --changed`,
+      `shfmt -d` + `shellcheck` for Bash, `reuse --no-multiprocessing
+      lint-file` on staged files
+- [ ] `AGENTS.md`, `CLAUDE.md`, `docs/agent-principles.md`,
+      `.claude/settings.json` — Block 0 (repo-foundation `provides/`
+      baselines adapted for babble)
+- [ ] `docs/architecture.md` — initial draft: entry flow, planned
+      module table, test/typecheck pipeline, ⨀ convention
+- [ ] `adrs.toml` + `docs/decisions/0001–0003` in MADR 4.0 (external
+      command shape, ⨀ output prefix, Swift build strategy)
+- [ ] `.github/workflows/` — `ci.yml` (brew style + brew tests via
+      hardlinks, macos-latest), `lint.yml` (reuse, actionlint, zizmor,
+      shellcheck/shfmt on Ubuntu)
+- [ ] No babble logic changes in these commits
 
 **Files:** all of the above.
 
@@ -98,36 +106,42 @@ disabled — the headline of the migration delivers nothing.
 - [ ] RSpec stubs `lsappinfo list` with a fixture (capture once from a
       real macOS) and asserts the parser returns >= 1 bundle ID and
       excludes lines that don't have `bundleID="..."`
-- [ ] Fixture committed as `spec/fixtures/lsappinfo_list_sample.txt`
+- [ ] Fixture committed as `test/fixtures/lsappinfo_list_sample.txt`
+      (captured by the maintainer, not fabricated)
 
-**Files:** `lib/babble/app_manager.rb`, `spec/babble/app_manager_spec.rb`,
-`spec/fixtures/lsappinfo_list_sample.txt`.
+**Files:** `cmd/babble/app_manager.rb`,
+`test/cmd/babble/app_manager_spec.rb`,
+`test/fixtures/lsappinfo_list_sample.txt`.
 
 ### P0.4 — `lsregister -dump` performance: cache and use cheap predicate
 
-Per PR #1 review B2. Current code calls `lsregister -dump` (~20 s) inside
-a 0.2 s polling loop; reopening five apps post-upgrade can hang for
-tens of minutes. Replace the polling predicate with `osascript -e 'id of
-app "<bundle-id>"'` (tens of milliseconds), and cache the
-`lsregister -dump` output for the cold-path resolver.
+Per PR #1 review B2. Prototype code called `lsregister -dump` (~20 s)
+inside a 0.2 s polling loop; reopening five apps post-upgrade could
+hang for tens of minutes. Replace the polling predicate with
+`osascript -e 'id of app "<bundle-id>"'` (tens of milliseconds), and
+delegate the cold-path resolver to cask-tools.
+
+**Post-W7 note:** the cold-path resolution (find the bundle on disk)
+is now `Homebrew::CaskTools::BundleDiscovery` from the cask-tools tap,
+whose `BundleDiscovery.lsregister_dump` already caches the dump on
+disk (5-minute TTL, shared across consumers). Babble does not build
+its own `LSRegisterCache`; the earlier in-process-cache plan is
+superseded. What remains babble-side is the cheap polling predicate.
 
 **Acceptance criteria:**
 
 - [ ] `BundleLauncher#app_registered?` uses `osascript -e 'id of app
-      "<bundle>"'` for the polling check
-- [ ] `BundleLauncher#app_path_via_lsregister_dump` caches the dump for
-      the duration of one `Babble` run (instance variable on a small
-      `LSRegisterCache` object), not 5 minutes on disk like cask-tools
-      does — a single run is short-lived enough that in-process caching
-      suffices
-- [ ] RSpec covers: cached path used on second call within run; cache
-      not used after a fresh `BundleLauncher.new`
+      "<bundle>"'` for the polling check — never `lsregister -dump`
+- [ ] Cold-path resolution delegates to
+      `Homebrew::CaskTools::BundleDiscovery` (see handoff Block C.3);
+      no dump parsing in babble
+- [ ] Spec covers the polling predicate and the delegation boundary
 - [ ] No regression: reopen of 5 apps completes in < 30 s on a typical
       macOS install (manual smoke test, recorded in
-      `spec/manual/TESTING.md`)
+      `test/manual/TESTING.md`)
 
-**Files:** `lib/babble/bundle_launcher.rb`,
-`spec/babble/bundle_launcher_spec.rb`, `spec/manual/TESTING.md`.
+**Files:** `cmd/babble/bundle_launcher.rb`,
+`test/cmd/babble/bundle_launcher_spec.rb`, `test/manual/TESTING.md`.
 
 ### P0.5 — `brew outdated` flags must match `brew upgrade` flags
 
@@ -238,48 +252,52 @@ since v0.5.0; the Ruby migration is the right time to fix it.
 `lib/babble/brew_upgrade.rb`, `spec/babble/terminal_detector_spec.rb`,
 `spec/babble/brew_upgrade_spec.rb`, `README.md`.
 
-### P0.10 — Sorbet runtime enforced in CI
+### P0.10 — Sorbet typecheck enforced (revised for the external-command shape)
 
-Per PR #1 review B8. `# typed: strict` magic comments without `srb tc`
-in CI is decorative. Enforce.
+Per PR #1 review B8. `# typed: strict` magic comments without a
+typecheck run are decorative. Enforce via `brew typecheck` (Homebrew's
+Sorbet), not a project Sorbet install — there is no Gemfile.
 
 **Acceptance criteria:**
 
-- [ ] `Gemfile` includes `sorbet` and `sorbet-runtime`
-- [ ] `sorbet/config` configured for `strict` files in `lib/`
-- [ ] `srb tc` runs cleanly in `.github/workflows/ci.yml` (Ubuntu)
-- [ ] All public methods have `sig { ... }` declarations
-- [ ] Spec files explicitly use `# typed: false` (Sorbet doesn't play
-      well with RSpec mocks)
-- [ ] CI fails on Sorbet errors
+- [ ] All non-spec files `# typed: strict` with `sig { ... }` on every
+      method (private included)
+- [ ] Spec files never `typed: strict` (cask-tools convention:
+      `# typed: true # rubocop:disable Sorbet/StrictSigil`)
+- [ ] `brew typecheck` passes locally with the tap files hardlinked
+      into `$(brew --repo)` (run-tests.sh pattern)
+- [ ] CI runs it the same way if the hardlink approach proves to work
+      in CI (Block B verifies); otherwise pre-commit-hook enforcement
+      with the limitation documented in `docs/architecture.md`
 
-**Files:** `Gemfile`, `Gemfile.lock`, `sorbet/config`, `sorbet/rbi/*`,
-all `lib/babble/*.rb`, `.github/workflows/ci.yml`.
+**Files:** all `cmd/**/*.rb`, `.github/workflows/ci.yml`,
+`.githooks/pre-commit`.
 
-### P0.11 — RSpec test suite with macOS CI runner
+### P0.11 — Test suite via `brew tests` (revised for the external-command shape)
 
 Per PR #1 review B8. The migration ships with zero tests. Tests must
-land before merge, and macOS-specific behavior must be exercised on a
-macOS runner.
+land with each C-block. Specs run inside Homebrew's own RSpec harness
+(`brew tests --only=…`) with tap files hardlinked into
+`$(brew --repo)` — no project `spec_helper.rb`, no simplecov, no
+separate Ubuntu unit-test path (`brew tests` runs on the macOS CI
+runner).
 
 **Acceptance criteria:**
 
-- [ ] `spec/spec_helper.rb` with shared setup
-- [ ] One `*_spec.rb` per non-trivial module:
-      `app_manager_spec.rb`, `bundle_launcher_spec.rb`,
-      `brew_upgrade_spec.rb`, `mas_upgrade_spec.rb`,
-      `macos_update_spec.rb`, `config_manager_spec.rb`,
-      `terminal_detector_spec.rb`, `waiter_spec.rb`
-- [ ] `spec/manual/TESTING.md` documents the smoke tests that must be
-      run on real hardware (full upgrade cycle, quit/reopen of an
-      unsafe-to-quit app, etc.)
-- [ ] CI: `rspec.yml` workflow on `macos-14` runner, runs unit specs;
-      integration specs that need real macOS APIs (`lsappinfo`,
-      `osascript`) gated by an `:integration` tag
-- [ ] Ubuntu CI runs unit specs only (with macOS APIs mocked)
-- [ ] Coverage target: ≥ 80% on `lib/babble/`. Use `simplecov` to track
+- [ ] One `test/cmd/babble/<unit>_spec.rb` per non-trivial class or
+      module: `app_manager`, `bundle_launcher`, `brew_upgrade`,
+      `mas_upgrade`, `macos_update`, config classes,
+      `terminal_detector`, `waiter`, `formatter`, `sh`
+- [ ] `test/manual/TESTING.md` documents the real-hardware smoke tests
+      (full upgrade cycle, quit/reopen of an unsafe-to-quit app, etc.)
+- [ ] External boundaries mocked (`Babble::Sh` / `system_command`,
+      JXA quits, `lsappinfo`); fixtures under `test/fixtures/`
+- [ ] CI `brew_tests` job runs every spec via the hardlink pattern
+      (cask-tools `ci.yml` model, extended with W7's `lib/`-style
+      subtree handling for `cmd/babble/`)
 
-**Files:** `spec/`, `.github/workflows/rspec.yml`, `Gemfile`.
+**Files:** `test/`, `scripts/run-tests.sh`,
+`.github/workflows/ci.yml`.
 
 ### P0.12 — REUSE/SPDX compliance via `scripts/annotate.sh`
 
@@ -289,8 +307,9 @@ know what's covered.
 
 **Acceptance criteria:**
 
-- [ ] `scripts/annotate.sh` adapted from `homebrew-cask-tools`
-- [ ] `LICENSES/GPL-3.0-or-later.txt` committed (via `reuse download`)
+- [x] `scripts/annotate.sh` adapted from `homebrew-cask-tools`
+      (landed in W2)
+- [x] `LICENSES/GPL-3.0-or-later.txt` committed (landed in W2)
 - [ ] All source files have SPDX headers (Ruby, Bash, Swift, YAML,
       Markdown)
 - [ ] Generated/binary files have `.license` sidecars
@@ -313,17 +332,21 @@ it in `apps.yml`), and aligns with the long-term mas API.
 - [ ] `mas list --json <app_id>` used to look up display name and
       bundle IDs at runtime, with config-file values as override
 - [ ] Spec covers both code paths with fixtures
-      (`spec/fixtures/mas_outdated_v7.json`,
-      `spec/fixtures/mas_outdated_v6_text.txt`)
+      (`test/fixtures/mas_outdated_v7.json`,
+      `test/fixtures/mas_outdated_v6_text.txt`)
 
-**Files:** `lib/babble/mas_upgrade.rb`,
-`spec/babble/mas_upgrade_spec.rb`, `spec/fixtures/mas_outdated_*`.
+**Files:** `cmd/babble/mas_upgrade.rb`,
+`test/cmd/babble/mas_upgrade_spec.rb`, `test/fixtures/mas_outdated_*`.
 
 ---
 
 ## P1 — Important pre-release
 
 ### P1.1 — Simplify `bin/babble` portable-Ruby setup
+
+> **Superseded by the external-command pivot.** There is no
+> `bin/babble`: `brew babble` runs inside Homebrew's Ruby process and
+> Homebrew owns the Ruby bootstrap. Kept for the record; no action.
 
 Per PR #1 review S1. Replace `setup-ruby.sh` source with the simpler
 `current/bin/ruby` symlink path used by Homebrew's own actions, with
