@@ -357,7 +357,7 @@ top of `~/.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "if [ \"$(git -C \"${CLAUDE_PROJECT_DIR:-.}\" branch --show-current)\" = \"main\" ]; then echo 'Direct edits to main are not allowed. Create a feature branch (git switch -c b1-tap-toolchain / c1-<topic>) before editing.' >&2; exit 2; fi",
+            "command": "if [ \"$(git -C \"${CLAUDE_PROJECT_DIR:-.}\" branch --show-current)\" = \"main\" ]; then echo 'Direct edits to main are not allowed. Create a feature branch first, e.g. git switch -c b1-tap-toolchain.' >&2; exit 2; fi",
             "timeout": 5
           }
         ]
@@ -450,7 +450,8 @@ doubles as the installed tap, mirroring the Copilot-sandbox layout
 cask-tools documents):
 
 ```sh
-ln -s ~/devel/claude/desktop/toobuntu/babble \
+mkdir -p "$(brew --repository)/Library/Taps/toobuntu"
+ln -sfn ~/devel/claude/desktop/toobuntu/babble \
   "$(brew --repository)/Library/Taps/toobuntu/homebrew-babble"
 brew tap-info toobuntu/babble   # sanity: brew sees the tap
 ```
@@ -519,10 +520,12 @@ Copy-paste the following into Claude Code:
 >   Homebrew, Mac App Store, and macOS software") and the first two
 >   switches: `--no-update` (skip the brew-update phase) and
 >   `--dry-run` (print what would be upgraded without doing it).
->   `run` prints `oh1 "⨀ Babble #{Babble::VERSION}"` and an
->   ohai-level "migration in progress; phases land in C-blocks"
->   notice, then exits 0. Guard `raise UsageError … unless OS.mac?`
->   like purge-quarantine.
+>   `run` prints the banner via
+>   `Babble::Formatter.oh1 "Babble #{Babble::VERSION}"` and a
+>   "migration in progress; phases land in C-blocks" notice via
+>   `Babble::Formatter.ohai`, then exits 0 — the ⨀ prefix comes
+>   from the formatter, never hardcoded at call sites. Guard
+>   `raise UsageError … unless OS.mac?` like purge-quarantine.
 > - `cmd/babble/version.rb` — `Babble::VERSION = "0.6.0.pre"`,
 >   frozen, typed strict. Required from `cmd/babble.rb` via
 >   `require_relative "babble/version"`.

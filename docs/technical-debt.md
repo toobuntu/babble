@@ -76,8 +76,8 @@ carry the split (agent scaffolding in Block 0, everything else here).
 - [ ] `scripts/run-tests.sh` — hardlink harness adapted from
       cask-tools (including the `cmd/babble/` subtree)
 - [ ] `.githooks/pre-commit` — `brew style --fix --changed`,
-      `shfmt -d` + `shellcheck` for Bash, `reuse --no-multiprocessing
-      lint-file` on staged files
+      `shfmt -d` + `shellcheck` for Bash, and
+      `reuse --no-multiprocessing lint-file` on staged files
 - [ ] `AGENTS.md`, `CLAUDE.md`, `docs/agent-principles.md`,
       `.claude/settings.json` — Block 0 (repo-foundation `provides/`
       baselines adapted for babble)
@@ -352,7 +352,7 @@ Per PR #1 review S1. Replace `setup-ruby.sh` source with the simpler
 `current/bin/ruby` symlink path used by Homebrew's own actions, with
 `brew vendor-install ruby` as bootstrap fallback.
 
-**Acceptance criteria:**
+**Original acceptance criteria (superseded; kept for the record):**
 
 - [ ] Probes
       `$(brew --repository)/Library/Homebrew/vendor/portable-ruby/current/bin/ruby`
