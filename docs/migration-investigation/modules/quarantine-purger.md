@@ -46,7 +46,7 @@ this as a regression.
 7. mdfind / Spotlight
 
 Cleared the W7 inspiration: extract the seven-tier logic to
-a shared `Homebrew::Cask::BundleDiscovery` class so both
+a shared `Homebrew::CaskTools::BundleDiscovery` class so both
 `purge-quarantine` and the future babble can consume it
 without duplicating the discovery code.
 

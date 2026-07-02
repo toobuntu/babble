@@ -994,9 +994,17 @@ Plus launchctl-asuser fallback for GUI session inheritance.
 Plus a custom `OpenLaunchError` class with `to_h` for diagnostics.
 
 **Carries to W3?** Yes, but consuming the seven-tier
-`Homebrew::Cask::BundleDiscovery` helper from cask-tools (W7
+`Homebrew::CaskTools::BundleDiscovery` helper from cask-tools (W7
 in master-plan). The retry-with-backoff and launchctl-asuser
 fallback stay; the path-resolution tiers delegate.
+
+(Namespace note: W7 originally sketched the class as
+`Homebrew::Cask::BundleDiscovery`, but defining `Homebrew::Cask`
+would shadow the top-level `::Cask` module for every piece of brew
+code written inside `module Homebrew` — Ruby resolves bare
+`Cask::...` lexically before falling back to `Object` — breaking
+Homebrew internals at runtime. `Homebrew::CaskTools` is the safe
+tap-owned namespace.)
 
 ## Light/dark mode detection for Swift quit_alert
 

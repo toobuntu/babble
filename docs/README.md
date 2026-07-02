@@ -13,7 +13,8 @@ Internal-only documentation for the babble project.
 - [`handoff.md`](handoff.md) — what comes next: Block A (sanity, ship
   v0.5.2, branch hygiene), Block B (conventions stack), Block C (P0
   blockers). Includes Claude Code handoff prompts.
-- [`tech-debt.md`](tech-debt.md) — prioritized debt register (P0–P3)
+- [`technical-debt.md`](technical-debt.md) — prioritized debt register
+  (P0–P3)
 - [`reviews/pr1-review.md`](reviews/pr1-review.md) — internal review of
   PR #1 (Ruby modular rewrite)
 - [`reviews/pr3-review.md`](reviews/pr3-review.md) — internal review of

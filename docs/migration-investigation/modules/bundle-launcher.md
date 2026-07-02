@@ -13,7 +13,7 @@ fallback paths if the simple `/usr/bin/open -b <id>` fails
 (LaunchServices stale entries, missing registration, etc.).
 The implementation in refactor/modular is sophisticated;
 the planned W3 evolution is to delegate path resolution to
-the seven-tier `Homebrew::Cask::BundleDiscovery` helper
+the seven-tier `Homebrew::CaskTools::BundleDiscovery` helper
 extracted from cask-tools' `purge-quarantine` (W7).
 
 ## Refactor/modular implementation
