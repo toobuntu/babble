@@ -1,0 +1,82 @@
+<!--
+SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+# Agent instructions for toobuntu/babble
+
+@docs/agent-principles.md
+
+The import above pulls in the **operating principles** that apply to every
+toobuntu repository: pre-action discipline, modern git verbs, the sandbox
+model, the universal denied operations, and the agent commit-and-signing
+procedure. They are committed to this repository (in
+`docs/agent-principles.md`) and synced from `toobuntu/repo-foundation`, so every
+contributor — human or agent — has them on checkout, without depending on any
+one maintainer's machine.
+
+Everything in this block is managed by repo-foundation and is refreshed on each
+sync. Put this repository's own context — what it is, how to build and test it,
+its safety invariants, and its project-specific tools — outside the block, in
+the surrounding `AGENTS.md`.
+
+## Project summary
+
+Babble is an interactive upgrade routine for Homebrew (formulae and
+casks), Mac App Store apps via mas, and macOS system updates via
+softwareupdate. Currently shipping as a ksh script (bbl, v0.5.2); in
+active migration to a Homebrew external command (`brew babble`) in
+this repo, which becomes the toobuntu/babble tap (repo renamed to
+homebrew-babble at v0.6.0). Modeled on homebrew-cask-tools. Target
+platform: macOS 14+ on Apple Silicon and Intel.
+
+## Key constraints
+
+- Target: macOS 14+ (Sonoma); macOS 15+ for the Swift quit_alert
+  binary (Swift 5.9 syntax requires Xcode 15)
+- Runtime: Homebrew's Ruby, inside the brew process (external
+  command). No Gemfile; Homebrew's vendored gems only.
+- Dependencies: brew (required), mas (optional), toobuntu/cask-tools
+  tap (for `brew purge-quarantine` delegation and
+  `Homebrew::CaskTools::BundleDiscovery`), Xcode CLT (required for the
+  Swift quit_alert auto-compile)
+- Codesigning: ad-hoc only (no Apple Developer cert)
+- License: GPL-3.0-or-later (single license)
+- Lint: `brew style` (Homebrew rubocop config; no project rubocop).
+  Shell files also go through `brew style` (Homebrew's
+  shfmt/shellcheck config verbatim — never repo-foundation's shell
+  lint; the standalone `.shellcheckrc` is superseded and awaits the
+  post-RF-sync cleanup pass)
+- Typecheck: `brew typecheck` with tap files hardlinked into
+  `$(brew --repo)` (scripts/run-tests.sh pattern)
+- Tests: `brew tests --only=…` via scripts/run-tests.sh
+- Output: Homebrew helpers with ⨀-prefixed messages via
+  `Babble::Formatter` (ADR 0002); the prefix lives in the formatter,
+  never at call sites
+- Sorbet: every non-spec Ruby file is `# typed: strict` with `sig`s
+  on every method; spec files are never `typed: strict`
+- SPDX headers only via `scripts/annotate.sh` — never hand-written
+
+## Project-specific tools (danger list)
+
+- bbl (the ksh script) — DO NOT run. It performs real upgrades.
+- brew babble (once it exists) — same restriction.
+- osascript / JXA app-quit — quits running user apps; always ask.
+- xcrun swiftc — auto-compiles swift/src/quit_alert.swift on first
+  run; output stays inside the project tree.
+- scripts/run-tests.sh — hardlinks files into $(brew --repo); do not
+  run brew update/upgrade/update-reset concurrently.
+
+## Documents to read on first load
+
+- `docs/agent-principles.md` (imported above — re-read with intent)
+- `docs/technical-debt.md` — the canonical, prioritized debt
+  register; the source of truth when plans and code disagree
+- `docs/handoff.md` — the migration action plan (Blocks 0/B/C)
+- `docs/decisions/` — babble's ADRs (MADR 4.0, once Block B lands
+  them)
+- `docs/reviews/` — PR review analyses, for any PR work
+- `docs/migration-investigation/01-decisions.md` — the locked design
+  decisions (entry-point shape, class-vs-module classification,
+  ⨀ output formatting, tap distribution); do not re-litigate
