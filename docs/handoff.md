@@ -80,7 +80,11 @@ Compared to the pre-pivot plan (see git history of this file):
 Babble uses Homebrew's own pipeline, exactly like cask-tools:
 
 - **`brew style <files>`** (or `--changed`) for lint. Homebrew's
-  rubocop config; no project-local `.rubocop.yml`.
+  rubocop config; no project-local `.rubocop.yml`. Shell files get
+  Homebrew's shfmt/shellcheck config verbatim through the same
+  command — never RF's shell-lint. The standalone `.shellcheckrc`
+  is superseded by `brew style` but stays in place until the
+  post-RF-sync cleanup pass.
 - **`brew typecheck`** for Sorbet, run against the brew repo with the
   tap files hardlinked in (see `scripts/run-tests.sh` pattern below).
   Every non-spec file is `# typed: strict` with `sig`s throughout;
@@ -134,11 +138,11 @@ Per-block tier recommendations:
 | Block B | **3** | Multi-commit, broad file changes |
 | Block C.1–C.7 | **3** | Multi-commit; every block ends in a PR |
 
-The `sandbox-enter.sh` script lives in
-`~/devel/claude/desktop/toobuntu/blackoutd/scripts/sandbox-enter.sh`
-until repo-foundation's sync takes over distribution. Copy it (plus
-`sandbox-exit.sh`) into `scripts/` during Block 0 so it's in place
-when Block B starts.
+The `sandbox-enter.sh` script now lives in
+`~/devel/claude/desktop/toobuntu/repo-foundation/scripts/sandbox-enter.sh`
+(repo-foundation took over from blackoutd as the canonical home;
+blackoutd's copies are gone). Copy it (plus `sandbox-exit.sh`) into
+`scripts/` during Block 0 so it's in place when Block B starts.
 
 ---
 
@@ -179,6 +183,18 @@ scaffolding (`AGENTS.md`, `CLAUDE.md`, `docs/agent-principles.md`,
 `.claude/settings.json`, sandbox tier scripts) so every subsequent
 Claude Code session starts with guard rails in effect.
 
+> **RF-sync coordination.** repo-foundation is pushed but **not yet
+> synced** to babble; the first sync (plus its cleanup pass) happens
+> after Block B merges, as its own step. These baseline copies are
+> therefore **interim guardrails**, sourced read-only from
+> `~/devel/claude/desktop/toobuntu/repo-foundation/` (`provides/` for
+> the repo files, `scripts/` for the sandbox scripts); the first sync
+> reconciles them. Do not hand-add the other RF-managed repo-health
+> files (`.githooks/pre-commit`, `lint.yml`, `.editorconfig`, RF
+> shell-lint configs, commit-convention / org-ADR-policy plumbing) —
+> they arrive via the sync. See the master plan § W3 "RF-sync
+> coordination".
+
 ### 0.1 — Create the branch and copy the templates
 
 Working in this repo:
@@ -189,22 +205,19 @@ git switch main && git pull
 git switch -c ruby-migration
 git push -u origin ruby-migration
 
-# Sources: repo-foundation provides/ (W1 Sessions 1-4, on disk),
-# blackoutd for the sandbox scripts (canonical until W6/W1 sync).
+# Source: repo-foundation (W1 Sessions 1-4, on disk) — provides/
+# for the repo files, scripts/ for the sandbox scripts (RF took
+# over from blackoutd as the canonical home).
 RF=~/devel/claude/desktop/toobuntu/repo-foundation
-BD=~/devel/claude/desktop/toobuntu/blackoutd
 
 mkdir -p .claude
 cp "$RF/provides/repo/AGENTS.baseline.md"     AGENTS.md
 cp "$RF/provides/repo/CLAUDE.md"              CLAUDE.md
 cp "$RF/provides/repo/settings.baseline.json" .claude/settings.json
-# agent-principles: repo-foundation is the canonical home; check
-# docs/ there (or fall back to blackoutd's copy) for the current
-# canonical file, then:
-cp <canonical-agent-principles path>          docs/agent-principles.md
+cp "$RF/docs/agent-principles.md"             docs/agent-principles.md
 
-cp "$BD/scripts/sandbox-enter.sh"             scripts/sandbox-enter.sh
-cp "$BD/scripts/sandbox-exit.sh"              scripts/sandbox-exit.sh
+cp "$RF/scripts/sandbox-enter.sh"             scripts/sandbox-enter.sh
+cp "$RF/scripts/sandbox-exit.sh"              scripts/sandbox-exit.sh
 chmod +x scripts/sandbox-*.sh
 ```
 
@@ -418,11 +431,31 @@ a working Homebrew tap with a stub command, CI, and docs — the
 external-command replacement for the old "Ruby toolchain" block.
 The result: `brew babble --help` works (stub), `brew style`,
 `brew typecheck`, `brew tests`, `reuse lint`, and `actionlint` all
-pass — but no upgrade logic is ported yet.
+pass locally — but no upgrade logic is ported yet.
 
 This discharges the toolchain part of **P0.2** in
 [`technical-debt.md`](technical-debt.md) as revised for the
 external-command shape.
+
+> **RF-sync coordination (scopes this block).** repo-foundation is
+> pushed but not yet synced to babble; babble keeps its pre-sync
+> infra during W3. Block B lands only the **Homebrew-aligned**
+> pieces: `ci.yml` (style + brew_tests jobs), `scripts/run-tests.sh`,
+> the `cmd/babble.rb` stub plus `cmd/babble/{version,formatter}.rb`,
+> and ADRs 0001–0003 (babble-specific, MADR 4.0 via `adrs`, numbered
+> from babble's own 0001; org-wide ADRs live in repo-foundation).
+> RF-managed repo-health files — `.githooks/pre-commit`, `lint.yml`
+> (reuse/actionlint/zizmor/shellcheck CI), `.editorconfig`, RF
+> shell-lint configs, commit-convention and org-ADR-policy plumbing —
+> are **not** hand-added here; they arrive via the first RF sync
+> after this block merges. The local lint tools (`reuse lint`,
+> `actionlint`, `shellcheck`, `shfmt`) still run by hand until then.
+> babble defers to `brew style` verbatim (Homebrew's
+> rubocop/shfmt/shellcheck config) — never RF's 2-space shell lint;
+> the standalone `.shellcheckrc` is superseded by `brew style` but
+> **stays in place** — its disposition belongs to the post-sync
+> cleanup pass, not to Block B. See the master plan § W3 "RF-sync
+> coordination" and P0.2 in `technical-debt.md`.
 
 ### B.1 — Pre-flight (manual, before launching Claude Code)
 
@@ -558,8 +591,10 @@ Copy-paste the following into Claude Code:
 >   verify it picks up the tap files; if it does not, document that
 >   typecheck is local-only for now and move on (do not sink the
 >   session into it).
-> - `lint.yml` — Ubuntu: `reuse lint`, `actionlint`, `zizmor`,
->   `shellcheck` + `shfmt -d` for `bbl` and `scripts/`.
+> - ~~`lint.yml`~~ — **struck per RF-sync coordination**: the
+>   reuse/actionlint/zizmor/shellcheck CI workflow is RF-managed and
+>   arrives via the first repo-foundation sync after this block
+>   merges. Run those linters by hand locally in the meantime.
 > - Update `.github/dependabot.yml` for github-actions (no bundler —
 >   there is no Gemfile).
 >
@@ -607,6 +642,12 @@ Copy-paste the following into Claude Code:
 > - Don't rename the GitHub repo (that's the v0.6.0 gate)
 > - Don't edit `AGENTS.md` / `.claude/settings.json` (Block 0 landed
 >   them; propose changes in the report instead)
+> - Don't hand-add RF-managed repo-health files: no
+>   `.githooks/pre-commit`, no `lint.yml`, no `.editorconfig`, no RF
+>   shell-lint configs, no commit-convention or org-ADR-policy
+>   plumbing — they arrive via the first repo-foundation sync
+> - Don't remove `.shellcheckrc` — superseded by `brew style`, but
+>   its removal belongs to the post-RF-sync cleanup pass
 >
 > **Conventions** (org-wide): first commit line ≤ 50 chars; commits
 > signed off (`git commit --signoff`); en_US spelling; long options
@@ -778,7 +819,7 @@ After C.1 lands, ask for the C.2 prompt.
 | `cmd/babble.rb` | B | the external command (stub → orchestrator) |
 | `cmd/babble/{version,formatter}.rb` | B | version + ⨀ output helpers |
 | `scripts/run-tests.sh` | B | brew-tests hardlink harness |
-| `.github/workflows/{ci,lint}.yml` | B | CI |
+| `.github/workflows/ci.yml` | B | CI (style + brew_tests; `lint.yml` arrives via RF sync) |
 | `adrs.toml`, `docs/decisions/0001–0003` | B | MADR 4.0 ADRs |
 | `docs/architecture.md` | B | architecture |
 | `cmd/babble/{sh,app_manager}.rb`, `test/` | C.1 | first logic + specs |

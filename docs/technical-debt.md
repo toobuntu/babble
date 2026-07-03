@@ -77,17 +77,23 @@ carry the split (agent scaffolding in Block 0, everything else here).
       cask-tools (including the `cmd/babble/` subtree)
 - [ ] `.githooks/pre-commit` — `brew style --fix --changed`,
       `shfmt -d` + `shellcheck` for Bash, and
-      `reuse --no-multiprocessing lint-file` on staged files
+      `reuse --no-multiprocessing lint-file` on staged files.
+      **Arrives via RF sync** (repo-foundation-managed; not
+      hand-added in Block B)
 - [ ] `AGENTS.md`, `CLAUDE.md`, `docs/agent-principles.md`,
       `.claude/settings.json` — Block 0 (repo-foundation `provides/`
-      baselines adapted for babble)
+      baselines adapted for babble as interim guardrails; the first
+      RF sync + cleanup pass reconciles them)
 - [ ] `docs/architecture.md` — initial draft: entry flow, planned
       module table, test/typecheck pipeline, ⨀ convention
 - [ ] `adrs.toml` + `docs/decisions/0001–0003` in MADR 4.0 (external
       command shape, ⨀ output prefix, Swift build strategy)
-- [ ] `.github/workflows/` — `ci.yml` (brew style + brew tests via
-      hardlinks, macos-latest), `lint.yml` (reuse, actionlint, zizmor,
-      shellcheck/shfmt on Ubuntu)
+- [ ] `.github/workflows/ci.yml` — brew style + brew tests via
+      hardlinks, macos-latest (Block B)
+- [ ] `.github/workflows/lint.yml` — reuse, actionlint, zizmor,
+      shellcheck/shfmt on Ubuntu. **Arrives via RF sync**
+      (repo-foundation-managed; not hand-added in Block B — run the
+      linters by hand locally until the sync lands)
 - [ ] No babble logic changes in these commits
 
 **Files:** all of the above.
@@ -268,10 +274,11 @@ Sorbet), not a project Sorbet install — there is no Gemfile.
       into `$(brew --repo)` (run-tests.sh pattern)
 - [ ] CI runs it the same way if the hardlink approach proves to work
       in CI (Block B verifies); otherwise pre-commit-hook enforcement
-      with the limitation documented in `docs/architecture.md`
+      (`.githooks/pre-commit` — **arrives via RF sync**) with the
+      limitation documented in `docs/architecture.md`
 
 **Files:** all `cmd/**/*.rb`, `.github/workflows/ci.yml`,
-`.githooks/pre-commit`.
+`.githooks/pre-commit` (via RF sync).
 
 ### P0.11 — Test suite via `brew tests` (revised for the external-command shape)
 
@@ -314,10 +321,14 @@ know what's covered.
       Markdown)
 - [ ] Generated/binary files have `.license` sidecars
 - [ ] CI runs `reuse lint` and fails on missing headers
-- [ ] `.githooks/pre-commit` runs `reuse lint --quiet` on changed files
+      (`lint.yml` — **arrives via RF sync**; run `reuse lint` by
+      hand locally until then)
+- [ ] `.githooks/pre-commit` runs `reuse lint --quiet` on changed
+      files (**arrives via RF sync**)
 
 **Files:** `scripts/annotate.sh`, `LICENSES/`, all source files,
-`.github/workflows/ci.yml`, `.githooks/pre-commit`.
+`.github/workflows/lint.yml` and `.githooks/pre-commit` (both via
+RF sync).
 
 ### P0.13 — Migrate to `mas outdated --json` (mas v7+)
 
@@ -757,8 +768,13 @@ points at the v0.5 ksh download path. After v0.6 ships, refresh.
 
 ### P3.7 — `.shellcheckrc` review
 
-The current rules predate the Ruby migration. After the Bash surface
-shrinks to `bin/babble` + `script/*`, review for relevance.
+The current rules predate the Ruby migration. Under the
+external-command shape, shell lint defers to `brew style` verbatim
+(Homebrew's shfmt/shellcheck config), which supersedes the standalone
+`.shellcheckrc`. The file **stays in place** during W3; its removal
+or replacement belongs to the post-RF-sync cleanup pass. After the
+Bash surface shrinks to `script/*` + `scripts/*`, review what (if
+anything) remains relevant.
 
 **Acceptance criteria:**
 
