@@ -85,7 +85,7 @@ main() {
   parent=${PWD}
   source=
 
-  while [[ $# -gt 0 ]]
+  while (($# > 0))
   do
     case "$1" in
       --mode=*)
@@ -102,7 +102,7 @@ main() {
         ;;
       --)
         shift
-        [[ $# -eq 1 ]] || die "expected one positional after --"
+        (($# == 1)) || die "expected one positional after --"
         source=$1
         shift
         break

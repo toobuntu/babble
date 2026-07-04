@@ -40,7 +40,7 @@ main() {
   do_push=
   push_target=origin
 
-  while [[ $# -gt 0 ]]
+  while (($# > 0))
   do
     case "$1" in
       --push)

@@ -32,18 +32,17 @@ TITLE=
 RECREATE_BRANCH=0
 
 usage() {
-  cat <<EOF
-Usage: $(basename "$0") [--recreate-branch] <pr-number>
+  printf "%s\n" \
+    "Usage: $(basename "$0") [--recreate-branch] <pr-number>" \
+    "" \
+    "--recreate-branch  Reconstruct the PR branch from its HEAD SHA" \
+    "                   if the remote branch has already been deleted."
+  exit 1
+}
 
-  --recreate-branch  Reconstruct the PR branch from its HEAD SHA
-                     if the remote branch has already been deleted.
-                        EOF
-                        exit 1
-                        }
-                        
-                        parse_args() {
-                        if [[ "${1:-}" == "--recreate-branch" ]]
-                     then
+parse_args() {
+  if [[ "${1:-}" == "--recreate-branch" ]]
+  then
     RECREATE_BRANCH=1
     shift
   fi

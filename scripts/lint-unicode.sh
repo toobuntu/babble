@@ -40,7 +40,7 @@ set -eu
 # Collect files to scan into a newline-delimited list. No args: tracked files.
 # Args: the given files; a directory argument is walked, pruning .git.
 collect_files() {
-  if [[ "$#" -eq 0 ]]
+  if (($# == 0))
   then
     git ls-files
   else
@@ -140,8 +140,7 @@ done <"${_files_tmp}"
 if [[ -n "${_found}" ]]
 then
   printf 'Invisible Unicode characters found (CVE-2021-42574):\n' >&2
-  printf '%s\n' "${_found}" | while IFS= read -r _bf
-  do
+  printf '%s\n' "${_found}" | while IFS= read -r _bf; do
     printf '  %s\n' "${_bf}" >&2
   done
   printf '\nA file may opt out of specific codepoints with an in-file\n' >&2

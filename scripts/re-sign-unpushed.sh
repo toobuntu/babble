@@ -74,7 +74,7 @@ resign_one() {
   fi
 }
 
-if [[ "$#" -eq 0 ]]
+if (($# == 0))
 then
   set -- "${PWD}"
 fi
