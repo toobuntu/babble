@@ -91,15 +91,20 @@ project-local lint or test configuration:
   pivot, is superseded by `brew style`, and awaits the post-RF-sync
   cleanup pass (P3.7).
 - **Typecheck** — `brew typecheck` (Homebrew's Sorbet) against the
-  brew repo with the tap files hardlinked in. Every non-spec file is
-  `# typed: strict` with `sig`s on every method; spec files are never
-  `typed: strict`. **Local-only for now**: whether the hardlink
-  approach lets `brew typecheck` see the tap files on a CI runner is
-  unverified (Block B could not test it from the Tier 3 sandbox, and
-  the canonical cask-tools workflow ships without a typecheck job).
-  Revisit after the first CI runs; until then the enforcement story
-  for P0.10 is local runs plus the repo-foundation pre-commit hook
-  once the RF sync lands.
+  brew repo with the tap files hardlinked in, via
+  [`../scripts/run-typecheck.sh`](../scripts/run-typecheck.sh). A
+  *plain* `brew typecheck` passes vacuously — it only checks
+  `Library/Homebrew` and never sees tap files — so the harness is
+  the only meaningful invocation. Every non-spec file is
+  `# typed: strict` with `sig`s on every method; spec files are
+  never `typed: strict`. Note that sorbet-runtime also enforces
+  sigs at **runtime** under `brew tests`: a wrapper that redefines
+  a sigged Homebrew method must mirror the original's signature
+  (see `Babble::Formatter`). Enforced three ways, matching
+  Homebrew's own required-before-commit policy (P0.10): the
+  `.githooks/pre-commit.d/60-babble-typecheck` plugin on every
+  commit that stages Ruby, the `typecheck` step in `ci.yml`'s style
+  job, and manual runs.
 - **Tests** — `brew tests --only=…` via
   [`../scripts/run-tests.sh`](../scripts/run-tests.sh). brew only
   discovers specs inside `$(brew --repo)/Library/Homebrew/test/`, so
@@ -116,10 +121,20 @@ project-local lint or test configuration:
   `brew_tests` job (hardlink → `brew tests --only=cmd/babble` and
   `--only=cmd/babble/formatter` → unlink in an `always()` step),
   both on macos-latest with the Bundler-gems and style caches.
-- **License compliance** — SPDX headers via `scripts/annotate.sh`
-  (never hand-written); `reuse lint` locally. CI enforcement
-  (`lint.yml`: reuse/actionlint/zizmor/shellcheck) arrives via the
-  repo-foundation sync, not hand-added (see handoff § Block B).
+- **License compliance and repo health** — SPDX headers via
+  `scripts/annotate.sh` (never hand-written); `reuse lint` locally.
+  CI enforcement is in place ahead of the first repo-foundation
+  sync as hand-staged copies of RF's canonicals (decision
+  2026-07-03; the sync reconciles them): `lint.yml` (reuse,
+  lint-unicode, lint-perms, lint-adrs), `actionlint.yml`
+  (actionlint + zizmor with the Homebrew/actions ref-pin policy in
+  `.github/zizmor.yml`), and the `.githooks/` pre-commit chain
+  (dispatcher + 15-prose/30-brew/50-adrs plugins, plus babble's own
+  60-babble-typecheck). Activate the hooks with
+  `git config core.hooksPath .githooks`. Shell lint remains `brew
+  style` only: babble tracks Homebrew/brew's `.shellcheckrc` and
+  `.editorconfig` verbatim and is excluded from RF's shell_lint set
+  by the sync manifest (ADR 0017 there).
 
 ## Tap layout
 

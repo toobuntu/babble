@@ -67,34 +67,42 @@ carry the split (agent scaffolding in Block 0, everything else here).
 
 **Acceptance criteria:**
 
-- [ ] `cmd/babble.rb` stub (`Homebrew::Cmd::Babble < AbstractCommand`)
-      plus `cmd/babble/{version,formatter}.rb` (⨀ output helpers)
+- [x] `cmd/babble.rb` stub (`Homebrew::Cmd::Babble < AbstractCommand`)
+      plus `cmd/babble/{version,formatter}.rb` (⨀ output helpers).
+      Landed in Block B (W3, 2026-07-03).
 - [x] `LICENSES/GPL-3.0-or-later.txt` (single license — babble is an
       end-user tool; the sister repos' dual-license rationale does not
       apply). Landed in W2.
 - [x] `scripts/annotate.sh` — landed in W2.
-- [ ] `scripts/run-tests.sh` — hardlink harness adapted from
-      cask-tools (including the `cmd/babble/` subtree)
-- [ ] `.githooks/pre-commit` — `brew style --fix --changed`,
-      `shfmt -d` + `shellcheck` for Bash, and
-      `reuse --no-multiprocessing lint-file` on staged files.
-      **Arrives via RF sync** (repo-foundation-managed; not
-      hand-added in Block B)
-- [ ] `AGENTS.md`, `CLAUDE.md`, `docs/agent-principles.md`,
+- [x] `scripts/run-tests.sh` — hardlink harness adapted from
+      cask-tools (including the `cmd/babble/` subtree). Landed in
+      Block B; `scripts/run-typecheck.sh` added alongside.
+- [x] `.githooks/` chain — **hand-staged from repo-foundation ahead
+      of the first sync** (2026-07-03 amendment): canonical
+      dispatcher + pre-push + 15-prose/30-brew/50-adrs plugins, plus
+      babble's own 60-babble-typecheck (brew typecheck via the
+      hardlink harness). Activate with
+      `git config core.hooksPath .githooks`.
+- [x] `AGENTS.md`, `CLAUDE.md`, `docs/agent-principles.md`,
       `.claude/settings.json` — Block 0 (repo-foundation `provides/`
-      baselines adapted for babble as interim guardrails; the first
-      RF sync + cleanup pass reconciles them)
-- [ ] `docs/architecture.md` — initial draft: entry flow, planned
+      baselines adapted for babble as interim guardrails); AGENTS.md
+      and `.gitignore` now carry the sync sentinel markers and
+      `.claude/settings.addenda.json` holds babble's delta so the
+      first baseline-merge sync reconciles cleanly
+- [x] `docs/architecture.md` — initial draft: entry flow, planned
       module table, test/typecheck pipeline, ⨀ convention
-- [ ] `adrs.toml` + `docs/decisions/0001–0003` in MADR 4.0 (external
+- [x] `adrs.toml` + `docs/decisions/0001–0003` in MADR 4.0 (external
       command shape, ⨀ output prefix, Swift build strategy)
-- [ ] `.github/workflows/ci.yml` — brew style + brew tests via
-      hardlinks, macos-latest (Block B)
-- [ ] `.github/workflows/lint.yml` — reuse, actionlint, zizmor,
-      shellcheck/shfmt on Ubuntu. **Arrives via RF sync**
-      (repo-foundation-managed; not hand-added in Block B — run the
-      linters by hand locally until the sync lands)
-- [ ] No babble logic changes in these commits
+- [x] `.github/workflows/ci.yml` — brew style + brew typecheck
+      (via scripts/run-typecheck.sh) + brew tests via hardlinks,
+      macos-latest (Block B)
+- [x] `.github/workflows/lint.yml` + `actionlint.yml` — **hand-staged
+      from repo-foundation ahead of the first sync** (2026-07-03):
+      reuse / lint-unicode / lint-perms / lint-adrs, and actionlint +
+      zizmor (Homebrew/actions ref-pin policy in `.github/zizmor.yml`).
+      Shell lint deliberately stays with `brew style` in ci.yml —
+      babble is excluded from RF's shell_lint set.
+- [x] No babble logic changes in these commits
 
 **Files:** all of the above.
 
@@ -272,13 +280,14 @@ Sorbet), not a project Sorbet install — there is no Gemfile.
       `# typed: true # rubocop:disable Sorbet/StrictSigil`)
 - [ ] `brew typecheck` passes locally with the tap files hardlinked
       into `$(brew --repo)` (run-tests.sh pattern)
-- [ ] CI runs it the same way if the hardlink approach proves to work
-      in CI (Block B verifies); otherwise pre-commit-hook enforcement
-      (`.githooks/pre-commit` — **arrives via RF sync**) with the
-      limitation documented in `docs/architecture.md`
+- [x] CI runs it via `scripts/run-typecheck.sh` (hardlink harness) in
+      ci.yml's style job, and `.githooks/pre-commit.d/60-babble-typecheck`
+      enforces the same check on every commit that stages Ruby —
+      first-CI-run confirmation pending (a plain `brew typecheck`
+      passes vacuously; only the harness invocation is meaningful)
 
 **Files:** all `cmd/**/*.rb`, `.github/workflows/ci.yml`,
-`.githooks/pre-commit` (via RF sync).
+`scripts/run-typecheck.sh`, `.githooks/pre-commit.d/60-babble-typecheck`.
 
 ### P0.11 — Test suite via `brew tests` (revised for the external-command shape)
 
@@ -320,15 +329,14 @@ know what's covered.
 - [ ] All source files have SPDX headers (Ruby, Bash, Swift, YAML,
       Markdown)
 - [ ] Generated/binary files have `.license` sidecars
-- [ ] CI runs `reuse lint` and fails on missing headers
-      (`lint.yml` — **arrives via RF sync**; run `reuse lint` by
-      hand locally until then)
-- [ ] `.githooks/pre-commit` runs `reuse lint --quiet` on changed
-      files (**arrives via RF sync**)
+- [x] CI runs `reuse lint` and fails on missing headers (`lint.yml`
+      reuse job — hand-staged from RF, 2026-07-03)
+- [x] `.githooks/pre-commit` (hand-staged RF canonical) checks REUSE
+      on staged files
 
 **Files:** `scripts/annotate.sh`, `LICENSES/`, all source files,
-`.github/workflows/lint.yml` and `.githooks/pre-commit` (both via
-RF sync).
+`.github/workflows/lint.yml`, `.githooks/pre-commit` (hand-staged
+ahead of RF sync).
 
 ### P0.13 — Migrate to `mas outdated --json` (mas v7+)
 
@@ -768,13 +776,15 @@ points at the v0.5 ksh download path. After v0.6 ships, refresh.
 
 ### P3.7 — `.shellcheckrc` review
 
-The current rules predate the Ruby migration. Under the
-external-command shape, shell lint defers to `brew style` verbatim
-(Homebrew's shfmt/shellcheck config), which supersedes the standalone
-`.shellcheckrc`. The file **stays in place** during W3; its removal
-or replacement belongs to the post-RF-sync cleanup pass. After the
-Bash surface shrinks to `script/*` + `scripts/*`, review what (if
-anything) remains relevant.
+**Resolved 2026-07-03.** The pre-pivot rules are gone: babble now
+carries verbatim copies of Homebrew/brew's `.shellcheckrc` and
+`.editorconfig` (with upstream-attribution `.license` sidecars,
+BSD-2-Clause added to `LICENSES/`), so `brew style` and bare
+shellcheck/editor behavior agree. Remaining follow-up: add both
+files to repo-foundation's `upstreams:` list (source
+`Homebrew/brew`) with a component set mapped to the Homebrew-aligned
+consumers (cask-tools, babble), so they track upstream via the sync
+instead of by hand.
 
 **Acceptance criteria:**
 
