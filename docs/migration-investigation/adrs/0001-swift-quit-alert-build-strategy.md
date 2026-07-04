@@ -6,7 +6,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # ADR-0001: Swift quit_alert build strategy
 
-- **Status:** Accepted
+- **Status:** Superseded by
+  [`docs/decisions/0003-swift-quit-alert-build-strategy.md`](../../decisions/0003-swift-quit-alert-build-strategy.md)
+  (the MADR 4.0 record in babble's live ADR series; this
+  investigation copy retains the full analysis)
 - **Deciders:** maintainer
 - **Date:** 2026-05
 
