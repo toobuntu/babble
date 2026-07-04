@@ -25,52 +25,61 @@ set -eu
 
 resign_one() {
   repo_dir=$1
-  branch=$(git -C "$repo_dir" branch --show-current)
+  branch=$(git -C "${repo_dir}" branch --show-current)
 
-  if ! git -C "$repo_dir" rev-parse --quiet --verify HEAD > /dev/null 2>&1; then
-    printf '%s (%s): no commits yet; skipping\n' "$repo_dir" "$branch"
+  if ! git -C "${repo_dir}" rev-parse --quiet --verify HEAD >/dev/null 2>&1
+  then
+    printf '%s (%s): no commits yet; skipping\n' "${repo_dir}" "${branch}"
     return 0
   fi
 
   # Oldest unsigned commit among those not on any remote. The pipeline prints
   # the first match and breaks; the command substitution captures it.
   oldest_unsigned=$(
-    git -C "$repo_dir" rev-list --reverse HEAD --not --remotes |
-      while IFS= read -r oid; do
-        if [ "$(git -C "$repo_dir" log -1 --format='%G?' "$oid")" = N ]; then
-          printf '%s\n' "$oid"
+    git -C "${repo_dir}" rev-list --reverse HEAD --not --remotes |
+      while IFS= read -r oid
+      do
+        if [[ "$(git -C "${repo_dir}" log -1 --format='%G?' "${oid}")" = N ]]
+        then
+          printf '%s\n' "${oid}"
           break
         fi
       done
   )
 
-  if [ -z "$oldest_unsigned" ]; then
-    printf '%s (%s): already fully signed\n' "$repo_dir" "$branch"
+  if [[ -z "${oldest_unsigned}" ]]
+  then
+    printf '%s (%s): already fully signed\n' "${repo_dir}" "${branch}"
     return 0
   fi
 
-  if git -C "$repo_dir" rev-parse --quiet --verify "${oldest_unsigned}^" > /dev/null 2>&1; then
-    git -C "$repo_dir" rebase --exec 'git commit --amend --no-edit --gpg-sign' "${oldest_unsigned}^"
+  if git -C "${repo_dir}" rev-parse --quiet --verify "${oldest_unsigned}^" >/dev/null 2>&1
+  then
+    git -C "${repo_dir}" rebase --exec 'git commit --amend --no-edit --gpg-sign' "${oldest_unsigned}^"
   else
-    git -C "$repo_dir" rebase --root --exec 'git commit --amend --no-edit --gpg-sign'
+    git -C "${repo_dir}" rebase --root --exec 'git commit --amend --no-edit --gpg-sign'
   fi
 
   remote_ref="refs/remotes/origin/${branch}"
-  if ! git -C "$repo_dir" rev-parse --quiet --verify "$remote_ref" > /dev/null 2>&1; then
-    printf '%s (%s): re-signed; no remote-tracking ref, not pushing\n' "$repo_dir" "$branch"
-  elif git -C "$repo_dir" merge-base --is-ancestor "$remote_ref" HEAD; then
-    git -C "$repo_dir" push origin "HEAD:${branch}"
+  if ! git -C "${repo_dir}" rev-parse --quiet --verify "${remote_ref}" >/dev/null 2>&1
+  then
+    printf '%s (%s): re-signed; no remote-tracking ref, not pushing\n' "${repo_dir}" "${branch}"
+  elif git -C "${repo_dir}" merge-base --is-ancestor "${remote_ref}" HEAD
+  then
+    git -C "${repo_dir}" push origin "HEAD:${branch}"
   else
-    git -C "$repo_dir" push \
-      --force-with-lease="refs/heads/${branch}:$(git -C "$repo_dir" rev-parse "$remote_ref")" \
+    git -C "${repo_dir}" push \
+      --force-with-lease="refs/heads/${branch}:$(git -C "${repo_dir}" rev-parse "${remote_ref}")" \
       origin "HEAD:${branch}"
   fi
 }
 
-if [ "$#" -eq 0 ]; then
-  set -- "$PWD"
+if [[ "$#" -eq 0 ]]
+then
+  set -- "${PWD}"
 fi
 
-for repo in "$@"; do
-  resign_one "$repo"
+for repo in "$@"
+do
+  resign_one "${repo}"
 done
