@@ -32,3 +32,8 @@ updates:
           # a minor or patch version.
           - "minor"
           - "patch"
+    # Wait out the first week after an upstream release before proposing it
+    # (supply-chain cooldown; zizmor flags configs without one). Matches
+    # cask-tools' setting.
+    cooldown:
+      default-days: 7
