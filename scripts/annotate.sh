@@ -88,7 +88,7 @@ set -euo pipefail
 # an empty result (the `|| true` swallows the failure), so the script
 # silently no-ops while the user believes annotation ran.
 require_tool() {
-  command -v "$1" > /dev/null 2>&1 && return 0
+  command -v "$1" >/dev/null 2>&1 && return 0
   printf 'error: %s not found; required by %s\n' "$1" "${0##*/}" >&2
   printf '  Install: brew install %s\n' "$1" >&2
   exit 1
