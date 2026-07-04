@@ -52,6 +52,9 @@ jobs:
       - name: brew style
         run: brew style --changed
 
+      - name: brew typecheck (tap files hardlinked)
+        run: scripts/run-typecheck.sh
+
   brew_tests:
     if: github.repository_owner == 'toobuntu'
     runs-on: macos-latest

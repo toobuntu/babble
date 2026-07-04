@@ -1,0 +1,39 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Babble-owned pre-commit plugin (NOT synced from repo-foundation): enforce
+# `brew typecheck` before each commit that stages tap Ruby, matching
+# Homebrew's own required-before-commit policy. Runs the hardlink harness
+# (scripts/run-typecheck.sh) so Sorbet actually sees cmd/babble* — a plain
+# `brew typecheck` never checks tap files. Skips when no .rb is staged:
+# typecheck output cannot change without a Ruby change on brew's side of
+# the boundary we control.
+
+set -e
+
+staged_rb=$(git diff --cached --name-only --diff-filter=ACMRT | /usr/bin/grep '\.rb$' || true)
+[ -n "${staged_rb}" ] || exit 0
+
+if [ ! -x scripts/run-typecheck.sh ]; then
+  printf 'error: scripts/run-typecheck.sh missing or not executable\n' >&2
+  exit 1
+fi
+
+# Sandboxed sessions (Tier 3) cannot write into $(brew --repo), which the
+# hardlink harness requires. Warn loudly and defer to the ci.yml typecheck
+# step instead of hard-failing every sandboxed commit; a "correctly written
+# hook runs clean in-sandbox" (docs/agent-principles.md), and CI is the
+# enforcement backstop.
+brew_lib="$(brew --repo)/Library/Homebrew"
+probe="${brew_lib}/.babble-typecheck-probe.$$"
+if touch "${probe}" 2>/dev/null; then
+  rm -f "${probe}"
+else
+  printf 'warning: %s not writable (sandbox?) — brew typecheck NOT run here.\n' "${brew_lib}" >&2
+  printf '  CI enforces it (ci.yml style job); run scripts/run-typecheck.sh outside the sandbox.\n' >&2
+  exit 0
+fi
+
+scripts/run-typecheck.sh

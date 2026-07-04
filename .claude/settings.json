@@ -132,6 +132,7 @@
       "Bash(brew babble:*)",
       "Bash(brew tests:*)",
       "Bash(scripts/run-tests.sh:*)",
+      "Bash(scripts/run-typecheck.sh:*)",
       "Bash(brew ruby:*)",
       "Bash(brew tap:*)",
       "Bash(brew untap:*)",
@@ -314,6 +315,7 @@
       "open:*",
       "xcrun swiftc:*",
       "scripts/run-tests.sh:*",
+      "scripts/run-typecheck.sh:*",
       "brew tests:*",
       "brew typecheck:*"
     ],
