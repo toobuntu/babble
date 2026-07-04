@@ -1,4 +1,8 @@
 #!/bin/sh
+# Hand-copy of the toobuntu/repo-foundation canonical, staged ahead of the first RF sync; do not modify it directly.
+# repo-foundation-lineage script: exempt Homebrew optional shellcheck checks
+# (babble defers to brew style; POSIX-style layout is canonical upstream).
+# shellcheck disable=SC2249,SC2250,SC2292,SC2310,SC2311,SC2312
 # SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -19,7 +23,7 @@
 set -eu
 
 usage() {
-  cat << USAGE
+  cat <<USAGE
 Usage: $(basename "$0") [--mode=MODE] [--parent=DIR] <source-repo>
 
 Modes (--mode):
@@ -51,7 +55,7 @@ die() {
 }
 
 resolve_path() {
-  (cd "$1" 2> /dev/null && pwd) ||
+  (cd "$1" 2>/dev/null && pwd) ||
     die "cannot resolve path: $1"
 }
 
@@ -60,115 +64,116 @@ resolve_path() {
 save_source_remotes() {
   _src=$1
   _out=$2
-  mkdir -p "$(dirname "$_out")"
-  : > "$_out"
-  git -C "$_src" remote | while IFS= read -r _name; do
-    [ -n "$_name" ] || continue
-    _url=$(git -C "$_src" remote get-url "$_name")
-    printf '%s\t%s\n' "$_name" "$_url" >> "$_out"
+  mkdir -p "$(dirname "${_out}")"
+  : >"${_out}"
+  git -C "${_src}" remote | while IFS= read -r _name; do
+    [[ -n "${_name}" ]] || continue
+    _url=$(git -C "${_src}" remote get-url "${_name}")
+    printf '%s\t%s\n' "${_name}" "${_url}" >>"${_out}"
   done
 }
 
 remove_all_remotes() {
   git remote | while IFS= read -r _name; do
-    [ -n "$_name" ] || continue
-    git remote remove "$_name"
+    [[ -n "${_name}" ]] || continue
+    git remote remove "${_name}"
   done
 }
 
 main() {
   mode=no-remote
-  parent=$PWD
+  parent=${PWD}
   source=
 
-  while [ $# -gt 0 ]; do
+  while [[ $# -gt 0 ]]
+  do
     case "$1" in
-    --mode=*)
-      mode=${1#--mode=}
-      shift
-      ;;
-    --parent=*)
-      parent=${1#--parent=}
-      shift
-      ;;
-    -h | --help)
-      usage
-      exit 0
-      ;;
-    --)
-      shift
-      [ $# -eq 1 ] || die "expected one positional after --"
-      source=$1
-      shift
-      break
-      ;;
-    --*) die "unknown option: $1" ;;
-    *)
-      [ -z "$source" ] || die "multiple positional args: $source $1"
-      source=$1
-      shift
-      ;;
+      --mode=*)
+        mode=${1#--mode=}
+        shift
+        ;;
+      --parent=*)
+        parent=${1#--parent=}
+        shift
+        ;;
+      -h | --help)
+        usage
+        exit 0
+        ;;
+      --)
+        shift
+        [[ $# -eq 1 ]] || die "expected one positional after --"
+        source=$1
+        shift
+        break
+        ;;
+      --*) die "unknown option: $1" ;;
+      *)
+        [[ -z "${source}" ]] || die "multiple positional args: ${source} $1"
+        source=$1
+        shift
+        ;;
     esac
   done
 
-  [ -n "$source" ] || {
+  [[ -n "${source}" ]] || {
     usage >&2
     exit 1
   }
 
-  case "$mode" in
-  no-remote | repoint-origin | add-local) ;;
-  *) die "invalid --mode value: $mode (use no-remote, repoint-origin, or add-local)" ;;
+  case "${mode}" in
+    no-remote | repoint-origin | add-local) ;;
+    *) die "invalid --mode value: ${mode} (use no-remote, repoint-origin, or add-local)" ;;
   esac
 
-  source_abs=$(resolve_path "$source")
-  [ -d "$source_abs/.git" ] || die "$source_abs is not a git repository"
+  source_abs=$(resolve_path "${source}")
+  [[ -d "${source_abs}/.git" ]] || die "${source_abs} is not a git repository"
 
-  parent_abs=$(resolve_path "$parent")
-  [ -d "$parent_abs" ] || die "parent dir does not exist: $parent"
+  parent_abs=$(resolve_path "${parent}")
+  [[ -d "${parent_abs}" ]] || die "parent dir does not exist: ${parent}"
 
-  repo_name=$(basename "$source_abs")
+  repo_name=$(basename "${source_abs}")
   ts=$(date +%Y%m%d-%H%M%S)
-  sandbox_dir="$parent_abs/${repo_name}-sandbox-${ts}"
-  [ ! -e "$sandbox_dir" ] || die "sandbox path already exists: $sandbox_dir"
+  sandbox_dir="${parent_abs}/${repo_name}-sandbox-${ts}"
+  [[ ! -e "${sandbox_dir}" ]] || die "sandbox path already exists: ${sandbox_dir}"
 
   # Capture source's remotes BEFORE cloning. After clone the new repo's
   # origin points at the source path, not at the source's GitHub URL,
   # so the source's remote list cannot be reconstructed from the clone.
   saved_remotes=$(mktemp -t blackoutd-sandbox.XXXXXX)
-  save_source_remotes "$source_abs" "$saved_remotes"
-  [ -s "$saved_remotes" ] || {
-    rm -f "$saved_remotes"
-    die "source has no remotes: $source_abs"
+  save_source_remotes "${source_abs}" "${saved_remotes}"
+  [[ -s "${saved_remotes}" ]] || {
+    rm -f "${saved_remotes}"
+    die "source has no remotes: ${source_abs}"
   }
 
-  git clone --quiet "$source_abs" "$sandbox_dir"
+  git clone --quiet "${source_abs}" "${sandbox_dir}"
 
-  cd "$sandbox_dir"
+  cd "${sandbox_dir}"
   mkdir -p .sandbox-remotes
-  mv "$saved_remotes" .sandbox-remotes/saved.tsv
+  mv "${saved_remotes}" .sandbox-remotes/saved.tsv
 
-  case "$mode" in
-  no-remote)
-    remove_all_remotes
-    ;;
-  repoint-origin)
-    # The clone's origin already points at source_abs.
-    :
-    ;;
-  add-local)
-    original_origin=$(awk -F'\t' '$1 == "origin" {print $2}' .sandbox-remotes/saved.tsv)
-    [ -n "$original_origin" ] ||
-      die "source has no origin remote; cannot use --mode=add-local"
-    git remote set-url origin "$original_origin"
-    git remote add local "$source_abs"
-    ;;
+  case "${mode}" in
+    no-remote)
+      remove_all_remotes
+      ;;
+    repoint-origin)
+      # The clone's origin already points at source_abs.
+      :
+      ;;
+    add-local)
+      original_origin=$(awk -F'\t' '$1 == "origin" {print $2}' .sandbox-remotes/saved.tsv)
+      [[ -n "${original_origin}" ]] ||
+        die "source has no origin remote; cannot use --mode=add-local"
+      git remote set-url origin "${original_origin}"
+      git remote add local "${source_abs}"
+      ;;
   esac
 
-  printf '%s\n' "$sandbox_dir"
+  printf '%s\n' "${sandbox_dir}"
   {
     printf '\nSandbox created. Next:\n'
-    printf '  cd %s\n' "$sandbox_dir"
+    printf '  cd %s\n' "${sandbox_dir}"
     printf '  claude\n'
     printf '\nWhen done, run scripts/sandbox-exit.sh from inside the sandbox.\n'
   } >&2

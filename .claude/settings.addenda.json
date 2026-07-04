@@ -1,0 +1,71 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(reuse --no-multiprocessing lint)",
+      "Bash(shfmt -d:*)",
+      "Bash(brew style)",
+      "Bash(brew style:*)",
+      "Bash(brew typecheck)",
+      "Bash(brew tap-info:*)",
+      "Bash(brew --prefix)",
+      "Bash(brew --repository)",
+      "Bash(brew --caskroom)",
+      "Bash(brew --version)",
+      "Bash(brew commands:*)",
+      "Bash(brew config)",
+      "Bash(brew outdated:*)",
+      "Bash(brew info:*)",
+      "Bash(brew list:*)",
+      "Bash(brew desc:*)",
+      "Bash(mas version)",
+      "Bash(mas list:*)",
+      "Bash(mas outdated:*)",
+      "Bash(mas info:*)",
+      "Bash(softwareupdate --list:*)",
+      "Bash(/usr/bin/lsappinfo list)",
+      "Bash(/usr/bin/lsappinfo info:*)",
+      "Bash(lsappinfo list)",
+      "Bash(lsappinfo info:*)",
+      "Bash(xcrun --find swiftc)",
+      "Bash(script/log-since-latest-tag)",
+      "Bash(script/release-notes)"
+    ],
+    "ask": [
+      "Bash(./bbl)",
+      "Bash(bbl)",
+      "Bash(brew babble:*)",
+      "Bash(brew tests:*)",
+      "Bash(scripts/run-tests.sh:*)",
+      "Bash(scripts/run-typecheck.sh:*)",
+      "Bash(brew ruby:*)",
+      "Bash(brew tap:*)",
+      "Bash(brew untap:*)",
+      "Bash(brew update)",
+      "Bash(brew update:*)",
+      "Bash(brew install-bundler-gems)",
+      "Bash(osascript -e:*)",
+      "Bash(osascript -l JavaScript:*)",
+      "Bash(/usr/bin/osascript:*)",
+      "Bash(/usr/bin/open:*)",
+      "Bash(open -b:*)",
+      "Bash(open -g:*)",
+      "Bash(scripts/annotate.sh:*)",
+      "Bash(scripts/sandbox-enter.sh:*)",
+      "Bash(scripts/sandbox-exit.sh:*)",
+      "Bash(xcrun swiftc:*)"
+    ]
+  },
+  "sandbox": {
+    "excludedCommands": [
+      "/usr/bin/osascript:*",
+      "osascript:*",
+      "/usr/bin/open:*",
+      "open:*",
+      "xcrun swiftc:*",
+      "scripts/run-tests.sh:*",
+      "scripts/run-typecheck.sh:*",
+      "brew tests:*",
+      "brew typecheck:*"
+    ]
+  }
+}
