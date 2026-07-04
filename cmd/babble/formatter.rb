@@ -20,22 +20,25 @@ module Babble
     class << self
       include Utils::Output::Mixin
 
-      sig { params(message: String).void }
-      def oh1(message)
-        super("#{PREFIX} #{message}")
+      # Sigs mirror Utils::Output::Mixin's exactly: sorbet-runtime
+      # enforces override compatibility (contravariant params, matching
+      # kwargs) when these redefine the mixin's methods.
+      sig { params(message: String, truncate: T.any(Symbol, T::Boolean)).void }
+      def oh1(message, truncate: :auto)
+        super("#{PREFIX} #{message}", truncate:)
       end
 
-      sig { params(message: String, sput: T.anything).void }
+      sig { params(message: T.any(String, Exception), sput: T.anything).void }
       def ohai(message, *sput)
         super("#{PREFIX} #{message}", *sput)
       end
 
-      sig { params(message: String).void }
+      sig { params(message: T.any(String, Exception)).void }
       def opoo(message)
         super("#{PREFIX} #{message}")
       end
 
-      sig { params(message: String).void }
+      sig { params(message: T.any(String, Exception)).void }
       def ofail(message)
         super("#{PREFIX} #{message}")
       end
