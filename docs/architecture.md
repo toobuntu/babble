@@ -173,3 +173,19 @@ The quarantine phase similarly delegates to `brew purge-quarantine`
 `Homebrew::CaskTools`, **not** `Homebrew::Cask` — defining
 `Homebrew::Cask` would shadow `::Cask` for brew code inside
 `module Homebrew` and break brew at runtime.
+
+**Upstream overlap (design input for C.2/C.3, noted 2026-07-04).**
+Homebrew itself now quits and reopens running GUI apps during cask
+upgrades, in the narrower scope of casks that declare `uninstall
+quit:`: `437b221ca8` (stop skipping `quit` stanzas on upgrade),
+`0c8f0ac097` + `5c1d2ca812` (opt-out flag), `610b1a8ca3` /
+`20bd107aaf` (reopen apps closed during upgrade), `0c4f4d9b18` /
+`f2c2b789e1` (lsregister re-register before reopen), `ada1594676` /
+`daf67e8daa` (bundle-ID discovery from app bundles for generate-zap),
+plus the maintainer's own `164b97af69` (opt-in quit/signal DSL). Read
+these before designing the C.2 quit/reopen flow: babble's scope is
+broader (mas + softwareupdate, unsafe-to-quit confirmation dialog,
+config-driven app lists, terminal exclusion), but where brew already
+does the mechanics — quit stanza handling, reopen bookkeeping,
+re-registration — babble should reuse or mirror rather than reinvent,
+and anything babble does better is an upstreaming candidate.

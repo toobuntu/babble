@@ -135,6 +135,13 @@ hang for tens of minutes. Replace the polling predicate with
 `osascript -e 'id of app "<bundle-id>"'` (tens of milliseconds), and
 delegate the cold-path resolver to cask-tools.
 
+**Upstream note (2026-07-04):** Homebrew now quits/reopens running
+apps for casks with `uninstall quit:` (brew commits `437b221ca8`,
+`610b1a8ca3`, `0c4f4d9b18` among others — see
+`docs/architecture.md` § Bundle discovery for the full list). Review
+against this item before implementing C.2/C.3: brew's
+re-register-then-reopen path may replace part of the polling design.
+
 **Post-W7 note:** the cold-path resolution (find the bundle on disk)
 is now `Homebrew::CaskTools::BundleDiscovery` from the cask-tools tap,
 whose `BundleDiscovery.lsregister_dump` already caches the dump on

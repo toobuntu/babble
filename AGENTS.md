@@ -72,6 +72,18 @@ platform: macOS 14+ on Apple Silicon and Intel.
 - scripts/run-tests.sh — hardlinks files into $(brew --repo); do not
   run brew update/upgrade/update-reset concurrently.
 
+## Upstream Homebrew rules apply here too
+
+Babble is a Homebrew external command: code that runs inside the brew
+process follows Homebrew's own contributor rules in addition to this
+file. Read `$(brew --repository)/AGENTS.md` — in particular its
+required-before-each-commit checks (`brew typecheck`, `brew style
+--fix --changed`, `brew tests --only=…`; `brew lgtm` bundles them)
+and its commit-style rules (Homebrew rejects Conventional-Commits
+subjects; see `.github/workflows/reject-conventional-commits.yml`
+there). Where this file and Homebrew's conflict on matters of brew
+internals, Homebrew's wins.
+
 ## Documents to read on first load
 
 - `docs/agent-principles.md` (imported above — re-read with intent)
