@@ -14,7 +14,7 @@ RSpec.describe Babble::AppManager do
   # (2026-07-04); never fabricated. 1019 lines, of which 134 carry
   # bundleID="..." — the rest must be excluded by the parser.
   let(:fixture) do
-    File.read(File.expand_path("../../fixtures/lsappinfo_list_sample.txt", __dir__))
+    File.read(File.expand_path("../../support/fixtures/babble/lsappinfo_list_sample.txt", __dir__))
   end
 
   define_method(:stub_capture) do |stdout:, status:|
@@ -40,6 +40,18 @@ RSpec.describe Babble::AppManager do
     it "parses duplicate entries once" do
       stub_capture(stdout: %Q(  bundleID="com.example.App"\n  bundleID="com.example.App"\n), status: 0)
       expect(manager.running_bundle_ids).to eq(["com.example.App"])
+    end
+
+    it "returns only ids the refactor/modular validator accepts" do
+      stub_capture(stdout: fixture, status: 0)
+      expect(manager.running_bundle_ids.grep_v(Babble::AppManager::VALID_BUNDLE_ID)).to be_empty
+    end
+
+    it "warns about and excludes syntactically invalid bundle ids" do
+      stub_capture(stdout: %Q(  bundleID="com.ok.App"\n  bundleID="bad id$(rm)"\n), status: 0)
+      expect(Babble::Formatter).to receive(:opoo).with(/Ignoring invalid bundleID.*bad id/)
+
+      expect(manager.running_bundle_ids).to eq(["com.ok.App"])
     end
 
     it "returns [] and warns via the ⨀ formatter on non-zero exit" do

@@ -81,7 +81,7 @@ jobs:
       - name: Link tap files into Homebrew for brew tests
         run: |
           brew_lib="$(brew --repo)/Library/Homebrew"
-          mkdir -p "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble"
+          mkdir -p "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble" "${brew_lib}/test/support/fixtures/babble"
           ln -f cmd/babble.rb "${brew_lib}/cmd/babble.rb"
           ln -f cmd/babble/version.rb "${brew_lib}/cmd/babble/version.rb"
           ln -f cmd/babble/formatter.rb "${brew_lib}/cmd/babble/formatter.rb"
@@ -91,7 +91,7 @@ jobs:
           ln -f test/cmd/babble/formatter_spec.rb "${brew_lib}/test/cmd/babble/formatter_spec.rb"
           ln -f test/cmd/babble/sh_spec.rb "${brew_lib}/test/cmd/babble/sh_spec.rb"
           ln -f test/cmd/babble/app_manager_spec.rb "${brew_lib}/test/cmd/babble/app_manager_spec.rb"
-          ln -f test/fixtures/lsappinfo_list_sample.txt "${brew_lib}/test/fixtures/lsappinfo_list_sample.txt"
+          ln -f test/support/fixtures/babble/lsappinfo_list_sample.txt "${brew_lib}/test/support/fixtures/babble/lsappinfo_list_sample.txt"
 
       - name: brew tests
         run: |
@@ -113,5 +113,5 @@ jobs:
           rm -f "${brew_lib}/test/cmd/babble/formatter_spec.rb"
           rm -f "${brew_lib}/test/cmd/babble/sh_spec.rb"
           rm -f "${brew_lib}/test/cmd/babble/app_manager_spec.rb"
-          rm -f "${brew_lib}/test/fixtures/lsappinfo_list_sample.txt"
-          rmdir "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble" 2>/dev/null || true
+          rm -f "${brew_lib}/test/support/fixtures/babble/lsappinfo_list_sample.txt"
+          rmdir "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble" "${brew_lib}/test/support/fixtures/babble" 2>/dev/null || true

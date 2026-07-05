@@ -62,10 +62,10 @@ AM_SPEC_SRC="${TAP_DIR}/test/cmd/babble/app_manager_spec.rb"
 AM_LIB_DST="${HOMEBREW_LIB}/cmd/babble/app_manager.rb"
 AM_SPEC_DST="${HOMEBREW_LIB}/test/cmd/babble/app_manager_spec.rb"
 
-# brew's test/fixtures/ already exists; only the file is linked (and only
-# the file is removed on cleanup).
-FIXTURE_SRC="${TAP_DIR}/test/fixtures/lsappinfo_list_sample.txt"
-FIXTURE_DST="${HOMEBREW_LIB}/test/fixtures/lsappinfo_list_sample.txt"
+# The fixture lives in a babble-owned subdir of brew's fixtures tree —
+# created here, removed on cleanup — so it can never collide with brew's.
+FIXTURE_SRC="${TAP_DIR}/test/support/fixtures/babble/lsappinfo_list_sample.txt"
+FIXTURE_DST="${HOMEBREW_LIB}/test/support/fixtures/babble/lsappinfo_list_sample.txt"
 
 cleanup() {
   local exit_code=$?
@@ -77,7 +77,7 @@ cleanup() {
   rm -f "${SH_LIB_DST}" "${SH_SPEC_DST}"
   rm -f "${AM_LIB_DST}" "${AM_SPEC_DST}"
   rm -f "${FIXTURE_DST}"
-  rmdir "${HOMEBREW_LIB}/cmd/babble" "${HOMEBREW_LIB}/test/cmd/babble" 2>/dev/null || true
+  rmdir "${HOMEBREW_LIB}/cmd/babble" "${HOMEBREW_LIB}/test/cmd/babble" "${HOMEBREW_LIB}/test/support/fixtures/babble" 2>/dev/null || true
   exit "${exit_code}"
 }
 trap cleanup EXIT INT TERM
@@ -112,7 +112,7 @@ done
 # File.stat on the spec path relative to HOMEBREW_LIBRARY_PATH; symlinks that
 # point outside that tree fail with ENOENT.
 echo "==> Hardlinking files into Homebrew repository..." >&2
-mkdir -p "${HOMEBREW_LIB}/cmd/babble" "${HOMEBREW_LIB}/test/cmd/babble"
+mkdir -p "${HOMEBREW_LIB}/cmd/babble" "${HOMEBREW_LIB}/test/cmd/babble" "${HOMEBREW_LIB}/test/support/fixtures/babble"
 pairs=(
   "${BABBLE_CMD_SRC}:${BABBLE_CMD_DST}"
   "${BABBLE_SPEC_SRC}:${BABBLE_SPEC_DST}"
