@@ -52,6 +52,21 @@ FMT_SPEC_SRC="${TAP_DIR}/test/cmd/babble/formatter_spec.rb"
 FMT_LIB_DST="${HOMEBREW_LIB}/cmd/babble/formatter.rb"
 FMT_SPEC_DST="${HOMEBREW_LIB}/test/cmd/babble/formatter_spec.rb"
 
+SH_LIB_SRC="${TAP_DIR}/cmd/babble/sh.rb"
+SH_SPEC_SRC="${TAP_DIR}/test/cmd/babble/sh_spec.rb"
+SH_LIB_DST="${HOMEBREW_LIB}/cmd/babble/sh.rb"
+SH_SPEC_DST="${HOMEBREW_LIB}/test/cmd/babble/sh_spec.rb"
+
+AM_LIB_SRC="${TAP_DIR}/cmd/babble/app_manager.rb"
+AM_SPEC_SRC="${TAP_DIR}/test/cmd/babble/app_manager_spec.rb"
+AM_LIB_DST="${HOMEBREW_LIB}/cmd/babble/app_manager.rb"
+AM_SPEC_DST="${HOMEBREW_LIB}/test/cmd/babble/app_manager_spec.rb"
+
+# brew's test/fixtures/ already exists; only the file is linked (and only
+# the file is removed on cleanup).
+FIXTURE_SRC="${TAP_DIR}/test/fixtures/lsappinfo_list_sample.txt"
+FIXTURE_DST="${HOMEBREW_LIB}/test/fixtures/lsappinfo_list_sample.txt"
+
 cleanup() {
   local exit_code=$?
   echo "" >&2
@@ -59,6 +74,9 @@ cleanup() {
   rm -f "${BABBLE_CMD_DST}" "${BABBLE_SPEC_DST}"
   rm -f "${VERSION_LIB_DST}"
   rm -f "${FMT_LIB_DST}" "${FMT_SPEC_DST}"
+  rm -f "${SH_LIB_DST}" "${SH_SPEC_DST}"
+  rm -f "${AM_LIB_DST}" "${AM_SPEC_DST}"
+  rm -f "${FIXTURE_DST}"
   rmdir "${HOMEBREW_LIB}/cmd/babble" "${HOMEBREW_LIB}/test/cmd/babble" 2>/dev/null || true
   exit "${exit_code}"
 }
@@ -80,7 +98,7 @@ cat >&2 <<'WARNING'
 WARNING
 
 # Check that source files exist.
-for src in "${BABBLE_CMD_SRC}" "${BABBLE_SPEC_SRC}" "${VERSION_LIB_SRC}" "${FMT_LIB_SRC}" "${FMT_SPEC_SRC}"
+for src in "${BABBLE_CMD_SRC}" "${BABBLE_SPEC_SRC}" "${VERSION_LIB_SRC}" "${FMT_LIB_SRC}" "${FMT_SPEC_SRC}" "${SH_LIB_SRC}" "${SH_SPEC_SRC}" "${AM_LIB_SRC}" "${AM_SPEC_SRC}" "${FIXTURE_SRC}"
 do
   if [[ ! -f "${src}" ]]
   then
@@ -101,6 +119,11 @@ pairs=(
   "${VERSION_LIB_SRC}:${VERSION_LIB_DST}"
   "${FMT_LIB_SRC}:${FMT_LIB_DST}"
   "${FMT_SPEC_SRC}:${FMT_SPEC_DST}"
+  "${SH_LIB_SRC}:${SH_LIB_DST}"
+  "${SH_SPEC_SRC}:${SH_SPEC_DST}"
+  "${AM_LIB_SRC}:${AM_LIB_DST}"
+  "${AM_SPEC_SRC}:${AM_SPEC_DST}"
+  "${FIXTURE_SRC}:${FIXTURE_DST}"
 )
 for pair in "${pairs[@]}"
 do
@@ -120,4 +143,8 @@ else
   brew tests --only=cmd/babble
   echo "==> Running: brew tests --only=cmd/babble/formatter" >&2
   brew tests --only=cmd/babble/formatter
+  echo "==> Running: brew tests --only=cmd/babble/sh" >&2
+  brew tests --only=cmd/babble/sh
+  echo "==> Running: brew tests --only=cmd/babble/app_manager" >&2
+  brew tests --only=cmd/babble/app_manager
 fi

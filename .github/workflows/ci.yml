@@ -85,13 +85,20 @@ jobs:
           ln -f cmd/babble.rb "${brew_lib}/cmd/babble.rb"
           ln -f cmd/babble/version.rb "${brew_lib}/cmd/babble/version.rb"
           ln -f cmd/babble/formatter.rb "${brew_lib}/cmd/babble/formatter.rb"
+          ln -f cmd/babble/sh.rb "${brew_lib}/cmd/babble/sh.rb"
+          ln -f cmd/babble/app_manager.rb "${brew_lib}/cmd/babble/app_manager.rb"
           ln -f test/cmd/babble_spec.rb "${brew_lib}/test/cmd/babble_spec.rb"
           ln -f test/cmd/babble/formatter_spec.rb "${brew_lib}/test/cmd/babble/formatter_spec.rb"
+          ln -f test/cmd/babble/sh_spec.rb "${brew_lib}/test/cmd/babble/sh_spec.rb"
+          ln -f test/cmd/babble/app_manager_spec.rb "${brew_lib}/test/cmd/babble/app_manager_spec.rb"
+          ln -f test/fixtures/lsappinfo_list_sample.txt "${brew_lib}/test/fixtures/lsappinfo_list_sample.txt"
 
       - name: brew tests
         run: |
           brew tests --only=cmd/babble
           brew tests --only=cmd/babble/formatter
+          brew tests --only=cmd/babble/sh
+          brew tests --only=cmd/babble/app_manager
 
       - name: Unlink tap files from Homebrew
         if: always()
@@ -100,6 +107,11 @@ jobs:
           rm -f "${brew_lib}/cmd/babble.rb"
           rm -f "${brew_lib}/cmd/babble/version.rb"
           rm -f "${brew_lib}/cmd/babble/formatter.rb"
+          rm -f "${brew_lib}/cmd/babble/sh.rb"
+          rm -f "${brew_lib}/cmd/babble/app_manager.rb"
           rm -f "${brew_lib}/test/cmd/babble_spec.rb"
           rm -f "${brew_lib}/test/cmd/babble/formatter_spec.rb"
+          rm -f "${brew_lib}/test/cmd/babble/sh_spec.rb"
+          rm -f "${brew_lib}/test/cmd/babble/app_manager_spec.rb"
+          rm -f "${brew_lib}/test/fixtures/lsappinfo_list_sample.txt"
           rmdir "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble" 2>/dev/null || true

@@ -35,16 +35,23 @@ VERSION_LIB_DST="${HOMEBREW_LIB}/cmd/babble/version.rb"
 FMT_LIB_SRC="${TAP_DIR}/cmd/babble/formatter.rb"
 FMT_LIB_DST="${HOMEBREW_LIB}/cmd/babble/formatter.rb"
 
+SH_LIB_SRC="${TAP_DIR}/cmd/babble/sh.rb"
+SH_LIB_DST="${HOMEBREW_LIB}/cmd/babble/sh.rb"
+
+AM_LIB_SRC="${TAP_DIR}/cmd/babble/app_manager.rb"
+AM_LIB_DST="${HOMEBREW_LIB}/cmd/babble/app_manager.rb"
+
 cleanup() {
   local exit_code=$?
   echo "==> Removing hardlinks from Homebrew repository..." >&2
   rm -f "${BABBLE_CMD_DST}" "${VERSION_LIB_DST}" "${FMT_LIB_DST}"
+  rm -f "${SH_LIB_DST}" "${AM_LIB_DST}"
   rmdir "${HOMEBREW_LIB}/cmd/babble" 2>/dev/null || true
   exit "${exit_code}"
 }
 trap cleanup EXIT INT TERM
 
-for src in "${BABBLE_CMD_SRC}" "${VERSION_LIB_SRC}" "${FMT_LIB_SRC}"
+for src in "${BABBLE_CMD_SRC}" "${VERSION_LIB_SRC}" "${FMT_LIB_SRC}" "${SH_LIB_SRC}" "${AM_LIB_SRC}"
 do
   if [[ ! -f "${src}" ]]
   then
@@ -58,6 +65,8 @@ mkdir -p "${HOMEBREW_LIB}/cmd/babble"
 ln -f "${BABBLE_CMD_SRC}" "${BABBLE_CMD_DST}"
 ln -f "${VERSION_LIB_SRC}" "${VERSION_LIB_DST}"
 ln -f "${FMT_LIB_SRC}" "${FMT_LIB_DST}"
+ln -f "${SH_LIB_SRC}" "${SH_LIB_DST}"
+ln -f "${AM_LIB_SRC}" "${AM_LIB_DST}"
 
 echo "==> Running: brew typecheck" >&2
 brew typecheck
