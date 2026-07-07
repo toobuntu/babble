@@ -22,9 +22,12 @@ module Babble
       @config = config
     end
 
-    # A syntactically plausible bundle id: alphanumerics, dots, hyphens
-    # (refactor/modular's validator, confirmed against a real 134-id
-    # lsappinfo capture). Anything else in a bundleID="…" line is logged
+    # Apple's documented bundle-id character set — alphanumerics, hyphens,
+    # and periods, case-insensitive; reverse-DNS is typical but not
+    # enforced (developer.apple.com glossary "bundle-id" and the
+    # CFBundleIdentifier property-list reference). Matches
+    # refactor/modular's validator, confirmed against a real 134-id
+    # lsappinfo capture. Anything else in a bundleID="…" line is logged
     # and excluded rather than fed to later quit/reopen phases.
     VALID_BUNDLE_ID = T.let(/\A[[:alnum:].-]+\z/i, Regexp)
 
