@@ -30,7 +30,7 @@ fmt=${LINT_PERMS_FORMAT:-shell}
 
 usage() {
   rc=${1:-2}
-  if [[ "${rc}" == "0" ]]
+  if [ "${rc}" = "0" ]
   then
     cat <<EOF
 Usage: $0 --staged|--tracked
