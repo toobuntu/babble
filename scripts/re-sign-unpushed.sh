@@ -53,13 +53,14 @@ resign_one() {
       done
   )
 
+  # Even when everything is already signed, fall through to the push
+  # logic below: signing and publishing are one blessing step, and a
+  # signed-but-unpushed tip (e.g. a merge commit signed at creation)
+  # previously made the script return here without pushing — silently.
   if [ -z "${oldest_unsigned}" ]
   then
     printf '%s (%s): already fully signed\n' "${repo_dir}" "${branch}"
-    return 0
-  fi
-
-  if git -C "${repo_dir}" rev-parse --quiet --verify "${oldest_unsigned}^" >/dev/null 2>&1
+  elif git -C "${repo_dir}" rev-parse --quiet --verify "${oldest_unsigned}^" >/dev/null 2>&1
   then
     git -C "${repo_dir}" rebase --exec 'git commit --amend --no-edit --gpg-sign' "${oldest_unsigned}^"
   else
@@ -69,7 +70,7 @@ resign_one() {
   remote_ref="refs/remotes/origin/${branch}"
   if ! git -C "${repo_dir}" rev-parse --quiet --verify "${remote_ref}" >/dev/null 2>&1
   then
-    printf '%s (%s): re-signed; no remote-tracking ref, not pushing\n' "${repo_dir}" "${branch}"
+    printf '%s (%s): no remote-tracking ref, not pushing\n' "${repo_dir}" "${branch}"
   elif git -C "${repo_dir}" merge-base --is-ancestor "${remote_ref}" HEAD
   then
     git -C "${repo_dir}" push origin "HEAD:${branch}"
