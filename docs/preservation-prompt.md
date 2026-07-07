@@ -235,7 +235,7 @@ For specific topics:
 - The technical debt register lives in `../technical-debt.md`.
 - Branches associated with this work are tagged
   `archive/YYYY-MM-DD-<topic>` and visible at
-  https://github.com/toobuntu/babble/tags
+  https://github.com/toobuntu/homebrew-babble/tags
 ```
 
 ### Write 00-meta-overview.md

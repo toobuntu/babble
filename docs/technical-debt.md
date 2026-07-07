@@ -142,6 +142,15 @@ apps for casks with `uninstall quit:` (brew commits `437b221ca8`,
 against this item before implementing C.2/C.3: brew's
 re-register-then-reopen path may replace part of the polling design.
 
+**Lifecycle sketch (2026-07-06):**
+`docs/prototype-app-restart-lifecycle.md` records the intended
+sequence — quit → poll LS disappearance → upgrade → `brew info
+--json=v2` artifact targets → `lsregister -f` → `open -b` — in which
+`lsregister -f` removes the reopen-registration race entirely; the
+osascript polling predicate below then applies only to the post-quit
+disappearance wait. Reconcile this item's acceptance criteria when
+C.3 starts.
+
 **Post-W7 note:** the cold-path resolution (find the bundle on disk)
 is now `Homebrew::CaskTools::BundleDiscovery` from the cask-tools tap,
 whose `BundleDiscovery.lsregister_dump` already caches the dump on

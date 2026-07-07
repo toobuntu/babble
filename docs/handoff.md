@@ -61,8 +61,13 @@ Compared to the pre-pivot plan (see git history of this file):
 - **Distribution** becomes `brew tap toobuntu/babble`, which makes
   `brew babble` available. The GitHub repo gets renamed
   `toobuntu/babble → toobuntu/homebrew-babble` per Homebrew's
-  tap-naming convention. The rename is the *last* gate (at v0.6.0),
-  after `brew babble` works; GitHub redirects the old name.
+  tap-naming convention. **Rename accelerated** (2026-07-06, was the
+  v0.6.0 gate): `Homebrew/actions/setup-homebrew` auto-checks-out
+  only `homebrew-*` repos, so renaming now gives babble's CI the
+  same checkout behavior cask-tools relies on and avoids a
+  temporary explicit-checkout workaround; nobody taps babble yet,
+  and GitHub redirects the old name. `brew babble` stays a stub
+  until v0.6.0.
 - **Output formatting**: Homebrew's `oh1`/`ohai`/`opoo`/`ofail`
   helpers with the message text prefixed by `⨀`, producing
   `==> ⨀ Babble message` — visually distinct from Homebrew's own

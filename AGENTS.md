@@ -31,8 +31,10 @@ Babble is an interactive upgrade routine for Homebrew (formulae and
 casks), Mac App Store apps via mas, and macOS system updates via
 softwareupdate. Currently shipping as a ksh script (bbl, v0.5.2); in
 active migration to a Homebrew external command (`brew babble`) in
-this repo, which becomes the toobuntu/babble tap (repo renamed to
-homebrew-babble at v0.6.0). Modeled on homebrew-cask-tools. Target
+this repo, which is the toobuntu/babble tap (repo renamed to
+homebrew-babble on 2026-07-06, ahead of the original v0.6.0 gate,
+for setup-homebrew's tap auto-checkout in CI; `brew babble` stays a
+stub until v0.6.0). Modeled on homebrew-cask-tools. Target
 platform: macOS 14+ on Apple Silicon and Intel.
 
 ## Key constraints

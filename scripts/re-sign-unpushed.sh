@@ -1,4 +1,10 @@
 #!/bin/sh
+# POSIX [ ] tests are deliberate (dash-compatible; ksh -n clean) and queued as an
+# improvement for the repo-foundation canonical. brew style forces shellcheck
+# --shell=bash --enable=all (style.rb) regardless of shebang, so the optional
+# require-double-brackets preference must be exempted (numeric code: the named
+# form is not valid in disable= directives).
+# shellcheck disable=SC2292
 # This file is a hand-copy of toobuntu/repo-foundation/scripts/re-sign-unpushed.sh, staged ahead of
 # the first RF sync; do not modify it directly.
 # SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
@@ -39,7 +45,7 @@ resign_one() {
     git -C "${repo_dir}" rev-list --reverse HEAD --not --remotes |
       while IFS= read -r oid
       do
-        if [[ "$(git -C "${repo_dir}" log -1 --format='%G?' "${oid}")" = N ]]
+        if [ "$(git -C "${repo_dir}" log -1 --format='%G?' "${oid}")" = N ]
         then
           printf '%s\n' "${oid}"
           break
@@ -47,7 +53,7 @@ resign_one() {
       done
   )
 
-  if [[ -z "${oldest_unsigned}" ]]
+  if [ -z "${oldest_unsigned}" ]
   then
     printf '%s (%s): already fully signed\n' "${repo_dir}" "${branch}"
     return 0
@@ -74,7 +80,7 @@ resign_one() {
   fi
 }
 
-if (($# == 0))
+if [ "$#" -eq 0 ]
 then
   set -- "${PWD}"
 fi
