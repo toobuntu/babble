@@ -95,7 +95,7 @@ project-local lint or test configuration:
   [`../scripts/run-typecheck.sh`](../scripts/run-typecheck.sh). A
   *plain* `brew typecheck` passes vacuously — it only checks
   `Library/Homebrew` and never sees tap files — so the harness is
-  the only meaningful invocation. Every non-spec file is
+  the only meaningful invocation. Every non-spec Ruby file is
   `# typed: strict` with `sig`s on every method; spec files are
   never `typed: strict`. Note that sorbet-runtime also enforces
   sigs at **runtime** under `brew tests`: a wrapper that redefines

@@ -33,7 +33,7 @@ ls_presence() {
        /usr/bin/grep -q .
 }
 
-# Wait for LS to clear
+# Wait for LS to clear (50 ticks x 0.1 s sleep = 5 s total, by design)
 timeout=50
 while [ "$timeout" -gt 0 ] && ls_presence; do
   sleep 0.1
@@ -47,6 +47,7 @@ if ls_presence; then
     "Timed out waiting for FreeTube to quit." \
     "Please quit it manually and then run:" \
     "  /usr/bin/open -a /Applications/FreeTube.app"
+  exit 1
 fi
 
 unset -f ls_presence
@@ -85,7 +86,7 @@ ls_running() {
     /usr/bin/grep -q .
 }
 
-# Wait for app to become visible to LaunchServices
+# Wait for app to become visible to LaunchServices (50 x 0.1 s = 5 s)
 timeout=50
 while [ "$timeout" -gt 0 ]; do
   if ls_running "$1"; then
@@ -107,6 +108,7 @@ if ! ls_running "$1"; then
     "Timed out waiting for app to reopen." \
     "Try opening it manually:" \
     "  /usr/bin/open -b ${1}"
+  exit 1
 fi
 
 unset -f ls_running

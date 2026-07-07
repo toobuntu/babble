@@ -78,31 +78,13 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: brew install-bundler-gems
 
-      - name: Link tap files into Homebrew for brew tests
-        run: |
-          brew_lib="$(brew --repo)/Library/Homebrew"
-          mkdir -p "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble"
-          ln -f cmd/babble.rb "${brew_lib}/cmd/babble.rb"
-          ln -f cmd/babble/version.rb "${brew_lib}/cmd/babble/version.rb"
-          ln -f cmd/babble/formatter.rb "${brew_lib}/cmd/babble/formatter.rb"
-          ln -f test/cmd/babble_spec.rb "${brew_lib}/test/cmd/babble_spec.rb"
-          ln -f test/cmd/babble/formatter_spec.rb "${brew_lib}/test/cmd/babble/formatter_spec.rb"
-
-      - name: brew tests
-        run: |
-          brew tests --only=cmd/babble
-          brew tests --only=cmd/babble/formatter
-
-      - name: Unlink tap files from Homebrew
-        if: always()
-        run: |
-          brew_lib="$(brew --repo)/Library/Homebrew"
-          rm -f "${brew_lib}/cmd/babble.rb"
-          rm -f "${brew_lib}/cmd/babble/version.rb"
-          rm -f "${brew_lib}/cmd/babble/formatter.rb"
-          rm -f "${brew_lib}/test/cmd/babble_spec.rb"
-          rm -f "${brew_lib}/test/cmd/babble/formatter_spec.rb"
-          rmdir "${brew_lib}/cmd/babble" "${brew_lib}/test/cmd/babble" 2>/dev/null || true
+      # Delegate the hardlink/test/unlink cycle to the same harness used
+      # locally: one file list and one trap-based cleanup path, instead of
+      # an inline copy that must be kept in lockstep with
+      # scripts/run-tests.sh on every new file (per PR #8 review; the
+      # duplicate list had already drifted twice during C.1).
+      - name: brew tests (via scripts/run-tests.sh)
+        run: scripts/run-tests.sh
 
   shell_portability:
     if: github.repository_owner == 'toobuntu'

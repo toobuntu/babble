@@ -36,7 +36,7 @@ App Store apps via `mas`, and macOS system updates via
 
 ```shell
 # Download the script
-curl --silent "https://raw.githubusercontent.com/toobuntu/homebrew-babble/v0.5.2/bbl" --output "<path>/bbl" && chmod +x "<path>/bbl"
+curl --silent --show-error --fail "https://raw.githubusercontent.com/toobuntu/homebrew-babble/v0.5.2/bbl" --output "<path>/bbl" && chmod +x "<path>/bbl"
 # Run it
 "<path>/bbl"
 ```

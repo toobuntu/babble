@@ -80,7 +80,7 @@ Two archive tags preserve the source branches:
 - `archive/<DATE>-ksh-base64` — the base64 ksh approach with notes
 
 Browse the tags at https://github.com/toobuntu/homebrew-babble/tags
-(after the W3 rename, https://github.com/toobuntu/homebrew-babble/tags).
+(the repo was renamed from toobuntu/babble in W3; GitHub redirects).
 
 ## Status
 
