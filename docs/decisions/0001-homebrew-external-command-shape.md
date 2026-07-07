@@ -64,8 +64,13 @@ API, the entire project toolchain collapses into `brew style` /
 `brew typecheck` / `brew tests`, and distribution becomes
 `brew tap toobuntu/babble`. The GitHub repo is renamed
 `toobuntu/babble` → `toobuntu/homebrew-babble` per Homebrew's
-tap-naming convention as the *last* gate, at v0.6.0, after
-`brew babble` works; GitHub redirects the old name.
+tap-naming convention. *Amended 2026-07-06*: originally the last
+gate at v0.6.0, the rename was accelerated to Block B review —
+`Homebrew/actions/setup-homebrew` auto-checks-out only `homebrew-*`
+repos, so the early rename gives CI the exact cask-tools behavior
+instead of a temporary explicit-checkout workaround, at zero user
+cost (nothing taps babble yet; GitHub redirects the old name).
+`brew babble` remains a stub until v0.6.0.
 
 The ksh `bbl` stays in the tree as the working daily driver and
 rollback path until v0.6.0.

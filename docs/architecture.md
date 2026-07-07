@@ -87,9 +87,9 @@ project-local lint or test configuration:
 
 - **Lint** — `brew style --changed` (or explicit paths). Homebrew's
   RuboCop config for Ruby; Homebrew's shfmt/shellcheck dialect for
-  shell files, verbatim. The standalone `.shellcheckrc` predates the
-  pivot, is superseded by `brew style`, and awaits the post-RF-sync
-  cleanup pass (P3.7).
+  shell files, verbatim. `.shellcheckrc` and `.editorconfig` are
+  verbatim copies of Homebrew/brew's own (P3.7 resolved 2026-07-03;
+  upstream tracking via the RF sync proposed).
 - **Typecheck** — `brew typecheck` (Homebrew's Sorbet) against the
   brew repo with the tap files hardlinked in, via
   [`../scripts/run-typecheck.sh`](../scripts/run-typecheck.sh). A
@@ -139,7 +139,7 @@ project-local lint or test configuration:
 ## Tap layout
 
 ```text
-babble/                       → renamed toobuntu/homebrew-babble at v0.6.0
+babble/                       → toobuntu/homebrew-babble (renamed 2026-07-06, ahead of the v0.6.0 gate)
 ├── cmd/
 │   ├── babble.rb             the external command (stub → orchestrator)
 │   └── babble/               Babble::* support (version, formatter; C-blocks add more)
@@ -152,7 +152,7 @@ babble/                       → renamed toobuntu/homebrew-babble at v0.6.0
 └── adrs.toml                 MADR 4.0 via adrs; ADRs in docs/decisions/
 ```
 
-Install shape at v0.6.0: `brew tap toobuntu/babble`, then
+Install shape (functional at v0.6.0): `brew tap toobuntu/babble`, then
 `brew babble`. Until then the dev clone doubles as the installed tap
 via a symlink under `$(brew --repository)/Library/Taps/toobuntu/`
 (handoff § B.1).
@@ -173,6 +173,23 @@ The quarantine phase similarly delegates to `brew purge-quarantine`
 `Homebrew::CaskTools`, **not** `Homebrew::Cask` — defining
 `Homebrew::Cask` would shadow `::Cask` for brew code inside
 `module Homebrew` and break brew at runtime.
+
+**Restart lifecycle sketch (design input for C.2/C.3, added
+2026-07-06).**
+[`prototype-app-restart-lifecycle.md`](prototype-app-restart-lifecycle.md)
+sketches the quit/reopen lifecycle babble should implement, aligned
+with brew's own `reopen_apps_after_upgrade`: JXA quit → poll
+LaunchServices *disappearance* (`lsappinfo info -only
+pid,isregistered`) with timeout → upgrade → resolve installed app
+paths from `brew info --json=v2` (`artifacts[].target`; Homebrew
+stays authoritative for placement — babble never tracks paths) →
+`lsregister -f <target>` to force re-registration → `open -b
+<bundle-id>` once. The `lsregister -f` step *eliminates* the
+reopen-registration race rather than polling around it, superseding
+part of P0.4's cheap-polling design; what remains polled is the
+post-quit disappearance wait. Weigh it together with
+refactor/modular's working implementation (`stash/code-archive/`)
+and the brew commits below.
 
 **Upstream overlap (design input for C.2/C.3, noted 2026-07-04).**
 Homebrew itself now quits and reopens running GUI apps during cask

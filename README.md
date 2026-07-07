@@ -17,8 +17,8 @@ App Store apps via `mas`, and macOS system updates via
 `softwareupdate`.
 
 > **Migration in progress.** Babble is being rewritten as a Homebrew
-> external command (`brew babble`) in this repository, which becomes
-> the `toobuntu/babble` tap (renamed `homebrew-babble` at v0.6.0).
+> external command (`brew babble`) in this repository — the
+> `toobuntu/babble` tap (repo renamed `homebrew-babble` 2026-07-06).
 > The released, working version remains the ksh script `bbl` —
 > use [v0.5.2](https://github.com/toobuntu/babble/releases/tag/v0.5.2).
 > Plan and status: [docs/handoff.md](docs/handoff.md) and
@@ -44,7 +44,7 @@ curl --silent "https://raw.githubusercontent.com/toobuntu/babble/v0.5.2/bbl" --o
 Change `<path>` to the path of your choice. `"$HOME/Downloads"`,
 `"$HOME/bin"` and `"$HOME/devel"` are all common possibilities.
 
-### Homebrew external command (coming at v0.6.0)
+### Homebrew external command (functional at v0.6.0)
 
 ```shell
 brew tap toobuntu/babble
