@@ -531,8 +531,8 @@
     checkin time = 2026/06/11 22:44:28 ( 22 days, 3 hours, 10 minutes, 34.6664 seconds ago )
 75) "blackoutd" ASN:0x0-0x832d325: 
     bundleID=[ NULL ] 
-    bundle path="/Users/todd/devel/claude/desktop/blackoutd/build/blackoutd"
-    executable path="/Users/todd/devel/claude/desktop/blackoutd/build/blackoutd"
+    bundle path="/Users/USER/devel/claude/desktop/blackoutd/build/blackoutd"
+    executable path="/Users/USER/devel/claude/desktop/blackoutd/build/blackoutd"
     pid = 15910 type="UIElement" flavor=3 Version=[ NULL ]  fileType="????" creator="????" Arch=ARM64 
     coalition: 41097
     checkin time = 2026/06/12 11:48:17 ( 21 days, 14 hours, 6 minutes, 45.6741 seconds ago )
@@ -950,8 +950,8 @@
     checkin time = 2026/07/01 19:35:12 ( 2 days, 6 hours, 19 minutes, 50.6563 seconds ago )
 133) "Updater" ASN:0x0-0x20a9da7d: 
     bundleID="org.sparkle-project.Sparkle.Updater"
-    bundle path="/Users/todd/Library/Caches/net.imput.helium/org.sparkle-project.Sparkle/Launcher/oZgO3eXyI/Updater.app"
-    executable path="/Users/todd/Library/Caches/net.imput.helium/org.sparkle-project.Sparkle/Launcher/oZgO3eXyI/Updater.app/Contents/MacOS/Updater"
+    bundle path="/Users/USER/Library/Caches/net.imput.helium/org.sparkle-project.Sparkle/Launcher/oZgO3eXyI/Updater.app"
+    executable path="/Users/USER/Library/Caches/net.imput.helium/org.sparkle-project.Sparkle/Launcher/oZgO3eXyI/Updater.app/Contents/MacOS/Updater"
     pid = 74512 type="UIElement" flavor=3 Version="2057" fileType="APPL" creator="????" Arch=ARM64 
     coalition: 126568
     checkin time = 2026/07/02 06:13:57 ( 1 days, 19 hours, 41 minutes, 5.42517 seconds ago )

@@ -12,7 +12,10 @@ RSpec.describe Babble::AppManager do
 
   # Real `/usr/bin/lsappinfo list` output captured by the maintainer
   # (2026-07-04); never fabricated. 1019 lines, of which 134 carry
-  # bundleID="..." — the rest must be excluded by the parser.
+  # bundleID="..." — the rest must be excluded by the parser. One
+  # mechanical transform: /Users/<name>/ redacted to /Users/USER/ in
+  # bundle/executable path lines (personal data; no bundleID line or
+  # count was affected).
   let(:fixture) do
     File.read(File.expand_path("../../support/fixtures/babble/lsappinfo_list_sample.txt", __dir__))
   end

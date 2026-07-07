@@ -14,8 +14,10 @@ module Babble
   # W3 classification: holds the config reference and, later, cached
   # running-app snapshots.
   class AppManager
-    # config: stays T.untyped until Babble::Config lands (C.2+).
-    sig { params(config: T.untyped).void }
+    # config: stays a placeholder until Babble::Config lands (C.2+);
+    # T.anything per brew's AGENTS.md rule 10 (prefer it over T.untyped
+    # for a generic top type) — it is stored, never yet dereferenced.
+    sig { params(config: T.anything).void }
     def initialize(config:)
       @config = config
     end
@@ -42,8 +44,10 @@ module Babble
     def running_bundle_ids
       result = Sh.capture("/usr/bin/lsappinfo", "list")
       unless result.success?
+        detail = result.stderr.strip
+        detail = "no stderr" if detail.empty?
         Formatter.opoo "lsappinfo list failed (exit #{result.status}): " \
-                       "#{result.stderr.strip}; treating no apps as running."
+                       "#{detail}; treating no apps as running."
         return []
       end
 

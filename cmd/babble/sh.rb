@@ -26,10 +26,9 @@ module Babble
     class << self
       include SystemCommand::Mixin
 
-      sig { params(cmd: String).returns(Result) }
-      def capture(*cmd)
-        executable, *args = cmd
-        result = system_command(T.must(executable),
+      sig { params(executable: String, args: String).returns(Result) }
+      def capture(executable, *args)
+        result = system_command(executable,
                                 args:         args,
                                 print_stderr: false,
                                 must_succeed: false)
