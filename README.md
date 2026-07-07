@@ -20,7 +20,7 @@ App Store apps via `mas`, and macOS system updates via
 > external command (`brew babble`) in this repository — the
 > `toobuntu/babble` tap (repo renamed `homebrew-babble` 2026-07-06).
 > The released, working version remains the ksh script `bbl` —
-> use [v0.5.2](https://github.com/toobuntu/babble/releases/tag/v0.5.2).
+> use [v0.5.2](https://github.com/toobuntu/homebrew-babble/releases/tag/v0.5.2).
 > Plan and status: [docs/handoff.md](docs/handoff.md) and
 > [docs/technical-debt.md](docs/technical-debt.md); design:
 > [docs/architecture.md](docs/architecture.md) and
@@ -36,7 +36,7 @@ App Store apps via `mas`, and macOS system updates via
 
 ```shell
 # Download the script
-curl --silent "https://raw.githubusercontent.com/toobuntu/babble/v0.5.2/bbl" --output "<path>/bbl" && chmod +x "<path>/bbl"
+curl --silent "https://raw.githubusercontent.com/toobuntu/homebrew-babble/v0.5.2/bbl" --output "<path>/bbl" && chmod +x "<path>/bbl"
 # Run it
 "<path>/bbl"
 ```
@@ -71,4 +71,4 @@ The full license text is available in [LICENSE](https://github.com/tabler/tabler
 ### License
 
 Babble is licensed under the [GPLv3 License](https://en.wikipedia.org/wiki/GNU_General_Public_License).
-The full license text is available in [LICENSE](https://github.com/toobuntu/babble/blob/master/LICENSE).
+The full license text is available in [LICENSE](https://github.com/toobuntu/homebrew-babble/blob/master/LICENSE).

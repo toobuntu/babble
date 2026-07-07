@@ -1,4 +1,10 @@
 #!/bin/sh
+# POSIX [ ] tests are deliberate (dash-compatible; ksh -n clean) and queued as an
+# improvement for the repo-foundation canonical. brew style forces shellcheck
+# --shell=bash --enable=all (style.rb) regardless of shebang, so the optional
+# require-double-brackets preference must be exempted (numeric code: the named
+# form is not valid in disable= directives).
+# shellcheck disable=SC2292
 # This file is a hand-copy of toobuntu/repo-foundation/scripts/re-sign-unpushed.sh, staged ahead of
 # the first RF sync; do not modify it directly.
 # SPDX-FileCopyrightText: Copyright 2026 Todd Schulman

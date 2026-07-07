@@ -4,8 +4,6 @@
 
 # This file is a hand-copy of Homebrew/brew's .github/workflows/reject-conventional-commits.yml,
 # staged ahead of the repo-foundation upstream sync; do not modify it directly.
-# One mutation: runs-on ubuntu-slim -> ubuntu-latest (slim label availability
-# in the toobuntu org is unverified).
 name: Commit Style
 
 on:
@@ -16,7 +14,7 @@ permissions: {}
 
 jobs:
   reject-conventional-commits:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: read
     steps:
