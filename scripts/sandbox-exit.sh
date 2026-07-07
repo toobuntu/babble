@@ -40,7 +40,7 @@ main() {
   do_push=
   push_target=origin
 
-  while (($# > 0))
+  while [ "$#" -gt 0 ]
   do
     case "$1" in
       --push)
@@ -61,27 +61,27 @@ main() {
   done
 
   saved=.sandbox-remotes/saved.tsv
-  [[ -f "${saved}" ]] || die "no ${saved} found; not in a sandbox?"
+  [ -f "${saved}" ] || die "no ${saved} found; not in a sandbox?"
 
   # Remove any existing remotes first to avoid 'remote already exists'
   # collisions during restoration.
   git remote | while IFS= read -r _name; do
-    [[ -n "${_name}" ]] || continue
+    [ -n "${_name}" ] || continue
     git remote remove "${_name}"
   done
 
   _tab=$(printf '\t')
   while IFS="${_tab}" read -r name url
   do
-    [[ -n "${name}" ]] && [[ -n "${url}" ]] || continue
+    [ -n "${name}" ] && [ -n "${url}" ] || continue
     git remote add "${name}" "${url}"
     printf 'Restored remote: %s -> %s\n' "${name}" "${url}"
   done <"${saved}"
 
-  if [[ -n "${do_push}" ]]
+  if [ -n "${do_push}" ]
   then
     branch=$(git branch --show-current)
-    [[ -n "${branch}" ]] || die "no current branch (detached HEAD?); cannot push"
+    [ -n "${branch}" ] || die "no current branch (detached HEAD?); cannot push"
     git fetch "${push_target}"
     git push --set-upstream "${push_target}" "${branch}"
   fi

@@ -39,7 +39,7 @@ resign_one() {
     git -C "${repo_dir}" rev-list --reverse HEAD --not --remotes |
       while IFS= read -r oid
       do
-        if [[ "$(git -C "${repo_dir}" log -1 --format='%G?' "${oid}")" = N ]]
+        if [ "$(git -C "${repo_dir}" log -1 --format='%G?' "${oid}")" = N ]
         then
           printf '%s\n' "${oid}"
           break
@@ -47,7 +47,7 @@ resign_one() {
       done
   )
 
-  if [[ -z "${oldest_unsigned}" ]]
+  if [ -z "${oldest_unsigned}" ]
   then
     printf '%s (%s): already fully signed\n' "${repo_dir}" "${branch}"
     return 0
@@ -74,7 +74,7 @@ resign_one() {
   fi
 }
 
-if (($# == 0))
+if [ "$#" -eq 0 ]
 then
   set -- "${PWD}"
 fi

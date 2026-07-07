@@ -67,7 +67,7 @@ save_source_remotes() {
   mkdir -p "$(dirname "${_out}")"
   : >"${_out}"
   git -C "${_src}" remote | while IFS= read -r _name; do
-    [[ -n "${_name}" ]] || continue
+    [ -n "${_name}" ] || continue
     _url=$(git -C "${_src}" remote get-url "${_name}")
     printf '%s\t%s\n' "${_name}" "${_url}" >>"${_out}"
   done
@@ -75,7 +75,7 @@ save_source_remotes() {
 
 remove_all_remotes() {
   git remote | while IFS= read -r _name; do
-    [[ -n "${_name}" ]] || continue
+    [ -n "${_name}" ] || continue
     git remote remove "${_name}"
   done
 }
@@ -85,7 +85,7 @@ main() {
   parent=${PWD}
   source=
 
-  while (($# > 0))
+  while [ "$#" -gt 0 ]
   do
     case "$1" in
       --mode=*)
@@ -102,21 +102,21 @@ main() {
         ;;
       --)
         shift
-        (($# == 1)) || die "expected one positional after --"
+        [ "$#" -eq 1 ] || die "expected one positional after --"
         source=$1
         shift
         break
         ;;
       --*) die "unknown option: $1" ;;
       *)
-        [[ -z "${source}" ]] || die "multiple positional args: ${source} $1"
+        [ -z "${source}" ] || die "multiple positional args: ${source} $1"
         source=$1
         shift
         ;;
     esac
   done
 
-  [[ -n "${source}" ]] || {
+  [ -n "${source}" ] || {
     usage >&2
     exit 1
   }
@@ -127,22 +127,22 @@ main() {
   esac
 
   source_abs=$(resolve_path "${source}")
-  [[ -d "${source_abs}/.git" ]] || die "${source_abs} is not a git repository"
+  [ -d "${source_abs}/.git" ] || die "${source_abs} is not a git repository"
 
   parent_abs=$(resolve_path "${parent}")
-  [[ -d "${parent_abs}" ]] || die "parent dir does not exist: ${parent}"
+  [ -d "${parent_abs}" ] || die "parent dir does not exist: ${parent}"
 
   repo_name=$(basename "${source_abs}")
   ts=$(date +%Y%m%d-%H%M%S)
   sandbox_dir="${parent_abs}/${repo_name}-sandbox-${ts}"
-  [[ ! -e "${sandbox_dir}" ]] || die "sandbox path already exists: ${sandbox_dir}"
+  [ ! -e "${sandbox_dir}" ] || die "sandbox path already exists: ${sandbox_dir}"
 
   # Capture source's remotes BEFORE cloning. After clone the new repo's
   # origin points at the source path, not at the source's GitHub URL,
   # so the source's remote list cannot be reconstructed from the clone.
   saved_remotes=$(mktemp -t blackoutd-sandbox.XXXXXX)
   save_source_remotes "${source_abs}" "${saved_remotes}"
-  [[ -s "${saved_remotes}" ]] || {
+  [ -s "${saved_remotes}" ] || {
     rm -f "${saved_remotes}"
     die "source has no remotes: ${source_abs}"
   }
@@ -163,7 +163,7 @@ main() {
       ;;
     add-local)
       original_origin=$(awk -F'\t' '$1 == "origin" {print $2}' .sandbox-remotes/saved.tsv)
-      [[ -n "${original_origin}" ]] ||
+      [ -n "${original_origin}" ] ||
         die "source has no origin remote; cannot use --mode=add-local"
       git remote set-url origin "${original_origin}"
       git remote add local "${source_abs}"
