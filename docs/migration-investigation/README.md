@@ -79,7 +79,7 @@ Two archive tags preserve the source branches:
 - `archive/<DATE>-ruby-refactor-modular` — the year+ of work
 - `archive/<DATE>-ksh-base64` — the base64 ksh approach with notes
 
-Browse the tags at https://github.com/toobuntu/babble/tags
+Browse the tags at https://github.com/toobuntu/homebrew-babble/tags
 (after the W3 rename, https://github.com/toobuntu/homebrew-babble/tags).
 
 ## Status
