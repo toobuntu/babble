@@ -191,7 +191,7 @@ W3 lands. Any branches consolidated into main: delete.
 
 - [ ] `docs/migration-investigation/` PR merged to main
 - [ ] Archive tags pushed and visible at
-      https://github.com/toobuntu/babble/tags
+      https://github.com/toobuntu/homebrew-babble/tags
 - [ ] Discarded branches deleted both locally and on remote
 - [ ] Sandbox cleaned up
 - [ ] You've read enough of the new

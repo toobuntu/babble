@@ -61,8 +61,13 @@ Compared to the pre-pivot plan (see git history of this file):
 - **Distribution** becomes `brew tap toobuntu/babble`, which makes
   `brew babble` available. The GitHub repo gets renamed
   `toobuntu/babble → toobuntu/homebrew-babble` per Homebrew's
-  tap-naming convention. The rename is the *last* gate (at v0.6.0),
-  after `brew babble` works; GitHub redirects the old name.
+  tap-naming convention. **Rename accelerated** (2026-07-06, was the
+  v0.6.0 gate): `Homebrew/actions/setup-homebrew` auto-checks-out
+  only `homebrew-*` repos, so renaming now gives babble's CI the
+  same checkout behavior cask-tools relies on and avoids a
+  temporary explicit-checkout workaround; nobody taps babble yet,
+  and GitHub redirects the old name. `brew babble` stays a stub
+  until v0.6.0.
 - **Output formatting**: Homebrew's `oh1`/`ohai`/`opoo`/`ofail`
   helpers with the message text prefixed by `⨀`, producing
   `==> ⨀ Babble message` — visually distinct from Homebrew's own
@@ -82,12 +87,16 @@ Babble uses Homebrew's own pipeline, exactly like cask-tools:
 - **`brew style <files>`** (or `--changed`) for lint. Homebrew's
   rubocop config; no project-local `.rubocop.yml`. Shell files get
   Homebrew's shfmt/shellcheck config verbatim through the same
-  command — never RF's shell-lint. The standalone `.shellcheckrc`
-  is superseded by `brew style` but stays in place until the
-  post-RF-sync cleanup pass.
+  command — never RF's shell-lint (the sync manifest excludes
+  babble from RF's `shell_lint` set). `.shellcheckrc` and
+  `.editorconfig` are verbatim copies of Homebrew/brew's own
+  (adopted 2026-07-03, replacing the stale pre-pivot rules), with
+  upstream-tracking via repo-foundation's `upstreams:` list
+  proposed. RF-lineage POSIX scripts carry a one-line shellcheck
+  exemption for Homebrew's optional checks.
 - **`brew typecheck`** for Sorbet, run against the brew repo with the
   tap files hardlinked in (see `scripts/run-tests.sh` pattern below).
-  Every non-spec file is `# typed: strict` with `sig`s throughout;
+  Every non-spec Ruby file is `# typed: strict` with `sig`s throughout;
   spec files are never `typed: strict`.
 - **`brew tests --only=…`** for RSpec. brew only discovers specs
   inside `$(brew --repo)/Library/Homebrew/test/`, so babble adapts
@@ -444,18 +453,22 @@ external-command shape.
 > the `cmd/babble.rb` stub plus `cmd/babble/{version,formatter}.rb`,
 > and ADRs 0001–0003 (babble-specific, MADR 4.0 via `adrs`, numbered
 > from babble's own 0001; org-wide ADRs live in repo-foundation).
-> RF-managed repo-health files — `.githooks/pre-commit`, `lint.yml`
-> (reuse/actionlint/zizmor/shellcheck CI), `.editorconfig`, RF
-> shell-lint configs, commit-convention and org-ADR-policy plumbing —
-> are **not** hand-added here; they arrive via the first RF sync
-> after this block merges. The local lint tools (`reuse lint`,
-> `actionlint`, `shellcheck`, `shfmt`) still run by hand until then.
-> babble defers to `brew style` verbatim (Homebrew's
-> rubocop/shfmt/shellcheck config) — never RF's 2-space shell lint;
-> the standalone `.shellcheckrc` is superseded by `brew style` but
-> **stays in place** — its disposition belongs to the post-sync
-> cleanup pass, not to Block B. See the master plan § W3 "RF-sync
-> coordination" and P0.2 in `technical-debt.md`.
+> **Amended 2026-07-03 (in-session maintainer decision):** the
+> RF-managed repo-health files are **hand-staged ahead of the first
+> sync** so babble is fully set up now — copies of RF's canonicals
+> per the sync manifest's babble entry, each carrying a
+> hand-copy/do-not-modify header the first real sync reconciles:
+> the `.githooks/` chain (dispatcher, pre-push, 15-prose / 30-brew /
+> 50-adrs plugins, plus babble's own 60-babble-typecheck),
+> `lint.yml`, `actionlint.yml`, `.github/zizmor.yml` +
+> `actionlint.yaml` + matcher, `.pinact.yaml`, the shared scripts
+> (lint-perms, lint-unicode, re-sign-unpushed, rewrite-pr, fixed
+> annotate.sh), and sync-readiness sentinels in `AGENTS.md` /
+> `.gitignore` plus `.claude/settings.addenda.json`. babble still
+> defers to `brew style` verbatim for shell — it is excluded from
+> RF's `shell_lint` set; `.shellcheckrc`/`.editorconfig` are now
+> Homebrew/brew's verbatim copies instead. See the master plan § W3
+> "RF-sync coordination" and P0.2 in `technical-debt.md`.
 
 ### B.1 — Pre-flight (manual, before launching Claude Code)
 
@@ -591,10 +604,11 @@ Copy-paste the following into Claude Code:
 >   verify it picks up the tap files; if it does not, document that
 >   typecheck is local-only for now and move on (do not sink the
 >   session into it).
-> - ~~`lint.yml`~~ — **struck per RF-sync coordination**: the
->   reuse/actionlint/zizmor/shellcheck CI workflow is RF-managed and
->   arrives via the first repo-foundation sync after this block
->   merges. Run those linters by hand locally in the meantime.
+> - `lint.yml` + `actionlint.yml` — hand-staged copies of RF's
+>   canonicals (2026-07-03 amendment): reuse / lint-unicode /
+>   lint-perms / lint-adrs, and actionlint + zizmor with the
+>   Homebrew/actions ref-pin policy. Shell lint stays with `brew
+>   style` in ci.yml (babble is excluded from RF's shell_lint set).
 > - Update `.github/dependabot.yml` for github-actions (no bundler —
 >   there is no Gemfile).
 >
@@ -642,12 +656,12 @@ Copy-paste the following into Claude Code:
 > - Don't rename the GitHub repo (that's the v0.6.0 gate)
 > - Don't edit `AGENTS.md` / `.claude/settings.json` (Block 0 landed
 >   them; propose changes in the report instead)
-> - Don't hand-add RF-managed repo-health files: no
->   `.githooks/pre-commit`, no `lint.yml`, no `.editorconfig`, no RF
->   shell-lint configs, no commit-convention or org-ADR-policy
->   plumbing — they arrive via the first repo-foundation sync
-> - Don't remove `.shellcheckrc` — superseded by `brew style`, but
->   its removal belongs to the post-RF-sync cleanup pass
+> - Don't fork the hand-staged RF canonicals (files whose header
+>   says "do not modify it directly") — upstream fixes to
+>   repo-foundation instead
+> - Don't apply RF's shell-lint to babble's own shell — `brew style`
+>   owns it; `.shellcheckrc`/`.editorconfig` track Homebrew/brew
+>   verbatim
 >
 > **Conventions** (org-wide): first commit line ≤ 50 chars; commits
 > signed off (`git commit --signoff`); en_US spelling; long options
@@ -819,7 +833,7 @@ After C.1 lands, ask for the C.2 prompt.
 | `cmd/babble.rb` | B | the external command (stub → orchestrator) |
 | `cmd/babble/{version,formatter}.rb` | B | version + ⨀ output helpers |
 | `scripts/run-tests.sh` | B | brew-tests hardlink harness |
-| `.github/workflows/ci.yml` | B | CI (style + brew_tests; `lint.yml` arrives via RF sync) |
+| `.github/workflows/ci.yml` | B | CI: style + typecheck + brew_tests (`lint.yml`/`actionlint.yml` hand-staged from RF) |
 | `adrs.toml`, `docs/decisions/0001–0003` | B | MADR 4.0 ADRs |
 | `docs/architecture.md` | B | architecture |
 | `cmd/babble/{sh,app_manager}.rb`, `test/` | C.1 | first logic + specs |

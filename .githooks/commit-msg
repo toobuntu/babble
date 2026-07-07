@@ -1,0 +1,25 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Reject Conventional-Commits subjects, mirroring Homebrew's Commit Style
+# gate (.github/workflows/reject-conventional-commits.yml, hand-copied from
+# Homebrew/brew): babble is a Homebrew external command, so its commits
+# follow Homebrew's commit-style rules.
+#
+# Drift guard: the workflow's run block is the single source of truth for
+# the pattern below. When a sync updates the workflow, reconcile this hook;
+# the planned repo-foundation sync adds a checksum check that complains
+# loudly on divergence (see the RF sync notes). Babble-owned until the RF
+# commit-msg hook chain exists.
+
+pattern='^(feat|fix|chore|refactor|perf|ci)(\([^)]*\))?!?:'
+
+title=$(head -n 1 "$1")
+if printf '%s\n' "${title}" | LC_ALL=C /usr/bin/grep --extended-regexp --quiet "${pattern}"; then
+  printf 'error: Conventional-Commits subjects are not allowed (Homebrew Commit Style):\n' >&2
+  printf '  %s\n' "${title}" >&2
+  printf 'Reword the subject without the type prefix, e.g. "Add ..." not "feat: add ...".\n' >&2
+  exit 1
+fi

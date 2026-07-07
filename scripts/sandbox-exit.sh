@@ -1,4 +1,8 @@
 #!/bin/sh
+# Hand-copy of the toobuntu/repo-foundation canonical, staged ahead of the first RF sync; do not modify it directly.
+# repo-foundation-lineage script: exempt Homebrew optional shellcheck checks
+# (babble defers to brew style; POSIX-style layout is canonical upstream).
+# shellcheck disable=SC2249,SC2250,SC2292,SC2310,SC2311,SC2312
 # SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -14,7 +18,7 @@
 set -eu
 
 usage() {
-  cat << USAGE
+  cat <<USAGE
 Usage: $(basename "$0") [--push] [--push-target=REMOTE]
 
 Restore git remotes from .sandbox-remotes/saved.tsv (created by
@@ -36,47 +40,50 @@ main() {
   do_push=
   push_target=origin
 
-  while [ $# -gt 0 ]; do
+  while [ "$#" -gt 0 ]
+  do
     case "$1" in
-    --push)
-      do_push=1
-      shift
-      ;;
-    --push-target=*)
-      push_target=${1#--push-target=}
-      do_push=1
-      shift
-      ;;
-    -h | --help)
-      usage
-      exit 0
-      ;;
-    *) die "unknown option: $1" ;;
+      --push)
+        do_push=1
+        shift
+        ;;
+      --push-target=*)
+        push_target=${1#--push-target=}
+        do_push=1
+        shift
+        ;;
+      -h | --help)
+        usage
+        exit 0
+        ;;
+      *) die "unknown option: $1" ;;
     esac
   done
 
   saved=.sandbox-remotes/saved.tsv
-  [ -f "$saved" ] || die "no $saved found; not in a sandbox?"
+  [ -f "${saved}" ] || die "no ${saved} found; not in a sandbox?"
 
   # Remove any existing remotes first to avoid 'remote already exists'
   # collisions during restoration.
   git remote | while IFS= read -r _name; do
-    [ -n "$_name" ] || continue
-    git remote remove "$_name"
+    [ -n "${_name}" ] || continue
+    git remote remove "${_name}"
   done
 
   _tab=$(printf '\t')
-  while IFS="$_tab" read -r name url; do
-    [ -n "$name" ] && [ -n "$url" ] || continue
-    git remote add "$name" "$url"
-    printf 'Restored remote: %s -> %s\n' "$name" "$url"
-  done < "$saved"
+  while IFS="${_tab}" read -r name url
+  do
+    [ -n "${name}" ] && [ -n "${url}" ] || continue
+    git remote add "${name}" "${url}"
+    printf 'Restored remote: %s -> %s\n' "${name}" "${url}"
+  done <"${saved}"
 
-  if [ -n "$do_push" ]; then
+  if [ -n "${do_push}" ]
+  then
     branch=$(git branch --show-current)
-    [ -n "$branch" ] || die "no current branch (detached HEAD?); cannot push"
-    git fetch "$push_target"
-    git push --set-upstream "$push_target" "$branch"
+    [ -n "${branch}" ] || die "no current branch (detached HEAD?); cannot push"
+    git fetch "${push_target}"
+    git push --set-upstream "${push_target}" "${branch}"
   fi
 }
 

@@ -1,0 +1,107 @@
+# SPDX-FileCopyrightText: Copyright 2026 Todd Schulman
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: CI
+
+env:
+  HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_FROM_API: 1
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  style:
+    if: github.repository_owner == 'toobuntu'
+    runs-on: macos-latest
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+        with:
+          core: false
+          cask: false
+
+      - name: Cache Homebrew Bundler RubyGems
+        id: cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Install Homebrew Bundler RubyGems
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: brew install-bundler-gems
+
+      - name: Cache style cache
+        if: runner.os == 'macOS'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/Library/Caches/Homebrew/style
+          key: macos-style-cache-${{ github.sha }}
+          restore-keys: macos-style-cache-
+
+      - name: brew style
+        run: brew style --changed
+
+      - name: brew typecheck (tap files hardlinked)
+        run: scripts/run-typecheck.sh
+
+  brew_tests:
+    if: github.repository_owner == 'toobuntu'
+    runs-on: macos-latest
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+        with:
+          core: false
+          cask: false
+
+      - name: Cache Homebrew Bundler RubyGems
+        id: cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Install Homebrew Bundler RubyGems
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: brew install-bundler-gems
+
+      # Delegate the hardlink/test/unlink cycle to the same harness used
+      # locally: one file list and one trap-based cleanup path, instead of
+      # an inline copy that must be kept in lockstep with
+      # scripts/run-tests.sh on every new file (per PR #8 review; the
+      # duplicate list had already drifted twice during C.1).
+      - name: brew tests (via scripts/run-tests.sh)
+        run: scripts/run-tests.sh
+
+  shell_portability:
+    if: github.repository_owner == 'toobuntu'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # checkbashisms (devscripts) + dash -n guard the POSIX sh surface:
+      # brew style forces shellcheck --shell=bash, so nothing else catches
+      # a bashism under a #!/bin/sh shebang before dash (ubuntu /bin/sh)
+      # breaks at runtime.
+      - name: checkbashisms + dash -n on sh-shebang scripts
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq devscripts
+          mapfile -t sh_scripts < <(grep -rl '^#!/bin/sh$' scripts .githooks)
+          printf 'checking: %s\n' "${sh_scripts[@]}"
+          checkbashisms "${sh_scripts[@]}"
+          for f in "${sh_scripts[@]}"; do dash -n "$f"; done
