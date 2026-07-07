@@ -129,7 +129,7 @@ do
   else
     _pattern="${_default_pattern}"
   fi
-  if LC_ALL=en_US.UTF-8 /usr/bin/grep --binary-files=without-match \
+  if LC_ALL=C.UTF-8 /usr/bin/grep --binary-files=without-match \
      --extended-regexp --quiet "${_pattern}" "${_f}"
   then
     _found="${_found:+${_found}

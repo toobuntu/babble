@@ -96,7 +96,7 @@ Babble uses Homebrew's own pipeline, exactly like cask-tools:
   exemption for Homebrew's optional checks.
 - **`brew typecheck`** for Sorbet, run against the brew repo with the
   tap files hardlinked in (see `scripts/run-tests.sh` pattern below).
-  Every non-spec file is `# typed: strict` with `sig`s throughout;
+  Every non-spec Ruby file is `# typed: strict` with `sig`s throughout;
   spec files are never `typed: strict`.
 - **`brew tests --only=…`** for RSpec. brew only discovers specs
   inside `$(brew --repo)/Library/Homebrew/test/`, so babble adapts
