@@ -1,0 +1,1019 @@
+ 1) "loginwindow" ASN:0x0-0x1001: 
+    bundleID="com.apple.loginwindow"
+    bundle path="/System/Library/CoreServices/loginwindow.app"
+    executable path="/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow"
+    pid = 619 type="UIElement" flavor=3 Version="3085.5.3" fileType="APPL" creator="lgnw" Arch=ARM64 
+    childASNs: ASN:0x0-0x2a02a: ASN:0x0-0x62062: ASN:0x0-0x68068: ASN:0x0-0x6b06b: 
+    coalition: 374
+    loadedJobs:"local.restore-rgb" 
+    checkin time = 2026/06/01 21:49:45 ( 32 days, 4 hours, 5 minutes, 16.9319 seconds ago )
+ 2) "universalaccessd" ASN:0x0-0x8008: 
+    bundleID=[ NULL ] 
+    bundle path="/usr/sbin/universalaccessd"
+    executable path="/usr/sbin/universalaccessd"
+    pid = 928 !signalled type="BackgroundOnly" flavor=3 Version=[ NULL ]  fileType="????" creator="????" Arch=ARM64 
+    coalition: 680
+    checkin time = 2026/06/01 21:50:00 ( 32 days, 4 hours, 5 minutes, 2.3117 seconds ago )
+ 3) "WindowManager" ASN:0x0-0x9009: 
+    bundleID="com.apple.WindowManager"
+    bundle path="/System/Library/CoreServices/WindowManager.app"
+    executable path="/System/Library/CoreServices/WindowManager.app/Contents/MacOS/WindowManager"
+    pid = 926 type="UIElement" flavor=3 Version="341.4.4" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 676
+    checkin time = 2026/06/01 21:50:00 ( 32 days, 4 hours, 5 minutes, 2.22734 seconds ago )
+ 4) "Accessibility" ASN:0x0-0x10010: 
+    bundleID="com.apple.AccessibilityUIServer"
+    bundle path="/System/Library/CoreServices/AccessibilityUIServer.app"
+    executable path="/System/Library/CoreServices/AccessibilityUIServer.app/Contents/MacOS/AccessibilityUIServer"
+    pid = 1040 type="UIElement" flavor=3 Version="1" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 876
+    checkin time = 2026/06/01 21:50:04 ( 32 days, 4 hours, 4 minutes, 57.9667 seconds ago )
+ 5) "Wi-Fi" ASN:0x0-0x12012: 
+    bundleID="com.apple.wifi.WiFiAgent"
+    bundle path="/System/Library/CoreServices/WiFiAgent.app"
+    executable path="/System/Library/CoreServices/WiFiAgent.app/Contents/MacOS/WiFiAgent"
+    pid = 1027 type="UIElement" flavor=3 Version="19150.2" fileType="????" creator="????" Arch=ARM64 
+    coalition: 850
+    checkin time = 2026/06/01 21:50:07 ( 32 days, 4 hours, 4 minutes, 55.1663 seconds ago )
+ 6) "Control Center" ASN:0x0-0x13013: 
+    bundleID="com.apple.controlcenter"
+    bundle path="/System/Library/CoreServices/ControlCenter.app"
+    executable path="/System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter"
+    pid = 1066 type="UIElement" flavor=3 Version="1" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 922
+    checkin time = 2026/06/01 21:50:07 ( 32 days, 4 hours, 4 minutes, 54.9404 seconds ago )
+ 7) "chronod" ASN:0x0-0x17017: 
+    bundleID="com.apple.chronod"
+    bundle path="/System/Library/PrivateFrameworks/ChronoCore.framework/Support/chronod"
+    executable path="/System/Library/PrivateFrameworks/ChronoCore.framework/Support/chronod"
+    pid = 1116 !signalled type="BackgroundOnly" flavor=2 Version="1" fileType="com.apple.product-type.tool" Arch=ARM64 sandboxed 
+    coalition: 988  { 1116 1191 1192 1207 1210 1244 1246 1249 1251 1252 1253 1254 1257 1259 1261 1264 1265 1268 1271 1272 1273 1274 1275 1276 1277 1280 1281 1282 1285 50015 55593 78067 90887 }
+    checkin time = 2026/06/01 21:50:18 ( 32 days, 4 hours, 4 minutes, 44.0158 seconds ago )
+ 8) "Notification Center" ASN:0x0-0x18018: 
+    bundleID="com.apple.notificationcenterui"
+    bundle path="/System/Library/CoreServices/NotificationCenter.app"
+    executable path="/System/Library/CoreServices/NotificationCenter.app/Contents/MacOS/NotificationCenter"
+    pid = 1127 type="UIElement" flavor=3 Version="1553.4.18" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 1004
+    checkin time = 2026/06/01 21:50:21 ( 32 days, 4 hours, 4 minutes, 41.4967 seconds ago )
+ 9) "ViewBridgeAuxiliary" ASN:0x0-0x19019: 
+    bundleID="com.apple.ViewBridgeAuxiliary"
+    bundle path="/System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc"
+    executable path="/System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc/Contents/MacOS/ViewBridgeAuxiliary"
+    pid = 1131 !signalled type="BackgroundOnly" flavor=2 Version=[ NULL ]  fileType="XPC!" creator="????" Arch=ARM64 
+    coalition: 1012
+    checkin time = 2026/06/01 21:50:21 ( 32 days, 4 hours, 4 minutes, 41.3239 seconds ago )
+10) "UIKitSystem" ASN:0x0-0x1b01b: 
+    bundleID="com.apple.UIKitSystemApp"
+    bundle path="/System/Library/CoreServices/UIKitSystem.app"
+    executable path="/System/Library/CoreServices/UIKitSystem.app/Contents/MacOS/UIKitSystem"
+    pid = 1187 type="BackgroundOnly" flavor=2 Version="618" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1095
+    checkin time = 2026/06/01 21:50:34 ( 32 days, 4 hours, 4 minutes, 28.5036 seconds ago )
+11) "TipsWidgetExtension" ASN:0x0-0x20020: 
+    bundleID="com.apple.tips.Widget"
+    bundle path="/System/Applications/Tips.app/Contents/PlugIns/TipsWidgetExtension.appex"
+    executable path="/System/Applications/Tips.app/Contents/PlugIns/TipsWidgetExtension.appex/Contents/MacOS/TipsWidgetExtension"
+    pid = 1210 !signalled type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 21:50:39 ( 32 days, 4 hours, 4 minutes, 23.5571 seconds ago )
+12) "PhotosReliveWidget" ASN:0x0-0x21021: 
+    bundleID="com.apple.Photos.PhotosReliveWidget"
+    bundle path="/System/Applications/Photos.app/Contents/PlugIns/PhotosReliveWidget.appex"
+    executable path="/System/Applications/Photos.app/Contents/PlugIns/PhotosReliveWidget.appex/Contents/MacOS/PhotosReliveWidget"
+    pid = 1207 !signalled type="BackgroundOnly" flavor=2 Version="851.0.102" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 21:50:39 ( 32 days, 4 hours, 4 minutes, 23.4143 seconds ago )
+13) "familycircled" ASN:0x0-0x23023: 
+    bundleID=[ NULL ] 
+    bundle path="/System/Library/PrivateFrameworks/FamilyCircle.framework/Versions/A/Resources/familycircled"
+    executable path="/System/Library/PrivateFrameworks/FamilyCircle.framework/Versions/A/Resources/familycircled"
+    pid = 985 !signalled type="BackgroundOnly" flavor=2 Version=[ NULL ]  Arch=ARM64 sandboxed 
+    coalition: 780
+    checkin time = 2026/06/01 21:50:41 ( 32 days, 4 hours, 4 minutes, 21.3098 seconds ago )
+14) "CalendarWidgetExtension" ASN:0x0-0x24024: 
+    bundleID="com.apple.iCal.CalendarWidgetExtension"
+    bundle path="/System/Applications/Calendar.app/Contents/PlugIns/CalendarWidgetExtension.appex"
+    executable path="/System/Applications/Calendar.app/Contents/PlugIns/CalendarWidgetExtension.appex/Contents/MacOS/CalendarWidgetExtension"
+    pid = 1192 !signalled type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 21:50:41 ( 32 days, 4 hours, 4 minutes, 21.2751 seconds ago )
+15) "macOSWidgetExtension" ASN:0x0-0x25025: 
+    bundleID="com.apple.reminders.WidgetExtension"
+    bundle path="/System/Applications/Reminders.app/Contents/PlugIns/RemindersWidgetExtension.appex"
+    executable path="/System/Applications/Reminders.app/Contents/PlugIns/RemindersWidgetExtension.appex/Contents/MacOS/RemindersWidgetExtension"
+    pid = 1280 !signalled type="BackgroundOnly" flavor=2 Version="3976" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 21:50:42 ( 32 days, 4 hours, 4 minutes, 20.1768 seconds ago )
+16) "Safari" ASN:0x0-0x2a02a: 
+    bundleID="com.apple.Safari"
+    bundle path="/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+    executable path="/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app/Contents/MacOS/Safari"
+    pid = 1358 type="Foreground" flavor=3 Version="21624.2.5.11.4" fileType="APPL" creator="sfri" Arch=ARM64 sandboxed 
+    coalition: 1268  { 1358 1413 3434 3449 3480 3556 3576 3663 3793 3814 3833 3843 3854 3933 4385 4388 4432 4446 4548 4587 8490 15613 22935 22944 23527 33029 52010 56120 82448 83269 83344 85228 97544 97546 }
+    parentASN="loginwindow" ASN:0x0-0x1001: 
+    launch time =  2026/06/01 21:51:09 ( 32 days, 4 hours, 3 minutes, 53.514 seconds ago )
+    checkin time = 2026/06/01 21:51:09 ( 32 days, 4 hours, 3 minutes, 53.4823 seconds ago )
+    launch to checkin time: 0.0316918 seconds
+17) "SystemUIServer" ASN:0x0-0x2b02b: 
+    bundleID="com.apple.systemuiserver"
+    bundle path="/System/Library/CoreServices/SystemUIServer.app"
+    executable path="/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer"
+    pid = 1360 type="UIElement" flavor=3 Version="544" fileType="APPL" creator="syui" Arch=ARM64 
+    coalition: 1272
+    checkin time = 2026/06/01 21:51:09 ( 32 days, 4 hours, 3 minutes, 53.406 seconds ago )
+18) "Dock" ASN:0x0-0x2c02c: 
+    bundleID="com.apple.dock"
+    bundle path="/System/Library/CoreServices/Dock.app"
+    executable path="/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock"
+    pid = 1359 type="UIElement" flavor=4 Version="2427.4.7" fileType="APPL" creator="dock" Arch=ARM64 
+    coalition: 1270  { 1359 1408 }
+    checkin time = 2026/06/01 21:51:09 ( 32 days, 4 hours, 3 minutes, 53.3959 seconds ago )
+19) "Finder" ASN:0x0-0x2d02d: 
+    bundleID="com.apple.finder"
+    bundle path="/System/Library/CoreServices/Finder.app"
+    executable path="/System/Library/CoreServices/Finder.app/Contents/MacOS/Finder"
+    pid = 1361 type="Foreground" flavor=3 Version="1828.5.2" fileType="FNDR" creator="MACS" Arch=ARM64 
+    coalition: 1274  { 1361 7269 22058 47719 50202 53281 66386 87400 }
+    checkin time = 2026/06/01 21:51:09 ( 32 days, 4 hours, 3 minutes, 53.2002 seconds ago )
+20) "Wallpaper" ASN:0x0-0x2e02e: 
+    bundleID="com.apple.wallpaper.agent"
+    bundle path="/System/Library/CoreServices/WallpaperAgent.app"
+    executable path="/System/Library/CoreServices/WallpaperAgent.app/Contents/MacOS/WallpaperAgent"
+    pid = 1364 type="UIElement" flavor=3 Version="245.4.8" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 1276  { 1364 1386 4530 4531 4532 4533 4534 4535 4536 4537 }
+    checkin time = 2026/06/01 21:51:09 ( 32 days, 4 hours, 3 minutes, 52.9852 seconds ago )
+21) "CursorUIViewService" ASN:0x0-0x30030: 
+    bundleID="com.apple.TextInputUI.xpc.CursorUIViewService"
+    bundle path="/System/Library/PrivateFrameworks/TextInputUIMacHelper.framework/Versions/A/XPCServices/CursorUIViewService.xpc"
+    executable path="/System/Library/PrivateFrameworks/TextInputUIMacHelper.framework/Versions/A/XPCServices/CursorUIViewService.xpc/Contents/MacOS/CursorUIViewService"
+    pid = 1380 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" creator="????" Arch=ARM64 
+    coalition: 1291
+    checkin time = 2026/06/01 21:51:10 ( 32 days, 4 hours, 3 minutes, 52.2328 seconds ago )
+22) "Dock Extra" ASN:0x0-0x39039: 
+    bundleID="com.apple.dock.extra"
+    bundle path="/System/Library/CoreServices/Dock.app/Contents/XPCServices/com.apple.dock.extra.xpc"
+    executable path="/System/Library/CoreServices/Dock.app/Contents/XPCServices/com.apple.dock.extra.xpc/Contents/MacOS/com.apple.dock.extra"
+    pid = 1408 type="UIElement" flavor=3 Version="2427.4.7" fileType="XPC!" creator="????" Arch=ARM64 
+    checkin time = 2026/06/01 21:51:13 ( 32 days, 4 hours, 3 minutes, 49.3625 seconds ago )
+23) "Spotlight" ASN:0x0-0x43043: 
+    bundleID="com.apple.Spotlight"
+    bundle path="/System/Library/CoreServices/Spotlight.app"
+    executable path="/System/Library/CoreServices/Spotlight.app/Contents/MacOS/Spotlight"
+    pid = 4062 type="UIElement" flavor=3 Version="181.4.6" fileType="APPL" creator="????" Arch=ARM64 
+    childASNs: ASN:0x0-0x2ed2ed: ASN:0x0-0x2317315: ASN:0x0-0x102a1291: ASN:0x0-0x148eb8d7: ASN:0x0-0x1f8a6887: 
+    coalition: 1348
+    checkin time = 2026/06/01 21:51:29 ( 32 days, 4 hours, 3 minutes, 33.2822 seconds ago )
+24) "Safari Web Content" ASN:0x0-0x4b04b: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 1413 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.9238 seconds ago )
+25) "Safari Web Content" ASN:0x0-0x50050: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3663 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.8822 seconds ago )
+26) "Safari Web Content" ASN:0x0-0x52052: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3434 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.8683 seconds ago )
+27) "Safari Web Content" ASN:0x0-0x53053: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3480 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.8577 seconds ago )
+28) "Safari Web Content" ASN:0x0-0x54054: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4385 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.8519 seconds ago )
+29) "Safari Web Content" ASN:0x0-0x57057: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4388 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.8118 seconds ago )
+30) "Safari Web Content" ASN:0x0-0x58058: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3793 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7912 seconds ago )
+31) "Safari Web Content" ASN:0x0-0x59059: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3576 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7289 seconds ago )
+32) "Safari Web Content" ASN:0x0-0x5a05a: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3814 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7211 seconds ago )
+33) "Safari Web Content" ASN:0x0-0x5b05b: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3449 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7205 seconds ago )
+34) "Safari Web Content" ASN:0x0-0x5c05c: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3933 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7188 seconds ago )
+35) "Safari Web Content" ASN:0x0-0x5d05d: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3843 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7179 seconds ago )
+36) "Safari Web Content" ASN:0x0-0x5f05f: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3833 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7142 seconds ago )
+37) "Safari Web Content" ASN:0x0-0x60060: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3854 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7121 seconds ago )
+38) "Safari Web Content" ASN:0x0-0x61061: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3556 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.7115 seconds ago )
+39) "Rectangle" ASN:0x0-0x62062: 
+    bundleID="com.knollsoft.Rectangle"
+    bundle path="/Applications/Rectangle.app"
+    executable path="/Applications/Rectangle.app/Contents/MacOS/Rectangle"
+    pid = 4434 type="UIElement" flavor=3 Version="102" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1407
+    parentASN="loginwindow" ASN:0x0-0x1001: 
+    launch time =  2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.2183 seconds ago )
+    checkin time = 2026/06/01 21:54:51 ( 32 days, 4 hours, 11.1052 seconds ago )
+    launch to checkin time: 3 minutes, 13.1131 seconds
+40) "TextInputMenuAgent" ASN:0x0-0x63063: 
+    bundleID="com.apple.TextInputMenuAgent"
+    bundle path="/System/Library/CoreServices/TextInputMenuAgent.app"
+    executable path="/System/Library/CoreServices/TextInputMenuAgent.app/Contents/MacOS/TextInputMenuAgent"
+    pid = 4429 type="UIElement" flavor=3 Version="306" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1399
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.1595 seconds ago )
+41) "AirPlay Screen Mirroring" ASN:0x0-0x65065: 
+    bundleID="com.apple.AirPlayUIAgent"
+    bundle path="/System/Library/CoreServices/AirPlayUIAgent.app"
+    executable path="/System/Library/CoreServices/AirPlayUIAgent.app/Contents/MacOS/AirPlayUIAgent"
+    pid = 4425 type="UIElement" flavor=3 Version="950.7.1" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 1391
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 24.0655 seconds ago )
+42) "Siri" ASN:0x0-0x67067: 
+    bundleID="com.apple.Siri"
+    bundle path="/System/Library/CoreServices/Siri.app"
+    executable path="/System/Library/CoreServices/Siri.app/Contents/MacOS/Siri"
+    pid = 4419 type="UIElement" flavor=3 Version="3525.5.2" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 1379  { 4419 4552 }
+    checkin time = 2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 23.9474 seconds ago )
+43) "Itsycal" ASN:0x0-0x68068: 
+    bundleID="com.mowglii.ItsycalApp"
+    bundle path="/Applications/Itsycal.app"
+    executable path="/Applications/Itsycal.app/Contents/MacOS/Itsycal"
+    pid = 4438 type="UIElement" flavor=3 Version="2370" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1413
+    parentASN="loginwindow" ASN:0x0-0x1001: 
+    launch time =  2026/06/01 21:51:38 ( 32 days, 4 hours, 3 minutes, 23.9353 seconds ago )
+    checkin time = 2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.7919 seconds ago )
+    launch to checkin time: 0.143398 seconds
+44) "Pandan" ASN:0x0-0x6b06b: 
+    bundleID="com.sindresorhus.Pandan"
+    bundle path="/Applications/Pandan.app"
+    executable path="/Applications/Pandan.app/Contents/MacOS/Pandan"
+    pid = 4440 type="UIElement" flavor=2 Version="43" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 1417
+    parentASN="loginwindow" ASN:0x0-0x1001: 
+    launch time =  2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.805 seconds ago )
+    checkin time = 2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.7789 seconds ago )
+    launch to checkin time: 0.0260811 seconds
+45) "WeatherMenu" ASN:0x0-0x6c06c: 
+    bundleID="com.apple.weather.menu"
+    bundle path="/System/Applications/Weather.app/Contents/Library/LoginItems/WeatherMenu.app"
+    executable path="/System/Applications/Weather.app/Contents/Library/LoginItems/WeatherMenu.app/Contents/MacOS/WeatherMenu"
+    pid = 4427 type="UIElement" flavor=3 Version="1318" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 1395
+    checkin time = 2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.7695 seconds ago )
+46) "MonitorControlLite" ASN:0x0-0x6d06d: 
+    bundleID="app.monitorcontrol.MonitorControlLite"
+    bundle path="/Applications/MonitorControlLite.app"
+    executable path="/Applications/MonitorControlLite.app/Contents/MacOS/MonitorControlLite"
+    pid = 4442 type="UIElement" flavor=3 Version="212" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 1421
+    parentASN=ASN:0x0-0x6a06a: 
+    launch time =  2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.7509 seconds ago )
+    checkin time = 2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.7162 seconds ago )
+    launch to checkin time: 0.0347447 seconds
+47) "FolderActionsDispatcher" ASN:0x0-0x6f06f: 
+    bundleID="com.apple.FolderActionsDispatcher"
+    bundle path="/System/Library/CoreServices/FolderActionsDispatcher.app"
+    executable path="/System/Library/CoreServices/FolderActionsDispatcher.app/Contents/MacOS/FolderActionsDispatcher"
+    pid = 4412 type="BackgroundOnly" flavor=3 Version="1" fileType="APPL" creator="fadi" Arch=ARM64 
+    coalition: 1365
+    checkin time = 2026/06/01 21:51:39 ( 32 days, 4 hours, 3 minutes, 23.2432 seconds ago )
+48) "Safari Web Content" ASN:0x0-0x97097: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4446 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:52:24 ( 32 days, 4 hours, 2 minutes, 38.729 seconds ago )
+49) "SiriNCService" ASN:0x0-0x9b09b: 
+    bundleID="com.apple.SiriNCService"
+    bundle path="/System/Library/CoreServices/Siri.app/Contents/XPCServices/SiriNCService.xpc"
+    executable path="/System/Library/CoreServices/Siri.app/Contents/XPCServices/SiriNCService.xpc/Contents/MacOS/SiriNCService"
+    pid = 4552 type="BackgroundOnly" flavor=2 Version="3525.5.2" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 21:52:42 ( 32 days, 4 hours, 2 minutes,  20.67 seconds ago )
+50) "Safari Web Content" ASN:0x0-0x9d09d: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4548 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:53:51 ( 32 days, 4 hours, 1 minutes, 11.2678 seconds ago )
+51) "Safari Web Content" ASN:0x0-0xa00a0: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4587 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/01 21:53:52 ( 32 days, 4 hours, 1 minutes, 10.8205 seconds ago )
+52) "com.apple.PressAndHold" ASN:0x0-0x14b14b: 
+    bundleID="com.apple.PressAndHold"
+    bundle path="/System/Library/Input Methods/PressAndHold.app/Contents/PlugIns/PAH_Extension.appex"
+    executable path="/System/Library/Input Methods/PressAndHold.app/Contents/PlugIns/PAH_Extension.appex/Contents/MacOS/PAH_Extension"
+    pid = 4806 type="BackgroundOnly" flavor=2 Version="65" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 21:54:39 ( 32 days, 4 hours, 23.0974 seconds ago )
+53) "Grammarly Desktop Helper" ASN:0x0-0x175175: 
+    bundleID="com.grammarly.ProjectLlama.Shepherd"
+    bundle path="/Applications/Grammarly Desktop.app/Contents/Library/LaunchAgents/Grammarly Desktop Helper.app"
+    executable path="/Applications/Grammarly Desktop.app/Contents/Library/LaunchAgents/Grammarly Desktop Helper.app/Contents/MacOS/Grammarly Desktop Helper"
+    pid = 4431 type="UIElement" flavor=3 Version="1.167.2.0" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1403
+    checkin time = 2026/06/01 21:54:57 ( 32 days, 4 hours, 5.57931 seconds ago )
+54) "universalAccessAuthWarn" ASN:0x0-0x176176: 
+    bundleID="com.apple.accessibility.universalAccessAuthWarn"
+    bundle path="/System/Library/PrivateFrameworks/UniversalAccess.framework/Versions/A/Resources/universalAccessAuthWarn.app"
+    executable path="/System/Library/PrivateFrameworks/UniversalAccess.framework/Versions/A/Resources/universalAccessAuthWarn.app/Contents/MacOS/universalAccessAuthWarn"
+    pid = 4886 type="UIElement" flavor=3 Version="724" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1563
+    checkin time = 2026/06/01 21:54:58 ( 32 days, 4 hours, 4.75208 seconds ago )
+55) "Messages" ASN:0x0-0x2ed2ed: 
+    bundleID="com.apple.MobileSMS"
+    bundle path="/System/Applications/Messages.app"
+    executable path="/System/Applications/Messages.app/Contents/MacOS/Messages"
+    pid = 6600 type="Foreground" flavor=3 Version="1450.600.61.1.4" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 1963  { 6600 24578 }
+    parentASN="Spotlight" ASN:0x0-0x43043: 
+    launch time =  2026/06/01 22:26:49 ( 32 days, 3 hours, 28 minutes, 13.2678 seconds ago )
+    checkin time = 2026/06/01 22:26:49 ( 32 days, 3 hours, 28 minutes, 13.2313 seconds ago )
+    launch to checkin time: 0.0364749 seconds
+56) "QLPreviewGenerationExtension (Finder)" ASN:0x0-0x306306: 
+    bundleID="com.apple.QuickLookUIFramework.QLPreviewGenerationExtension"
+    bundle path="/System/Library/Frameworks/QuickLookUI.framework/Versions/A/PlugIns/QLPreviewGenerationExtension.appex"
+    executable path="/System/Library/Frameworks/QuickLookUI.framework/Versions/A/PlugIns/QLPreviewGenerationExtension.appex/Contents/MacOS/QLPreviewGenerationExtension"
+    pid = 7269 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/01 22:42:51 ( 32 days, 3 hours, 12 minutes, 11.6716 seconds ago )
+57) "PowerChime" ASN:0x0-0x367367: 
+    bundleID="com.apple.PowerChime"
+    bundle path="/System/Library/CoreServices/PowerChime.app"
+    executable path="/System/Library/CoreServices/PowerChime.app/Contents/MacOS/PowerChime"
+    pid = 9885 type="UIElement" flavor=3 Version="1" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 2169
+    checkin time = 2026/06/01 23:22:55 ( 32 days, 2 hours, 32 minutes, 6.94046 seconds ago )
+58) "Universal Control" ASN:0x0-0x5ac5ac: 
+    bundleID="com.apple.universalcontrol"
+    bundle path="/System/Library/CoreServices/UniversalControl.app"
+    executable path="/System/Library/CoreServices/UniversalControl.app/Contents/MacOS/UniversalControl"
+    pid = 23101 !signalled type="UIElement" flavor=2 Version="174.4.1" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1140
+    checkin time = 2026/06/02 15:39:10 ( 31 days, 10 hours, 15 minutes, 52.5671 seconds ago )
+59) "Safari Web Content" ASN:0x0-0x79c79c: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 33029 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/03 00:22:52 ( 31 days, 1 hours, 32 minutes, 10.4689 seconds ago )
+60) "Wallet" ASN:0x0-0x977977: 
+    bundleID="com.apple.passd"
+    bundle path="/System/Library/PrivateFrameworks/PassKitCore.framework/passd"
+    executable path="/System/Library/PrivateFrameworks/PassKitCore.framework/passd"
+    pid = 1216 !signalled type="BackgroundOnly" flavor=3 Version="1.0" creator="????" Arch=ARM64 sandboxed 
+    coalition: 1123
+    checkin time = 2026/06/03 13:57:56 ( 30 days, 11 hours, 57 minutes, 6.79554 seconds ago )
+61) "Syntax Highlight Quick Look Extension (Finder)" ASN:0x0-0xacaaca: 
+    bundleID="org.sbarex.SourceCodeSyntaxHighlight.QuickLookExtension"
+    bundle path="/Applications/Syntax Highlight.app/Contents/PlugIns/Syntax Highlight Quick Look Extension.appex"
+    executable path="/Applications/Syntax Highlight.app/Contents/PlugIns/Syntax Highlight Quick Look Extension.appex/Contents/MacOS/Syntax Highlight Quick Look Extension"
+    pid = 47719 type="BackgroundOnly" flavor=2 Version="79" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/03 21:10:24 ( 30 days, 4 hours, 44 minutes, 38.871 seconds ago )
+62) "Notes Spotlight Index Extension" ASN:0x0-0xec3ec3: 
+    bundleID="com.apple.Notes.SpotlightIndexExtension"
+    bundle path="/System/Applications/Notes.app/Contents/PlugIns/com.apple.Notes.SpotlightIndexExtension.appex"
+    executable path="/System/Applications/Notes.app/Contents/PlugIns/com.apple.Notes.SpotlightIndexExtension.appex/Contents/MacOS/com.apple.Notes.SpotlightIndexExtension"
+    pid = 66234 !signalled type="BackgroundOnly" flavor=2 Version="3146.121.7" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/04 21:14:20 ( 29 days, 4 hours, 40 minutes, 42.8848 seconds ago )
+63) "storeuid" ASN:0x0-0xf39f39: 
+    bundleID="com.apple.storeuid"
+    bundle path="/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storeuid.app"
+    executable path="/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storeuid.app/Contents/MacOS/storeuid"
+    pid = 67878 type="UIElement" flavor=3 Version="716.4.2" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 12504
+    checkin time = 2026/06/05 00:33:40 ( 29 days, 1 hours, 21 minutes, 22.5308 seconds ago )
+64) "Podcasts" ASN:0x0-0x1339338: 
+    bundleID="com.apple.podcasts"
+    bundle path="/System/Applications/Podcasts.app"
+    executable path="/System/Applications/Podcasts.app/Contents/MacOS/Podcasts"
+    pid = 86181 type="BackgroundOnly" flavor=3 Version="4025.640.1" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 15869
+    launch time =  2026/06/07 09:29:58 ( 26 days, 16 hours, 25 minutes, 4.13796 seconds ago )
+    checkin time = 2026/06/07 09:29:58 ( 26 days, 16 hours, 25 minutes, 4.10119 seconds ago )
+    launch to checkin time: 0.0367749 seconds
+65) "QuickLookUIService (Finder)" ASN:0x0-0x138d38c: 
+    bundleID="com.apple.quicklook.QuickLookUIService"
+    bundle path="/System/Library/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc"
+    executable path="/System/Library/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService"
+    pid = 87400 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/07 12:59:31 ( 26 days, 12 hours, 55 minutes, 31.8332 seconds ago )
+66) "avconferenced" ASN:0x0-0x145f45e: 
+    bundleID="com.apple.avconferenced"
+    bundle path="/usr/libexec/avconferenced"
+    executable path="/usr/libexec/avconferenced"
+    pid = 1198 !signalled type="BackgroundOnly" flavor=3 Version="2205.3.1" fileType="FMWK" creator="????" Arch=ARM64 sandboxed 
+    coalition: 1108
+    checkin time = 2026/06/07 17:36:58 ( 26 days, 8 hours, 18 minutes, 4.75227 seconds ago )
+67) "com.apple.AVKit.RoutePickerViewService (Safari)" ASN:0x0-0x214113f: 
+    bundleID="com.apple.AVKit.RoutePickerViewService"
+    bundle path="/System/Library/Frameworks/AVKit.framework/Versions/A/XPCServices/RoutePickerViewService.xpc"
+    executable path="/System/Library/Frameworks/AVKit.framework/Versions/A/XPCServices/RoutePickerViewService.xpc/Contents/MacOS/RoutePickerViewService"
+    pid = 4432 type="BackgroundOnly" flavor=2 Version="1330.6.5.1" fileType="XPC!" creator="????" Arch=ARM64 
+    checkin time = 2026/06/08 12:56:54 ( 25 days, 12 hours, 58 minutes, 8.83023 seconds ago )
+68) "iTerm2" ASN:0x0-0x2317315: (in front) 
+    bundleID="com.googlecode.iterm2"
+    bundle path="/Applications/iTerm.app"
+    executable path="/Applications/iTerm.app/Contents/MacOS/iTerm2"
+    pid = 19074 type="Foreground" flavor=3 Version="3.6.11" fileType="APPL" creator="ITRM" Arch=ARM64 
+    coalition: 19885  { 5103 5104 9279 12169 12170 19074 19086 19125 19137 19146 19161 19162 19200 19256 19285 19311 19326 19359 19361 19375 19391 19463 19500 19558 28632 28633 28653 39642 39643 43492 43493 62599 62600 69535 69536 70665 70666 71081 71082 77307 83345 94465 94466 }
+    loadedJobs:"io.github.toobuntu.blackoutd" 
+    parentASN="Spotlight" ASN:0x0-0x43043: 
+    launch time =  2026/06/08 13:59:35 ( 25 days, 11 hours, 55 minutes, 27.2346 seconds ago )
+    checkin time = 2026/06/08 13:59:37 ( 25 days, 11 hours, 55 minutes, 25.3082 seconds ago )
+    launch to checkin time: 1.92643 seconds
+69) "AutoFill (iTerm2)" ASN:0x0-0x231a318: 
+    bundleID="com.apple.SafariPlatformSupport.Helper"
+    bundle path="/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc"
+    executable path="/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper"
+    pid = 19558 type="BackgroundOnly" flavor=2 Version="21624.2.5.11.4" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/08 13:59:40 ( 25 days, 11 hours, 55 minutes, 22.2499 seconds ago )
+70) "Safari Web Content" ASN:0x0-0x2396394: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 22935 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/08 14:16:55 ( 25 days, 11 hours, 38 minutes, 7.53648 seconds ago )
+71) "Safari Web Content" ASN:0x0-0x2399397: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 22944 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/08 14:16:59 ( 25 days, 11 hours, 38 minutes, 3.09226 seconds ago )
+72) "ShareSheetUI (Finder)" ASN:0x0-0x6c69c63: 
+    bundleID="com.apple.sharing.ShareSheetUI"
+    bundle path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareSheetUI.appex"
+    executable path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareSheetUI.appex/Contents/MacOS/ShareSheetUI"
+    pid = 50202 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/11 15:18:14 ( 22 days, 10 hours, 36 minutes, 48.8995 seconds ago )
+73) "Safari Web Content" ASN:0x0-0x76ff6f8: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 97544 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/11 22:44:25 ( 22 days, 3 hours, 10 minutes, 37.7681 seconds ago )
+74) "Safari Web Content" ASN:0x0-0x77016fa: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 97546 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN=ASN:0x0-0x40040: 
+    checkin time = 2026/06/11 22:44:28 ( 22 days, 3 hours, 10 minutes, 34.6664 seconds ago )
+75) "blackoutd" ASN:0x0-0x832d325: 
+    bundleID=[ NULL ] 
+    bundle path="/Users/USER/devel/claude/desktop/blackoutd/build/blackoutd"
+    executable path="/Users/USER/devel/claude/desktop/blackoutd/build/blackoutd"
+    pid = 15910 type="UIElement" flavor=3 Version=[ NULL ]  fileType="????" creator="????" Arch=ARM64 
+    coalition: 41097
+    checkin time = 2026/06/12 11:48:17 ( 21 days, 14 hours, 6 minutes, 45.6741 seconds ago )
+76) "UserNotificationCenter" ASN:0x0-0x84bc4b4: 
+    bundleID="com.apple.UserNotificationCenter"
+    bundle path="/System/Library/CoreServices/UserNotificationCenter.app"
+    executable path="/System/Library/CoreServices/UserNotificationCenter.app/Contents/MacOS/UserNotificationCenter"
+    pid = 18363 type="UIElement" flavor=3 Version="82" fileType="APPL" creator="uncx" Arch=ARM64 
+    coalition: 41339
+    checkin time = 2026/06/12 12:56:30 ( 21 days, 12 hours, 58 minutes, 32.0921 seconds ago )
+77) "Emoji & Symbols" ASN:0x0-0xb4a3498: 
+    bundleID="com.apple.CharacterPaletteIM"
+    bundle path="/System/Library/Input Methods/CharacterPalette.app"
+    executable path="/System/Library/Input Methods/CharacterPalette.app/Contents/MacOS/CharacterPalette"
+    pid = 8296 type="UIElement" flavor=3 Version="353" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 51544
+    launch time =  2026/06/15 21:35:23 ( 18 days, 4 hours, 19 minutes, 38.9623 seconds ago )
+    checkin time = 2026/06/15 21:35:24 ( 18 days, 4 hours, 19 minutes, 38.9137 seconds ago )
+    launch to checkin time: 0.0486138 seconds
+78) "QuickLookPreview (Finder)" ASN:0x0-0xbc80c75: 
+    bundleID="com.chimehq.Edit.QuickLookPreview"
+    bundle path="/Applications/Chime.app/Contents/PlugIns/ChimeQuickLookPreview.appex"
+    executable path="/Applications/Chime.app/Contents/PlugIns/ChimeQuickLookPreview.appex/Contents/MacOS/ChimeQuickLookPreview"
+    pid = 22058 type="BackgroundOnly" flavor=2 Version="205" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/16 02:17:16 ( 17 days, 23 hours, 37 minutes, 46.1266 seconds ago )
+79) "Caffeine" ASN:0x0-0x102a1291: 
+    bundleID="net.domzilla.caffeine"
+    bundle path="/Applications/Caffeine.app"
+    executable path="/Applications/Caffeine.app/Contents/MacOS/Caffeine"
+    pid = 99101 type="UIElement" flavor=3 Version="30" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 67598
+    parentASN="Spotlight" ASN:0x0-0x43043: 
+    launch time =  2026/06/18 21:05:38 ( 15 days, 4 hours, 49 minutes, 24.3318 seconds ago )
+    checkin time = 2026/06/18 21:05:38 ( 15 days, 4 hours, 49 minutes, 24.1622 seconds ago )
+    launch to checkin time: 0.169603 seconds
+80) "Safari Networking" ASN:0x0-0x10e93e83: 
+    bundleID="com.apple.WebKit.Networking"
+    bundle path="/System/Volumes/Preboot/Cryptexes/Incoming/OS/System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.Networking.xpc"
+    executable path="/System/Volumes/Preboot/Cryptexes/Incoming/OS/System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.Networking.xpc/Contents/MacOS/com.apple.WebKit.Networking"
+    pid = 8490 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    childASNs: ASN:0x0-0x10e9ae8a: ASN:0x0-0x10ea4e94: ASN:0x0-0x10ea5e95: ASN:0x0-0x10ea6e96: ASN:0x0-0x10ea8e98: ASN:0x0-0x10eaae9a: ASN:0x0-0x10eabe9b: ASN:0x0-0x10eace9c: ASN:0x0-0x10eade9d: ASN:0x0-0x10eaee9e: ASN:0x0-0x10eafe9f: ASN:0x0-0x10eb0ea0: ASN:0x0-0x10eb1ea1: ASN:0x0-0x10eb2ea2: ASN:0x0-0x10eb3ea3: ASN:0x0-0x10eb4ea4: ASN:0x0-0x10eb5ea5: ASN:0x0-0x10eb7ea7: ASN:0x0-0x10eb8ea8: ASN:0x0-0x10eb9ea9: ASN:0x0-0x10ecdebd: ASN:0x0-0x11313302: ASN:0x0-0x115cc5bb: ASN:0x0-0x1182b81a: ASN:0x0-0x11fc1fb0: ASN:0x0-0x1b8e48c9: ASN:0x0-0x1ceb6e9a: ASN:0x0-0x1d0f60d9: ASN:0x0-0x23dd6db3: 
+    checkin time = 2026/06/19 04:08:12 ( 14 days, 21 hours, 46 minutes, 50.3575 seconds ago )
+81) "Web Content Process" ASN:0x0-0x10e9ae8a: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4548 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:08:23 ( 14 days, 21 hours, 46 minutes, 39.9314 seconds ago )
+82) "Web Content Process" ASN:0x0-0x10ea4e94: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3434 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:39 ( 14 days, 21 hours, 45 minutes, 23.7966 seconds ago )
+83) "Web Content Process" ASN:0x0-0x10ea5e95: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 33029 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:39 ( 14 days, 21 hours, 45 minutes, 23.6733 seconds ago )
+84) "Web Content Process" ASN:0x0-0x10ea6e96: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 1413 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:39 ( 14 days, 21 hours, 45 minutes, 23.6534 seconds ago )
+85) "Web Content Process" ASN:0x0-0x10ea8e98: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3814 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:39 ( 14 days, 21 hours, 45 minutes, 23.165 seconds ago )
+86) "Web Content Process" ASN:0x0-0x10eaae9a: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4587 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:40 ( 14 days, 21 hours, 45 minutes, 22.6934 seconds ago )
+87) "Web Content Process" ASN:0x0-0x10eabe9b: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4388 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:40 ( 14 days, 21 hours, 45 minutes, 22.3145 seconds ago )
+88) "Web Content Process" ASN:0x0-0x10eace9c: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3833 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.4074 seconds ago )
+89) "Web Content Process" ASN:0x0-0x10eade9d: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3843 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.3999 seconds ago )
+90) "Web Content Process" ASN:0x0-0x10eaee9e: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3933 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.3288 seconds ago )
+91) "Web Content Process" ASN:0x0-0x10eafe9f: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3793 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.3266 seconds ago )
+92) "Web Content Process" ASN:0x0-0x10eb0ea0: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3663 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.3249 seconds ago )
+93) "Web Content Process" ASN:0x0-0x10eb1ea1: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3854 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.3179 seconds ago )
+94) "Web Content Process" ASN:0x0-0x10eb2ea2: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 22944 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.2515 seconds ago )
+95) "Web Content Process" ASN:0x0-0x10eb3ea3: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 22935 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.2403 seconds ago )
+96) "Web Content Process" ASN:0x0-0x10eb4ea4: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4385 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.2212 seconds ago )
+97) "Web Content Process" ASN:0x0-0x10eb5ea5: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3449 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.2201 seconds ago )
+98) "Web Content Process" ASN:0x0-0x10eb7ea7: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3480 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.121 seconds ago )
+99) "Web Content Process" ASN:0x0-0x10eb8ea8: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3556 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.0991 seconds ago )
+100) "Web Content Process" ASN:0x0-0x10eb9ea9: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 4446 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:09:41 ( 14 days, 21 hours, 45 minutes, 21.0579 seconds ago )
+101) "Web Content Process" ASN:0x0-0x10ecdebd: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 97544 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 04:11:55 ( 14 days, 21 hours, 43 minutes, 7.35449 seconds ago )
+102) "Web Content Process" ASN:0x0-0x11313302: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 97546 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 06:36:52 ( 14 days, 19 hours, 18 minutes, 10.0023 seconds ago )
+103) "Web Content Process" ASN:0x0-0x115cc5bb: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 3576 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 08:06:41 ( 14 days, 17 hours, 48 minutes, 21.8904 seconds ago )
+104) "Safari Web Content" ASN:0x0-0x1182b81a: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 15613 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/19 14:50:23 ( 14 days, 11 hours, 4 minutes, 39.8425 seconds ago )
+105) "Safari Web Content" ASN:0x0-0x11fc1fb0: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 23527 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/20 00:22:50 ( 14 days, 1 hours, 32 minutes, 12.5006 seconds ago )
+106) "Notes" ASN:0x0-0x148eb8d7: 
+    bundleID="com.apple.Notes"
+    bundle path="/System/Applications/Notes.app"
+    executable path="/System/Applications/Notes.app/Contents/MacOS/Notes"
+    pid = 72879 type="Foreground" flavor=3 Version="3146.121.7" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 83584  { 72879 72890 }
+    parentASN="Spotlight" ASN:0x0-0x43043: 
+    launch time =  2026/06/22 08:48:05 ( 11 days, 17 hours, 6 minutes, 57.8442 seconds ago )
+    checkin time = 2026/06/22 08:48:05 ( 11 days, 17 hours, 6 minutes, 57.762 seconds ago )
+    launch to checkin time: 0.082233 seconds
+107) "ChatGPTHelper" ASN:0x0-0x159068f1: 
+    bundleID=[ NULL ] 
+    bundle path="/Applications/ChatGPT.app/Contents/Resources/ChatGPTHelper"
+    executable path="/Applications/ChatGPT.app/Contents/Resources/ChatGPTHelper"
+    pid = 10425 type="UIElement" flavor=3 Version=[ NULL ]  fileType="????" creator="????" Arch=ARM64 
+    coalition: 87867
+    checkin time = 2026/06/22 20:39:49 ( 11 days, 5 hours, 15 minutes, 13.583 seconds ago )
+108) "Messages (Finder)" ASN:0x0-0x16bb8ba2: 
+    bundleID="com.apple.share.Messages.window"
+    bundle path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareMessages.appex"
+    executable path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareMessages.appex/Contents/MacOS/ShareMessages"
+    pid = 66386 type="BackgroundOnly" flavor=2 Version="871" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/23 15:51:14 ( 10 days, 10 hours, 3 minutes, 48.2192 seconds ago )
+109) "Preview" ASN:0x0-0x1734532e: 
+    bundleID="com.apple.Preview"
+    bundle path="/System/Applications/Preview.app"
+    executable path="/System/Applications/Preview.app/Contents/MacOS/Preview"
+    pid = 80886 type="Foreground" flavor=3 Version="1113.5.3" fileType="APPL" creator="prvw" Arch=ARM64 sandboxed 
+    coalition: 94449  { 47122 47124 80886 80894 80896 }
+    parentASN=ASN:0x0-0x17340329: 
+    launch time =  2026/06/23 21:24:50 ( 10 days, 4 hours, 30 minutes, 12.5867 seconds ago )
+    checkin time = 2026/06/23 21:24:50 ( 10 days, 4 hours, 30 minutes, 12.5475 seconds ago )
+    launch to checkin time: 0.0392008 seconds
+110) "Open and Save Panel Service (Preview)" ASN:0x0-0x17347330: 
+    bundleID="com.apple.appkit.xpc.openAndSavePanelService"
+    bundle path="/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc"
+    executable path="/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService"
+    pid = 80896 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" creator="????" Arch=ARM64 
+    checkin time = 2026/06/23 21:24:53 ( 10 days, 4 hours, 30 minutes, 9.10288 seconds ago )
+111) "coreautha" ASN:0x0-0x199b899f: 
+    bundleID="com.apple.LocalAuthentication.UIAgent"
+    bundle path="/System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle"
+    executable path="/System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle/Contents/MacOS/coreautha"
+    pid = 20212 type="UIElement" flavor=3 Version="2005.121.1" fileType="BNDL" creator="????" Arch=ARM64 
+    coalition: 3675
+    checkin time = 2026/06/25 10:01:25 ( 8 days, 15 hours, 53 minutes, 37.9253 seconds ago )
+112) "Zed" ASN:0x0-0x1a98796d: 
+    bundleID="dev.zed.Zed"
+    bundle path="/Applications/Zed.app"
+    executable path="/Applications/Zed.app/Contents/MacOS/zed"
+    pid = 41292 type="Foreground" flavor=3 Version="20260624.160235" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 106084  { 41292 41302 41972 }
+    launch time =  2026/06/25 19:46:33 ( 8 days, 6 hours, 8 minutes, 29.2166 seconds ago )
+    checkin time = 2026/06/25 19:46:36 ( 8 days, 6 hours, 8 minutes, 26.4849 seconds ago )
+    launch to checkin time: 2.73169 seconds
+113) "AutoFill (Zed)" ASN:0x0-0x1a98b971: 
+    bundleID="com.apple.SafariPlatformSupport.Helper"
+    bundle path="/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc"
+    executable path="/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper"
+    pid = 41972 type="BackgroundOnly" flavor=2 Version="21624.2.5.11.4" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/25 19:46:42 ( 8 days, 6 hours, 8 minutes, 20.819 seconds ago )
+114) "ShareSheetUI (Preview)" ASN:0x0-0x1acd7cbd: 
+    bundleID="com.apple.sharing.ShareSheetUI"
+    bundle path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareSheetUI.appex"
+    executable path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareSheetUI.appex/Contents/MacOS/ShareSheetUI"
+    pid = 47122 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/25 21:31:26 ( 8 days, 4 hours, 23 minutes, 36.2374 seconds ago )
+115) "Messages (Preview)" ASN:0x0-0x1acd9cbf: 
+    bundleID="com.apple.share.Messages.window"
+    bundle path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareMessages.appex"
+    executable path="/System/Library/PrivateFrameworks/ShareKit.framework/Versions/A/PlugIns/ShareMessages.appex/Contents/MacOS/ShareMessages"
+    pid = 47124 type="BackgroundOnly" flavor=2 Version="871" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/25 21:31:28 ( 8 days, 4 hours, 23 minutes, 34.6185 seconds ago )
+116) "AirDrop (Finder)" ASN:0x0-0x1b5a558a: 
+    bundleID="com.apple.share.AirDrop.send"
+    bundle path="/System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/PlugIns/AirDrop.appex"
+    executable path="/System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/PlugIns/AirDrop.appex/Contents/MacOS/AirDrop"
+    pid = 53281 type="BackgroundOnly" flavor=2 Version="1828.5.2" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/06/26 10:00:05 ( 7 days, 15 hours, 54 minutes, 57.5584 seconds ago )
+117) "Safari Web Content" ASN:0x0-0x1b8e48c9: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 56120 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/27 08:04:37 ( 6 days, 17 hours, 50 minutes, 25.6423 seconds ago )
+118) "MobileDeviceUpdater" ASN:0x0-0x1c03b01f: 
+    bundleID="com.apple.MobileDeviceUpdater"
+    bundle path="/Library/Apple/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/Resources/MobileDeviceUpdater.app"
+    executable path="/Library/Apple/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/Resources/MobileDeviceUpdater.app/Contents/MacOS/MobileDeviceUpdater"
+    pid = 68765 type="UIElement" flavor=3 Version="1" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 110643
+    checkin time = 2026/06/28 14:25:56 ( 5 days, 11 hours, 29 minutes, 6.71322 seconds ago )
+119) "Safari Web Content" ASN:0x0-0x1ceb6e9a: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 82448 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/29 09:29:09 ( 4 days, 16 hours, 25 minutes, 53.1443 seconds ago )
+120) "Safari Web Content" ASN:0x0-0x1d0f60d9: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 85228 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2026/06/29 10:50:40 ( 4 days, 15 hours, 4 minutes, 22.7064 seconds ago )
+121) "Helium" ASN:0x0-0x1f4fb4dc: 
+    bundleID="net.imput.helium"
+    bundle path="/Applications/Helium.app"
+    executable path="/Applications/Helium.app/Contents/MacOS/Helium"
+    pid = 75971 type="Foreground" flavor=3 Version="0.13.6.1" fileType="APPL" creator="Cr24" Arch=ARM64 
+    coalition: 121865  { 53616 53617 76153 76154 76155 76167 76175 76177 76179 76299 76301 76302 76331 76334 76335 76336 76337 76338 76339 76340 76341 76342 76343 76344 76345 76346 76347 76348 76349 76350 76351 76352 76353 76354 76355 76356 76357 76358 76359 76360 76361 76364 76365 76366 76367 76368 76405 76444 76445 76446 76447 76448 76509 76517 76533 76535 76536 76591 76592 76593 76600 76665 76666 76667 76669 76673 76674 76675 76676 76679 76680 76681 76682 76683 76684 76685 76686 76687 78606 86236 }
+    loadedJobs:"net.imput.helium-sparkle-progress" "net.imput.helium-sparkle-updater" 
+    launch time =  2026/07/01 10:26:05 ( 2 days, 15 hours, 28 minutes, 57.674 seconds ago )
+    checkin time = 2026/07/01 10:26:11 ( 2 days, 15 hours, 28 minutes, 51.1984 seconds ago )
+    launch to checkin time: 6.47557 seconds
+122) "Stats" ASN:0x0-0x1f5024e3: 
+    bundleID="eu.exelban.Stats"
+    bundle path="/Applications/Stats.app"
+    executable path="/Applications/Stats.app/Contents/MacOS/Stats"
+    pid = 76180 type="UIElement" flavor=3 Version="810" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 121905
+    launch time =  2026/07/01 10:26:13 ( 2 days, 15 hours, 28 minutes, 49.7123 seconds ago )
+    checkin time = 2026/07/01 10:26:14 ( 2 days, 15 hours, 28 minutes, 48.8039 seconds ago )
+    launch to checkin time: 0.908459 seconds
+123) "Passwords Extension Helper (Helium)" ASN:0x0-0x1f5044e5: 
+    bundleID="com.apple.PasswordManagerBrowserExtensionHelper"
+    bundle path="/System/Volumes/Preboot/Cryptexes/App/System/Library/CoreServices/PasswordManagerBrowserExtensionHelper.app"
+    executable path="/System/Volumes/Preboot/Cryptexes/App/System/Library/CoreServices/PasswordManagerBrowserExtensionHelper.app/Contents/MacOS/PasswordManagerBrowserExtensionHelper"
+    pid = 76302 type="UIElement" flavor=2 Version=[ NULL ]  fileType="APPL" Arch=ARM64 sandboxed 
+    parentASN="Helium" ASN:0x0-0x1f4fb4dc:  (inferred)
+    checkin time = 2026/07/01 10:26:17 ( 2 days, 15 hours, 28 minutes, 45.7185 seconds ago )
+124) "AutoFill (Helium)" ASN:0x0-0x1f5074e8: 
+    bundleID="com.apple.SafariPlatformSupport.Helper"
+    bundle path="/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc"
+    executable path="/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper"
+    pid = 76328 type="BackgroundOnly" flavor=2 Version="21624.2.5.11.4" fileType="XPC!" Arch=ARM64 sandboxed 
+    checkin time = 2026/07/01 10:26:32 ( 2 days, 15 hours, 28 minutes, 30.2608 seconds ago )
+125) "Helium Helper" ASN:0x0-0x1f50d4ee: 
+    bundleID="net.imput.helium.helper"
+    bundle path="/Applications/Helium.app/Contents/Frameworks/Helium Framework.framework/Versions/149.0.7827.200/Helpers/Helium Helper.app"
+    executable path="/Applications/Helium.app/Contents/Frameworks/Helium Framework.framework/Versions/149.0.7827.200/Helpers/Helium Helper.app/Contents/MacOS/Helium Helper"
+    pid = 76593 type="UIElement" flavor=3 Version="0.13.6.1" fileType="APPL" creator="????" Arch=ARM64 
+    parentASN="Helium" ASN:0x0-0x1f4fb4dc:  (inferred)
+    checkin time = 2026/07/01 10:26:59 ( 2 days, 15 hours, 28 minutes, 3.74809 seconds ago )
+126) "Claude" ASN:0x0-0x1f8a6887: 
+    bundleID="com.anthropic.claudefordesktop"
+    bundle path="/Applications/Claude.app"
+    executable path="/Applications/Claude.app/Contents/MacOS/Claude"
+    pid = 85703 type="Foreground" flavor=3 Version="1.17377.1" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 122804  { 21037 22056 27915 27916 34651 34698 34699 34706 68226 79354 85703 85707 85709 85711 85716 85718 85753 85808 85809 85810 85815 85816 85817 85820 85821 85822 85836 85848 85863 85973 85974 85975 85978 85979 85980 85982 85989 86047 86059 }
+    loadedJobs:"com.anthropic.claudefordesktop.ShipIt" 
+    parentASN="Spotlight" ASN:0x0-0x43043: 
+    launch time =  2026/07/01 15:54:38 ( 2 days, 10 hours, 24.1235 seconds ago )
+    checkin time = 2026/07/01 15:54:39 ( 2 days, 10 hours, 23.8394 seconds ago )
+    launch to checkin time: 0.284124 seconds
+127) "Claude Helper" ASN:0x0-0x1f8aa88b: 
+    bundleID="com.anthropic.claudefordesktop.helper"
+    bundle path="/Applications/Claude.app/Contents/Frameworks/Claude Helper.app"
+    executable path="/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper"
+    pid = 85810 type="UIElement" flavor=3 Version="1.17377.1" fileType="APPL" creator="????" Arch=ARM64 
+    parentASN="Claude" ASN:0x0-0x1f8a6887:  (inferred)
+    checkin time = 2026/07/01 15:54:43 ( 2 days, 10 hours, 19.8019 seconds ago )
+128) "npm exec @cyanheads/git-mcp-server@latest" ASN:0x0-0x1f8ab88c: 
+    bundleID=[ NULL ] 
+    bundle path="/opt/homebrew/Cellar/node/26.4.0/bin/node"
+    executable path="/opt/homebrew/bin/node"
+    pid = 85820 !cgsConnection !signalled type="BackgroundOnly" flavor=[ NULL ]  Version=[ NULL ]  Arch=ARM64 
+    parentASN="Claude" ASN:0x0-0x1f8a6887:  (inferred)
+    checkin time = 2026/07/01 15:54:45 ( 2 days, 10 hours, 17.6498 seconds ago )
+129) "npm exec @modelcontextprotocol/server-sequential-thinking" ASN:0x0-0x1f8ac88d: 
+    bundleID=[ NULL ] 
+    bundle path="/opt/homebrew/Cellar/node/26.4.0/bin/node"
+    executable path="/opt/homebrew/bin/node"
+    pid = 85822 !cgsConnection !signalled type="BackgroundOnly" flavor=[ NULL ]  Version=[ NULL ]  Arch=ARM64 
+    parentASN="Claude" ASN:0x0-0x1f8a6887:  (inferred)
+    checkin time = 2026/07/01 15:54:45 ( 2 days, 10 hours,  17.65 seconds ago )
+130) "npm exec @modelcontextprotocol/server-sequential-thinking" ASN:0x0-0x1f8ae88f: 
+    bundleID=[ NULL ] 
+    bundle path="/opt/homebrew/Cellar/node/26.4.0/bin/node"
+    executable path="/opt/homebrew/bin/node"
+    pid = 85980 !cgsConnection !signalled type="BackgroundOnly" flavor=[ NULL ]  Version=[ NULL ]  Arch=ARM64 
+    parentASN="Claude" ASN:0x0-0x1f8a6887:  (inferred)
+    checkin time = 2026/07/01 15:54:53 ( 2 days, 10 hours, 9.07773 seconds ago )
+131) "npm exec @cyanheads/git-mcp-server@latest" ASN:0x0-0x1f8af890: 
+    bundleID=[ NULL ] 
+    bundle path="/opt/homebrew/Cellar/node/26.4.0/bin/node"
+    executable path="/opt/homebrew/bin/node"
+    pid = 85979 !cgsConnection !signalled type="BackgroundOnly" flavor=[ NULL ]  Version=[ NULL ]  Arch=ARM64 
+    parentASN="Claude" ASN:0x0-0x1f8a6887:  (inferred)
+    checkin time = 2026/07/01 15:54:53 ( 2 days, 10 hours, 9.08525 seconds ago )
+132) "Safari Graphics and Media" ASN:0x0-0x1fdcfdb0: 
+    bundleID="com.apple.WebKit.GPU"
+    bundle path="/System/Volumes/Preboot/Cryptexes/Incoming/OS/System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.GPU.xpc"
+    executable path="/System/Volumes/Preboot/Cryptexes/Incoming/OS/System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.GPU.xpc/Contents/MacOS/com.apple.WebKit.GPU"
+    pid = 52010 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 sandboxed 
+    checkin time = 2026/07/01 19:35:12 ( 2 days, 6 hours, 19 minutes, 50.6563 seconds ago )
+133) "Updater" ASN:0x0-0x20a9da7d: 
+    bundleID="org.sparkle-project.Sparkle.Updater"
+    bundle path="/Users/USER/Library/Caches/net.imput.helium/org.sparkle-project.Sparkle/Launcher/oZgO3eXyI/Updater.app"
+    executable path="/Users/USER/Library/Caches/net.imput.helium/org.sparkle-project.Sparkle/Launcher/oZgO3eXyI/Updater.app/Contents/MacOS/Updater"
+    pid = 74512 type="UIElement" flavor=3 Version="2057" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 126568
+    checkin time = 2026/07/02 06:13:57 ( 1 days, 19 hours, 41 minutes, 5.42517 seconds ago )
+134) "Open and Save Panel Service (Claude)" ASN:0x0-0x22c66c44: 
+    bundleID="com.apple.appkit.xpc.openAndSavePanelService"
+    bundle path="/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc"
+    executable path="/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService"
+    pid = 34651 type="BackgroundOnly" flavor=2 Version="1" fileType="XPC!" creator="????" Arch=ARM64 
+    checkin time = 2026/07/03 16:42:04 ( 9 hours, 12 minutes, 58.4119 seconds ago )
+135) "CoreServicesUIAgent" ASN:0x0-0x23be6bc3: 
+    bundleID="com.apple.coreservices.uiagent"
+    bundle path="/System/Library/CoreServices/CoreServicesUIAgent.app"
+    executable path="/System/Library/CoreServices/CoreServicesUIAgent.app/Contents/MacOS/CoreServicesUIAgent"
+    pid = 77097 type="UIElement" flavor=3 Version="369" fileType="????" creator="????" Arch=ARM64 
+    coalition: 678
+    checkin time = 2026/07/04 00:55:08 ( 59 minutes, 54.7201 seconds ago )
+136) "CoreLocationAgent" ASN:0x0-0x23becbc9: 
+    bundleID="com.apple.CoreLocationAgent"
+    bundle path="/System/Library/CoreServices/CoreLocationAgent.app"
+    executable path="/System/Library/CoreServices/CoreLocationAgent.app/Contents/MacOS/CoreLocationAgent"
+    pid = 77126 type="UIElement" flavor=3 Version="3075.0.8" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 726
+    checkin time = 2026/07/04 00:55:46 ( 59 minutes, 16.655 seconds ago )
+137) "talagentd" ASN:0x0-0x23c06be3: 
+    bundleID="com.apple.talagent"
+    bundle path="/System/Library/CoreServices/talagentd"
+    executable path="/System/Library/CoreServices/talagentd"
+    pid = 77224 type="UIElement" flavor=2 Version="255" fileType="APPL" creator="????" Arch=ARM64 sandboxed 
+    coalition: 978
+    checkin time = 2026/07/04 00:58:49 ( 56 minutes, 13.2498 seconds ago )
+138) "Shortcuts" ASN:0x0-0x23c07be4: 
+    bundleID="com.apple.WorkflowKit.ShortcutsViewService"
+    bundle path="/System/Library/PrivateFrameworks/WorkflowKit.framework/XPCServices/ShortcutsViewService.xpc"
+    executable path="/System/Library/PrivateFrameworks/WorkflowKit.framework/XPCServices/ShortcutsViewService.xpc/Contents/MacOS/ShortcutsViewService"
+    pid = 77227 type="UIElement" flavor=3 Version="1" fileType="XPC!" Arch=ARM64 sandboxed 
+    coalition: 1441
+    checkin time = 2026/07/04 00:58:50 ( 56 minutes, 12.4118 seconds ago )
+139) "Keychain Circle Notification" ASN:0x0-0x23cdfcbc: 
+    bundleID="com.apple.security.Keychain-Circle-Notification"
+    bundle path="/System/Library/CoreServices/Keychain Circle Notification.app"
+    executable path="/System/Library/CoreServices/Keychain Circle Notification.app/Contents/MacOS/Keychain Circle Notification"
+    pid = 77803 type="UIElement" flavor=3 Version="61901.120.67" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 788
+    checkin time = 2026/07/04 01:25:37 ( 29 minutes, 25.0553 seconds ago )
+140) "AquaAppearanceHelper" ASN:0x0-0x23db4d91: 
+    bundleID="com.apple.AquaAppearanceHelper"
+    bundle path="/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/Resources/AquaAppearanceHelper.app"
+    executable path="/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/Resources/AquaAppearanceHelper.app/Contents/MacOS/AquaAppearanceHelper"
+    pid = 82212 type="UIElement" flavor=3 Version="1" fileType="APPL" Arch=ARM64 sandboxed 
+    coalition: 1210
+    checkin time = 250 seconds ago, 2026/07/04 01:50:52 ( 4 minutes, 10.1565 seconds ago )
+141) "Accessibility Services" ASN:0x0-0x23dd0dad: 
+    bundleID="com.apple.accessibility.AXVisualSupportAgent"
+    bundle path="/System/Library/PrivateFrameworks/UniversalAccess.framework/Versions/A/Resources/AXVisualSupportAgent.app"
+    executable path="/System/Library/PrivateFrameworks/UniversalAccess.framework/Versions/A/Resources/AXVisualSupportAgent.app/Contents/MacOS/AXVisualSupportAgent"
+    pid = 83272 type="UIElement" flavor=3 Version="724" fileType="APPL" creator="????" Arch=ARM64 
+    coalition: 1918
+    checkin time = 53 seconds ago, 2026/07/04 01:54:10 ( 52.6354 seconds ago )
+142) "Refined GitHub Web Extension" ASN:0x0-0x23dd6db3: 
+    bundleID="com.apple.WebKit.WebContent"
+    bundle path=[ NULL ] 
+    executable path="/System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent"
+    pid = 83269 !cgsConnection !signalled type="UIElement" flavor=[ NULL ]  Version="21624.2.5.11.4" fileType="XPC!" creator="????" Arch=ARM64 
+    parentASN="Safari Networking" ASN:0x0-0x10e93e83: 
+    checkin time = 2 seconds ago, 2026/07/04 01:55:01 ( 1.62251 seconds ago )

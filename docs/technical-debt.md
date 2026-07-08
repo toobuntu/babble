@@ -120,12 +120,12 @@ disabled — the headline of the migration delivers nothing.
 - [ ] RSpec stubs `lsappinfo list` with a fixture (capture once from a
       real macOS) and asserts the parser returns >= 1 bundle ID and
       excludes lines that don't have `bundleID="..."`
-- [ ] Fixture committed as `test/fixtures/lsappinfo_list_sample.txt`
+- [ ] Fixture committed as `test/support/fixtures/babble/lsappinfo_list_sample.txt`
       (captured by the maintainer, not fabricated)
 
 **Files:** `cmd/babble/app_manager.rb`,
 `test/cmd/babble/app_manager_spec.rb`,
-`test/fixtures/lsappinfo_list_sample.txt`.
+`test/support/fixtures/babble/lsappinfo_list_sample.txt`.
 
 ### P0.4 — `lsregister -dump` performance: cache and use cheap predicate
 
@@ -323,7 +323,7 @@ runner).
 - [ ] `test/manual/TESTING.md` documents the real-hardware smoke tests
       (full upgrade cycle, quit/reopen of an unsafe-to-quit app, etc.)
 - [ ] External boundaries mocked (`Babble::Sh` / `system_command`,
-      JXA quits, `lsappinfo`); fixtures under `test/fixtures/`
+      JXA quits, `lsappinfo`); fixtures under `test/support/fixtures/babble/`
 - [ ] CI `brew_tests` job runs every spec via the hardlink pattern
       (cask-tools `ci.yml` model, extended with W7's `lib/`-style
       subtree handling for `cmd/babble/`)
@@ -367,11 +367,11 @@ it in `apps.yml`), and aligns with the long-term mas API.
 - [ ] `mas list --json <app_id>` used to look up display name and
       bundle IDs at runtime, with config-file values as override
 - [ ] Spec covers both code paths with fixtures
-      (`test/fixtures/mas_outdated_v7.json`,
-      `test/fixtures/mas_outdated_v6_text.txt`)
+      (`test/support/fixtures/babble/mas_outdated_v7.json`,
+      `test/support/fixtures/babble/mas_outdated_v6_text.txt`)
 
 **Files:** `cmd/babble/mas_upgrade.rb`,
-`test/cmd/babble/mas_upgrade_spec.rb`, `test/fixtures/mas_outdated_*`.
+`test/cmd/babble/mas_upgrade_spec.rb`, `test/support/fixtures/babble/mas_outdated_*`.
 
 ---
 
