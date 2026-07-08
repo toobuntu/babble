@@ -15,7 +15,8 @@
 set -eu
 
 # Anchored regex: anything under scripts/ ending in .sh (recursive);
-# the supported top-level git hooks (pre-commit, pre-push); and the
+# the supported top-level git hooks (pre-commit, pre-push, commit-msg);
+# and the
 # executable run-parts-named plugins under .githooks/pre-commit.d/.
 # Plugin names follow Debian run-parts' default "classicalre" rule
 # (^[A-Za-z0-9_-]+$ -- letters, digits, underscore, hyphen; no dot, no
@@ -23,7 +24,7 @@ set -eu
 # is not a valid run-parts name: the runner skips it, so a dot suffix is
 # how a plugin is disabled and lint-perms must not demand its exec bit.
 # Add a new top-level hook to the alternation when one is introduced.
-PERMS_PATTERN='^scripts/.*\.sh$|^\.githooks/(pre-commit|pre-push)$|^\.githooks/pre-commit\.d/[A-Za-z0-9_-]+$'
+PERMS_PATTERN='^scripts/.*\.sh$|^\.githooks/(pre-commit|pre-push|commit-msg)$|^\.githooks/pre-commit\.d/[A-Za-z0-9_-]+$'
 
 scope=${1:-}
 fmt=${LINT_PERMS_FORMAT:-shell}
