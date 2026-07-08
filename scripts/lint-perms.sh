@@ -15,7 +15,8 @@
 set -eu
 
 # Anchored regex: anything under scripts/ ending in .sh (recursive);
-# the supported top-level git hooks (pre-commit, pre-push); and the
+# the supported top-level git hooks (pre-commit, pre-push, commit-msg);
+# and the
 # executable run-parts-named plugins under .githooks/pre-commit.d/.
 # Plugin names follow Debian run-parts' default "classicalre" rule
 # (^[A-Za-z0-9_-]+$ -- letters, digits, underscore, hyphen; no dot, no
